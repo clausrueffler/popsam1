@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Exercise: Demographic Stochasticity</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/spacelab.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Population and community ecology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Exercises
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./EnvironmentalStochasticity.html">1. Excercise: Environmental Stochasticity</a>
+    </li>
+    <li>
+      <a href="./DemographicStochasticity.html">2. Excercise: Demograhic Stochasticity</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+
+</div>
+
+
+<div id="demographic-stochasticity" class="section level1 tabset">
+<h1>Demographic Stochasticity</h1>
+<div id="demographic-stochasticity-1" class="section level2">
+<h2>Demographic Stochasticity</h2>
+<p>In this exercise, you will explore through stochastic simulations a simple birth-death process. In the lecture, we have seen that the deterministic equation for exponential growth,</p>
+<p><span class="math display">\[
+\frac{\mathrm{d}N}{\mathrm{d}t}=N(b-d)=Nr,
+\]</span> describes the mean over many simulations. These simulations take into account that, even if all individuals in a population are genetically identical, they with still differ in the number of their offspring and their age at death. This is due to chance events (some people are hit by a falling tree while others are not…). Fluctuations due to such chance events acting at the level of the individual is called <em>demographic stochasticity</em>. In this exercise, you will explore the consequences of demographic stochasticity for population viability.</p>
+<p>The following piece of R-code defines a function that creates a stochastic population dynamical time series. The function has four arguments: <em>N0</em> (the initial number <em>N(0)</em> of individuals in the population), <em>Nmax</em> (when the simulated population has reached this number the simulation stops; the simulation will also stop once the population has gone extinct (<em>N=0</em>)), <em>birth</em> (the per capita birth rate) and <em>death</em> (the per capita death rate).</p>
+<pre class="r"><code>time.series &lt;- function(N0, Nmax, birth, death){# this defines a functino with the name &quot;time.series&quot;. It has four arguments: N0, Nmax, birth, death
+  N &lt;- N0
+  t &lt;- 0
+  output &lt;- data.frame(t,N) # creates a data frame in which we can store the results from the simulation
+  while (N &lt; Nmax &amp; N &gt; 0) {# loop runs until N=0 or N=Nmax
+    dt &lt;- rexp(1, rate = death*N+birth*N) # time to next event, this is a bit different then the algorithm I explained in the lecture, more later...
+    event &lt;- sample(c(-1,1), 1, prob = c(death*N, birth*N)) # determines which type of event happens by drawing a random number
+    t &lt;- t + dt # updates time
+    N &lt;- N + event # updates population size
+    output &lt;- rbind(output, c(t,N)) # updates output data.frame
+  }
+  return(output)
+}</code></pre>
+<p>We can evaluate the funciton by writing</p>
+<pre class="r"><code>time.series(3, 10, 0.6, 0.5)</code></pre>
+<pre><code>##            t  N
+## 1  0.0000000  3
+## 2  0.5337574  2
+## 3  1.0697914  3
+## 4  1.1282563  4
+## 5  1.2596319  3
+## 6  1.3290961  4
+## 7  1.7448521  5
+## 8  1.7637690  6
+## 9  1.8758167  7
+## 10 1.9615985  8
+## 11 1.9678667  7
+## 12 2.1134554  6
+## 13 2.1658615  5
+## 14 2.4499970  4
+## 15 2.4633085  5
+## 16 2.5109054  6
+## 17 2.5828974  7
+## 18 2.6340528  8
+## 19 2.8368949  9
+## 20 2.9033979 10</code></pre>
+<p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>birth=0.6</em>, and <em>death=0.5</em>. The output of the function is a matrix with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
+<pre class="r"><code>data&lt;-time.series(3,200,0.6,0.5)
+plot(data, type=&quot;l&quot;)</code></pre>
+<p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached Nmax before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
+<pre class="r"><code>plot(N+1 ~ t, data, log=&quot;y&quot;, type=&quot;l&quot;)</code></pre>
+<p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>birth</em> and <em>death</em> and investigate their effect on the time series, more specifically, whether or not it experiences extinction.</p>
+<p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct (<em>N=0</em>)? To investigate this we have to look at many realisations of the simulation and it is easier to do this by automatising this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated.</p>
+<pre class="r"><code>N0 &lt;- 10
+Nmax &lt;- 300 
+birth &lt;- 0.6
+death &lt;- 0.5
+sim &lt;- 10 # this sets the number of simulations</code></pre>
+<p>We first store the data from the 10 simulations in a list.</p>
+<pre class="r"><code>results &lt;- list() # a list variable to save results of all iterations of the function time.series
+iter &lt;- 1 # intialize counter
+for (i in 1:sim) {# to create sim different simulations, we embedd the function time.series in a for-loop
+  results[[iter]] &lt;- time.series(N0,Nmax,birth,death) # adds the result of a simulation to the results
+  iter = iter + 1
+}</code></pre>
+<p>In the next step, we print the results. Before we can do this we have to determine the length of the x-axis (time) in the plot. We do that by determining the length of the longest simulation run.</p>
+<pre class="r"><code>maxt &lt;- numeric(sim) # creates a vector in which we store the length of the different time series
+  for (i in 1:sim) {
+  maxt[i] &lt;- max(results[[i]][1]) # determines the length of the ith time series and stores the result in the object maxt
+  }
+tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
+<p>Next comes the code that produces the plots.</p>
+<pre class="r"><code>cl &lt;- rainbow(length(results)) # sets number of colours equal to number sim
+plot(N+1 ~ t, results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,Nmax),xlim=c(0,tmax), col=cl[1]) # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+  lines(N+1~t, results[[i]],type=&quot;l&quot;, col=cl[i])
+}</code></pre>
+<p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>This results in a figure showing ten simulation runs. From this figure, you can visually count how many of these runs resulted in extinction and how many in exponential growth.</p>
+<div id="task" class="section level3">
+<h3>Task</h3>
+<ol style="list-style-type: decimal">
+<li><p>Investigating the probability of extinction in dependence of three different parameters (<em>N0</em>, <em>birth</em>, <em>death</em>) is a bit cumbersome. Let us therefore set the death rate equal to 1 (<em>death=1</em>) and only vary <em>N0</em> and <em>birth</em>. Vary <em>birth</em> according to <em>birth = (0.9; 1; 1.1; 1.2; 1.5)</em> and initial population size <em>N0</em> according to <em>N0 = (1; 3; 5; 10; 50)</em>. Varying both parameters together gives you 25 different parameter combinations that you can arrange in a table with five rows (<em>N0</em>) and five columns (<em>birth</em>). In each cell of this table, report the proportion of ten runs that result in extinction. Please also think which conclusions you can draw from your results about the effect of <em>N0</em> and <em>birth</em> on the probability of extinction? Are there parameter combinations that you feel you need to add to your analysis to get a better understanding?</p></li>
+<li><p>As we have seen in the lecture, an analytical prediction for the extinction probability is given by the formula <span class="math display">\[
+u(N_0)=
+\begin{cases}
+1 &amp; \mathrm{for}\,\,\, b\leq d\\
+(\frac{d}{b})^{N_0} &amp; \mathrm{for}\,\,\, b&gt;d.
+\end{cases}
+\]</span> Calculate the probability for extinction according to this formula for each of the parameter combinations in your table and enter these results in a second table. How well do the results from your simulations and from the above formula agree?</p></li>
+</ol>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

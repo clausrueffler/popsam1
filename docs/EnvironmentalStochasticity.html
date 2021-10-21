@@ -248,19 +248,10 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="./PopulationDynamics.html">1. Excercise: Population Dynamics</a>
+      <a href="./EnvironmentalStochasticity.html">1. Excercise: Environmental Stochasticity</a>
     </li>
     <li>
-      <a href="./StructuredPopulations.html">2. Excercise: Structured Populations</a>
-    </li>
-    <li>
-      <a href="./Competition.html">3. Excercise: Competition</a>
-    </li>
-    <li>
-      <a href="./PredatorPrey.html">4. Excercise: Predator-Prey Interactions</a>
-    </li>
-    <li>
-      <a href="./Pulliam.html">5. Excercise: Sources, sinks, and population regulation</a>
+      <a href="./DemographicStochasticity.html">2. Excercise: Demograhic Stochasticity</a>
     </li>
   </ul>
 </li>
@@ -282,101 +273,131 @@ $(document).ready(function () {
 
 <div id="exercise-environmental-stochasticity" class="section level1 tabset">
 <h1>Exercise: Environmental Stochasticity</h1>
-<div id="lv-in-discrete-time" class="section level2">
-<h2>LV in discrete time</h2>
-<p>The Lotka-Volterra competition model in discrete time can be written as the following system of two difference equations: <span class="math display">\[
-\begin{align}
-N_1(t+1)&amp;=N_1(t)+N_1(t)r_1\bigg(1-\frac{N_1(t)+\alpha N_2(t)}{K_1}\bigg)\\
-N_2(t+1)&amp;=N_2(t)+N_2(t)r_2\bigg(1-\frac{N_2(t)+\beta N_1(t)}{K_2}\bigg)
-\end{align}
+<div id="environmental-stochasticity" class="section level2">
+<h2>Environmental stochasticity</h2>
+<p>In the lecture, we derived</p>
+<p><span class="math display">\[
+N(t)=N(0)*(1+p_bn-p_d)^t=N(0)*\lambda^t
+\]</span> as a model for exponential growth in discrete time, where <span class="math inline">\(\lambda=1+p_bn-p_d\)</span>. If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, <em>B</em>, and the number of individuals dying, <em>D</em>, at any time step will be very close to the expected values <span class="math inline">\(N(t)p_bn\)</span> and <span class="math inline">\(N(t)p_d\)</span>, respectively. This is due to the <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers">law of large numbers</a>. We will investigate the effect of <em>demographic stochasticity</em> as it occurs in small populations in a later exercise.</p>
+<p>Importantly, the above equation assumes that the growth factor <span class="math inline">\(\lambda\)</span> does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the the probability to produce offspring, <span class="math inline">\(p_b\)</span>, the average number of offspring, <span class="math inline">\(n\)</span>, and the probability to die, <span class="math inline">\(p_d\)</span>, of ALL individuals in a population. In short, <span class="math inline">\(\lambda\)</span> will vary in time and we indicate this by giving it a subscript, <span class="math inline">\(\lambda_t\)</span>.</p>
+<p>In this exercise, we simulate environmental stochasticity in R. We do this by choosing a set of random postive numbers that represent the <span class="math inline">\(\lambda\)</span>-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of <span class="math inline">\(\lambda\)</span>-values from an interval with a lower boundary given by the parameter <code>min</code> and an upper boundary given by the parameter <code>max</code>. Let us furthermore assume that eaach number of within the interval <code>(min, max)</code> occurs with equal probability. We can do this in R by using the command <code>runif(n, min,max)</code>. The name runif is an abbreviation combining the words <em>random</em> and <em>uniform</em>, indicating that the command <code>runif(n, min, max)</code> produces a vecotor of <code>max</code> numbers (the length of the time series) and that these are drawn randomly from the interval <code>(min, max)</code>. Drawing a set of random numbers from an interval corresponds to drawing numbers from a <em>uniform distribution</em>.</p>
+<pre class="r"><code>runif(10, 1, 2) # produces a vector of 10 random numbers between 1 and 2</code></pre>
+<pre><code>##  [1] 1.219843 1.769745 1.016955 1.123953 1.932195 1.856601 1.708837 1.237237
+##  [9] 1.759092 1.942393</code></pre>
+<p>We could in principle decide to draw the random numbers from distributions other than the normal distribution, for example from a Normal or Poisson distribution (using the commands <code>rnorm(n, mean, sd)</code> and <code>rpois(n, lambda)</code>, respectively). However, we would have to assure that we only obtain positive values, since the growth factor <span class="math inline">\(\lambda\)</span> is by definition a non-negative number.</p>
+<p>Let us dfine the parameter values of the random distributino and then draw the sequence of <span class="math inline">\(\lambda\)</span>-values.</p>
+<pre class="r"><code>n &lt;- 100 # lenght of time series
+min &lt;- 0.5 # lowest possible value of the growth factor lamabda
+max &lt;- 2 # largest possible value of the growth factor lambda
+N0 &lt;- 10 # initial population size
+
+growth_factors &lt;- runif(n, min, max)</code></pre>
+<p>In the next step, we want to use the sequence of <span class="math inline">\(\lambda\)</span>-values to project a population that consists of <code>N0</code> individuals at time <code>t=0</code> <code>t</code> time steps into the future. Thus, we want to compute</p>
+<p><span class="math display">\[
+N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
 \]</span></p>
-<p>In this exercise, you will investigate the behavior of the Lotka-Volterra competition model by iterating this system of equations. To do this, we first define a function that describes how the population size of two competing species one time step in the future depends on their population sizes at the current time step.</p>
-<pre class="r"><code>LVcomp &lt;- function(N, r1, r2, K1, K2, alpha, beta) {
-  N1.t1 &lt;- N[1] + r1 * N[1] * (1 - (N[1] + alpha * N[2])/K1)
-  N2.t1 &lt;- N[2] + r2 * N[2] * (1 - (N[2] + beta * N[1])/K2)
-  c(N1.t1, N2.t1)
-}</code></pre>
-<p>In the next code-block, all parameter values and the initial population size vector <code>N.0</code> specifying the initial densities for the two species are determined.</p>
-<pre class="r"><code>r1 &lt;- .9 # intrinsic growth rate of species 1
-r2 &lt;- .9 # intrinsic growth rate of species 2
-K1 &lt;- 100 # carrying capacity of species 1
-K2 &lt;- 100 # carrying capacity of species 2
-alpha &lt;- 0.8 # competitive effect of species 2 on species 1
-beta &lt;- 0.9 # competitive effect of species 1 on species 2
-N0 &lt;- c(5, 20) # vector of initial population sizes, N1(0) and N2(0)
-t &lt;- 50 # number of time steps the simulation should run</code></pre>
-<p>The next piece of code produces the data. EACH TIME YOU CHANGE A PARAMETER VALUE YOU HAVE TO EVALUATE THE CODE FROM HER ONWARDS IN ORDER TO THE SEE THE CORRESPONDING RESULT.</p>
-<pre class="r"><code>N &lt;- matrix(NA, nrow = t + 1, ncol = 2) # defines a matrix with two columns and t+1 rows in which the population vectors of the time series will be stored
-N[1, ] &lt;- N0 # enters the initial population vector into the first row of this matrix
-for (i in 1:t) N[i + 1, ] &lt;- LVcomp(N[i, ], r1, r2, K1, K2, alpha, beta) # this for-loop interates the population dynamics t-times</code></pre>
-<p>Finally, let us plot the time series.</p>
-<pre class="r"><code>matplot(0:t, N, type = &quot;l&quot;, lty = 1:2, col = 1, ylim = c(0, 90), ylab=&quot;Number of individuals&quot;, xlab=&quot;Time&quot;)
-legend(&quot;top&quot;, c(expression(&quot;species 1 &quot;), expression(&quot;species 2 &quot;)), lty = 1:2, bty = &quot;n&quot;)</code></pre>
+<pre class="r"><code>N0 &lt;- 10 # population size at time t=0
+time_series &lt;- numeric(n+1) # creates an (empty) vector of length n+1 (initial values plus n later time steps) in which we will store the population time series
+time_series[1] &lt;- N0 # initial population size N0 entered as first entry
+
+for (t in 1:n) {# for-loop that projects the population n time steps into the future
+  time_series[t+1] &lt;- if (time_series[t]*growth_factors[t] &lt; 1) 0 # sets the population vector to 0 in case N drops below 1
+  else time_series[t]*growth_factors[t]
+  }</code></pre>
+<p>Assuming that <em>N</em> describes the <em>absolute population size</em> we in this code set any population size less than one equal to zero (half a fox does not exist). In other words, if <span class="math inline">\(N &lt; 1\)</span> at any time <em>t</em>, then the we consider the population extinct from that time point onwards. Next, we plot the resulting time series on a log-scale.</p>
+<pre class="r"><code>plot(0:n, time_series+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
 <p><img src="EnvironmentalStochasticity_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-</div>
-<div id="logistic-growth-in-discrete-time" class="section level2">
-<h2>Logistic growth in discrete time</h2>
-<p>Before we actually look at competition between two species let us go back one step. We can use the above code to also investigate the population dynamics of a single species that growths according to logistic growth in discrete time. Recall the lecture about the discrete time logistic model. <em>All that we have to do for that is to set the initial population size of one species, say species 2, equal to zero, that is <span class="math inline">\(N_2(t=0)=0\)</span></em>. This works because in a population without imigration and emigration, a species that is not present at the beginning will never be present and the model behaves exactly as a single species model.</p>
-<pre class="r"><code>r1 &lt;- 1 # intrinsic growth rate of species 1
-r2 &lt;- 1.5 # intrinsic growth rate of species 2
-K1 &lt;- 100 # carrying capacity of species 1
-K2 &lt;- 100 # carrying capacity of species 2
-alpha &lt;- 0.8 # competitive effect of species 2 on species 1
-beta &lt;- 0.9 # competitive effect of species 1 on species 2
-N0 &lt;- c(10, 0) # vector of initial population sizes where N2(t=0)=0
-t &lt;- 20 # number of time steps the simulation should run</code></pre>
-<p>Here, you can see the population dynamics as resulting from the above parameter values. I also added a horizontal line indicating the value of the carrying capacity of species 1.</p>
-<pre class="r"><code>N &lt;- matrix(NA, nrow = t + 1, ncol = 2) # defines a matrix in which the population vectors of the time series will be stored
-N[1, ] &lt;- N0 # enters the initial population vector as a column into this matrix
-for (i in 1:t) N[i + 1, ] &lt;- LVcomp(N[i, ], r1, r2, K1, K2, alpha, beta) # this for-loop interates the population dynamics t-times
+<p>At each instance this code is executed (starting from the line in which the vector <code>growht_factors</code> is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after <em>n</em> time steps.</p>
+<p>To confirm that the arithmetic mean of the annual grwoth factors given by</p>
+<p><span class="math display">\[
+\bar\lambda=\frac{1}{t}(\lambda_{t-1}+\lambda_{t-2}+\ldots+\lambda_2+\lambda_1+\lambda_0)
+\]</span></p>
+<p>is not informative, we can add the time series as it would result if the population would grow each time step by the factor <span class="math inline">\(\bar\lambda\)</span>.</p>
+<pre class="r"><code>arithmetic_mean &lt;- mean(growth_factors) # calculates the arithmetic mean of the annual grwoth factors
+arithmetic_mean # shows the value of the arithmetic mean</code></pre>
+<pre><code>## [1] 1.21209</code></pre>
+<p>Next, we add the line that shows how the population develops if it changes each year according to the arithmetic mean of the <span class="math inline">\(\bar\lambda\)</span>.</p>
+<pre class="r"><code>time_series_arith &lt;- numeric(n+1) # creates an (empty) vector of length tmax+1 in which we will store the population time series
+time_series_arith[1] &lt;- N0 # first entry in this vector equals initial population size N(0)
+  for (t in 1:n) {# for-loop that projects the population tmax time steps into the future using only the arithmetric mean
+  time_series_arith[t+1] &lt;- max(0, time_series_arith[t]*arithmetic_mean)
+  }
 
-matplot(0:t, N, type = &quot;l&quot;, col = 1, ylim = c(0, 120), ylab=&quot;Number of individuals&quot;, xlab=&quot;Time&quot;)
-abline(h = K1, lty = 3) # plots a line indicating the carrying capacity of species 1
-text(0, K1+1, &quot;K1&quot;, adj = c(0, 0))
-legend(&quot;top&quot;, c(expression(&quot;species1 &quot;), expression(&quot;species2&quot;)), lty = 1:2, bty = &quot;n&quot;)</code></pre>
+plot(0:n, time_series+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # repeats the plot with the stochastic time series
+lines(0:n, time_series_arith, type=&quot;p&quot;, col=&quot;2&quot;) # adds the line based on arithmetric mean to the plot</code></pre>
 <p><img src="EnvironmentalStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>Vary the intrinsic growth rate <code>r1</code> to investigate the effect is has on the population dynamics. For example, you could try the values <code>r1=0.5, 0.9, 1.5, 1.9, 2.1, 2.4, 2.5, 2.6</code>. What do you observe? Feel free to choose additional values to complete your understanding.</p>
-<p>Does the behavior you observe change when you alter (i) the value of the carrying capacity <em>K</em> or (ii) the initial population size at time zero?</p>
-<pre class="r"><code>r1 &lt;- 0.5 # intrinsic growth rate of species 1 is now increased
-t &lt;- 50
+<p>As expected, the arithmetic mean growth factor is not very accurate in predicting the fate of the population.</p>
+<p>Next, let us add a line that shows how the population changes if each year it grows according to the geometric mean, <span class="math inline">\(\tilde\lambda\)</span>, of the annual growth factors, defined as</p>
+<p><span class="math display">\[
+\tilde\lambda:=(\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0)^{\frac{1}{t}}
+\]</span></p>
+<pre class="r"><code>geometric_mean &lt;- exp(mean(log(growth_factors))) # calculates the geometric mean of the annual grwoth factors by using Eq.(3.16) in Pasztor et al. (2016)
+geometric_mean # shows the value of the geometric mean</code></pre>
+<pre><code>## [1] 1.12979</code></pre>
+<p>The following piece of code adds the desired line:</p>
+<pre class="r"><code>time_series_geom &lt;- numeric(n+1) # creates an (empty) vector of length tmax+1 in which we will store the population time series
+time_series_geom[1] &lt;- N0 # first entry in this vector equals initial population size N(0)
+for (t in 1:n) {# for-loop that projects the population tmax time steps into the future using only the geometric mean
+  time_series_geom[t+1] &lt;- max(0,time_series_geom[t]*geometric_mean)
+}
 
-N &lt;- matrix(NA, nrow = t + 1, ncol = 2) # defines a matrix in which the population vectors of the time series will be stored
-N[1, ] &lt;- N0 # enters the initial population vector as a column into this matrix
-for (i in 1:t) N[i + 1, ] &lt;- LVcomp(N[i, ], r1, r2, K1, K2, alpha, beta) # this for-loop interates the population dynamics t-times
-
-N.r.0p5 &lt;- N # here I assign the matrix that contains the data for the new r-value to a new object, called N.r.0p5. When I plot the data with the following command I have to change the name of the matrix there accordingly.
-
-matplot(0:t, N.r.0p5, type = &quot;l&quot;, col = 1, ylim = c(0, 120), ylab=&quot;Number of individuals&quot;, xlab=&quot;Time&quot;)
-abline(h = K1, lty = 3) # plots a line indicating the carrying capacity of species 1
-text(0, K1+1, &quot;K1&quot;, adj = c(0, 0))
-legend(&quot;top&quot;, c(expression(&quot;species1 &quot;), expression(&quot;species2&quot;)), lty = 1:2, bty = &quot;n&quot;)</code></pre>
-<p><img src="EnvironmentalStochasticity_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>In the above code, we assigned the matrix that contains the data for the new <em>r</em>-value to a new object, called <code>N.r.0p5</code> (reminding us that the <em>r</em>-value equals 0.5 in this run). When we plot the data we have to change the name of the matrix in the plotting command accordingly. In this way, it is possible to always evaluate the same piece of code after a parameter value has been changed but simultaneously keeping the results since we have saved them each time to a new object.</p>
+plot(0:n, time_series+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # repeats the plot with the stochastic time series
+lines(0:n, time_series_arith, type=&quot;p&quot;, col=&quot;2&quot;) # adds the line based on arithmetric mean in red
+lines(0:n, time_series_geom, type=&quot;p&quot;, col=&quot;4&quot;) # add the line based on geometric mean in blue</code></pre>
+<p><img src="EnvironmentalStochasticity_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>You might encounter simulation runs in which the population goes extinct while the projection based on the geometric mean suggests that the population should slowly increase. Can you explain this apparent contradiction?</p>
 </div>
-<div id="competition-between-two-species" class="section level2">
-<h2>Competition between two species</h2>
-<p>In order to properly investigate the competion between two species both need to have a non-zero density at <em>t=0</em>.</p>
-<pre class="r"><code>r1 &lt;- 1 # intrinsic growth rate of species 1
-r2 &lt;- 1.5 # intrinsic growth rate of species 2
-K1 &lt;- 100 # carrying capacity of species 1
-K2 &lt;- 100 # carrying capacity of species 2
-alpha &lt;- 0.8 # competitive effect of species 2 on species 1
-beta &lt;- 0.9 # competitive effect of species 1 on species 2
-N0 &lt;- c(10, 5) # vector of initial population sizes, N1(0) and N2(0)
-t &lt;- 30 # number of time steps the simulation should run</code></pre>
-<p>For the remainder of this exercise, investigate the effect of the various parameters on the outcome of competition between two species. Specifically, investigate the following questions.</p>
+<div id="the-probability-of-extinction" class="section level2">
+<h2>The probability of extinction</h2>
+<p>You have seen that for the chosen set of parameters <code>min</code>, <code>max</code>, <code>n</code> and <code>N0</code> a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? You can explore this question by changing the values for <code>min</code>, <code>max</code>, <code>n</code> and <code>N0</code>.</p>
+<p>To investigate this question more systematically, it is useful to somewhat automatize the process in R. We start by defining a new function to make the depency of the time series on <code>min</code>, <code>max</code>, <code>n</code> and <code>N0</code> explicit.</p>
+<pre class="r"><code>environmental_stochasticity &lt;- function(N0, n, min, max) {# function with four arguments
+  growth_factors &lt;- runif(n, min, max) # creates vector of n random lambda-values
+  time_series &lt;- numeric(n+1) # creates an empty vector to store time series
+  time_series[1] &lt;- N0 # defines the N0 as the first entry in the time sereis
+  for (t in 1:n) {
+    time_series[t+1] &lt;- if (time_series[t]*growth_factors[t] &lt; 1) 0 else time_series[t]*growth_factors[t]
+  }
+  return(time_series)
+}</code></pre>
+<p>This function produces a population time series for a given set of parameters. The resulting population time series is stored in the vector <code>time_series</code>.</p>
+<p>The next piece of code allows us to execute the population simulation several times by putting our function inside a for-loop. How often the times series is repeated is determined by the new parameter <code>sim</code>, below set equal to 20. Note that each time series is different from the others because it is based on a different set of random <span class="math inline">\(\lambda\)</span>-values.</p>
+<pre class="r"><code>n &lt;- 500 # lenght of time series
+min &lt;- 0.9 # lowest possible value for growth factor
+max &lt;- 1.1 # largest possible value of growth factor
+N0 &lt;- 10 # initial population size
+sim &lt;- 20 # number of simulation runs
+
+results &lt;- matrix(numeric(sim), nrow = n + 1, ncol = sim) # creates an empty matrix to save the results
+
+j &lt;- 1 # intialize a counter
+for (i in 1:sim) {# executes the function sim times
+  results[, j] &lt;- environmental_stochasticity(N0, n, min, max) # produces a time series and stores it in the jth column of the matrix results
+  j = j + 1 # updates the counter by increasing it by 1
+}</code></pre>
+<p>The following code plots all time series on a log scale in a single figure:</p>
+<pre class="r"><code>cl &lt;- rainbow(sim) # set number of colors equal to number of simulations
+
+maxN &lt;- numeric(sim) # here we determines how long the y-axis has to be
+for (i in 1:sim) {# we do this by determining the largest population size that is reached in each of the simulations
+  maxN[i] &lt;- max(results[, i])
+}
+
+plot(0:n, results[, 1]+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, max(maxN)), col=cl[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plot the result from the first simulation
+for (i in 2:sim) {# add the results from all other simulations to the same graph
+  lines(0:n, results[, i]+1, type=&quot;l&quot;, col=cl[i])
+}</code></pre>
+<p><img src="EnvironmentalStochasticity_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>From these graphs, you can determine the number of simulation runs in which the population goes extinct.</p>
+<div id="tasks" class="section level3">
+<h3>TASKS</h3>
 <ol style="list-style-type: decimal">
-<li>First focus on the case that both carrying capacities are equal, <code>K1=K2</code>, and that the intrinsic growth rates are relatively small, say, <code>r1, r2 &lt;1</code>. Under this scenario, look at the following cases: <span class="math display">\[
-\begin{align}
-  \mathrm{i)\,\,} &amp; \alpha&lt;1&lt;\beta\\
-  \mathrm{ii)\,\,} &amp; \alpha&gt;1&gt;\beta\\
-  \mathrm{iii)\,\,} &amp; 1&lt;\alpha, \beta\\
-  \mathrm{iv)\,\,} &amp; \alpha, \beta&lt;1
-\end{align}
-\]</span></li>
-<li><p>Allow the two carrying capacities to differ from each other, for instance, <code>K1 &lt; K2</code>. Does this alter your previous results? If yes, how?</p></li>
-<li><p>The fact that the single-species logistic equation allows for overshooting and complicated population dynamical cycles when <em>r&gt;2</em> carries over to the LV-competition model in discrete time (note, that this is not possible in the continuous time versions of both these models). Investigate this possibility for the special case that the intrinsic growth rates and carrying capacities of both species are equal to each other, <code>r1 = r2</code> and and <code>K1 = K2</code>. What happens if both growth rates are close to 2 but slightly less and what happens if you increase both growth rates slightly above 2? You could combine this investigation with the different configurations that the competition competition coefficients can take as listed under (1).</p></li>
+<li><p>Keep <em>max=2</em> fixed and vary <em>min</em> and <em>n</em> according to <em>min = (0; 0.1; 0.2; 0.3; 0.4; 0.5)</em> and <em>tmax = (100; 200; 500)</em>, respectively. Varying both parameters together gives you 18 parameter combinations which you can arrange in a table with three rows (<em>n</em>) and six columns (<em>min</em>). In each cell of this table, enter the proportion of 20 runs that result in extinction. Do these simulations for <em>tmax=500</em>, of if this takes too long, for <em>tmax=200</em>.</p></li>
+<li><p>Keep <em>tmax=500</em> fixed and vary <em>min</em> and <em>max</em> according to <em>min/max = (0.9/1.1; 0.8/1.2; 0.7/1.3; 0.5/1.5; 0.2/1.8)</em>. For each <em>min/max</em> report the proportion of 20 runs in which the population goes extinct.</p></li>
+<li><p>For <em>tmax=500</em> and a pair of <em>min</em> and <em>max</em> of your own choice explore the effect of <em>N(0)</em> by varying it according to <em>N0=(1; 2; 3; 5; 10; 50)</em>. For each value of <em>N(0)</em>, report the proportion of ten runs in which the population went extinct.</p></li>
 </ol>
+<p>For each exercise, clarify for yourself why the observed pattern makes sense. Submit your results (for example, by entering them in a data frame).</p>
+</div>
 </div>
 </div>
 
