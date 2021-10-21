@@ -282,8 +282,8 @@ N(t)=N(0)*(1+p_bn-p_d)^t=N(0)*\lambda^t
 <p>Importantly, the above equation assumes that the growth factor <span class="math inline">\(\lambda\)</span> does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the the probability to produce offspring, <span class="math inline">\(p_b\)</span>, the average number of offspring, <span class="math inline">\(n\)</span>, and the probability to die, <span class="math inline">\(p_d\)</span>, of ALL individuals in a population. In short, <span class="math inline">\(\lambda\)</span> will vary in time and we indicate this by giving it a subscript, <span class="math inline">\(\lambda_t\)</span>.</p>
 <p>In this exercise, we simulate environmental stochasticity in R. We do this by choosing a set of random postive numbers that represent the <span class="math inline">\(\lambda\)</span>-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of <span class="math inline">\(\lambda\)</span>-values from an interval with a lower boundary given by the parameter <code>min</code> and an upper boundary given by the parameter <code>max</code>. Let us furthermore assume that eaach number of within the interval <code>(min, max)</code> occurs with equal probability. We can do this in R by using the command <code>runif(n, min,max)</code>. The name runif is an abbreviation combining the words <em>random</em> and <em>uniform</em>, indicating that the command <code>runif(n, min, max)</code> produces a vecotor of <code>max</code> numbers (the length of the time series) and that these are drawn randomly from the interval <code>(min, max)</code>. Drawing a set of random numbers from an interval corresponds to drawing numbers from a <em>uniform distribution</em>.</p>
 <pre class="r"><code>runif(10, 1, 2) # produces a vector of 10 random numbers between 1 and 2</code></pre>
-<pre><code>##  [1] 1.219843 1.769745 1.016955 1.123953 1.932195 1.856601 1.708837 1.237237
-##  [9] 1.759092 1.942393</code></pre>
+<pre><code>##  [1] 1.175017 1.940926 1.311168 1.263501 1.652987 1.458926 1.835349 1.892542
+##  [9] 1.715401 1.583966</code></pre>
 <p>We could in principle decide to draw the random numbers from distributions other than the normal distribution, for example from a Normal or Poisson distribution (using the commands <code>rnorm(n, mean, sd)</code> and <code>rpois(n, lambda)</code>, respectively). However, we would have to assure that we only obtain positive values, since the growth factor <span class="math inline">\(\lambda\)</span> is by definition a non-negative number.</p>
 <p>Let us dfine the parameter values of the random distributino and then draw the sequence of <span class="math inline">\(\lambda\)</span>-values.</p>
 <pre class="r"><code>n &lt;- 100 # lenght of time series
@@ -315,7 +315,7 @@ for (t in 1:n) {# for-loop that projects the population n time steps into the fu
 <p>is not informative, we can add the time series as it would result if the population would grow each time step by the factor <span class="math inline">\(\bar\lambda\)</span>.</p>
 <pre class="r"><code>arithmetic_mean &lt;- mean(growth_factors) # calculates the arithmetic mean of the annual grwoth factors
 arithmetic_mean # shows the value of the arithmetic mean</code></pre>
-<pre><code>## [1] 1.21209</code></pre>
+<pre><code>## [1] 1.351574</code></pre>
 <p>Next, we add the line that shows how the population develops if it changes each year according to the arithmetic mean of the <span class="math inline">\(\bar\lambda\)</span>.</p>
 <pre class="r"><code>time_series_arith &lt;- numeric(n+1) # creates an (empty) vector of length tmax+1 in which we will store the population time series
 time_series_arith[1] &lt;- N0 # first entry in this vector equals initial population size N(0)
@@ -333,7 +333,7 @@ lines(0:n, time_series_arith, type=&quot;p&quot;, col=&quot;2&quot;) # adds the 
 \]</span></p>
 <pre class="r"><code>geometric_mean &lt;- exp(mean(log(growth_factors))) # calculates the geometric mean of the annual grwoth factors by using Eq.(3.16) in Pasztor et al. (2016)
 geometric_mean # shows the value of the geometric mean</code></pre>
-<pre><code>## [1] 1.12979</code></pre>
+<pre><code>## [1] 1.270992</code></pre>
 <p>The following piece of code adds the desired line:</p>
 <pre class="r"><code>time_series_geom &lt;- numeric(n+1) # creates an (empty) vector of length tmax+1 in which we will store the population time series
 time_series_geom[1] &lt;- N0 # first entry in this vector equals initial population size N(0)

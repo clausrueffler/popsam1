@@ -295,27 +295,13 @@ $(document).ready(function () {
 }</code></pre>
 <p>We can evaluate the funciton by writing</p>
 <pre class="r"><code>time.series(3, 10, 0.6, 0.5)</code></pre>
-<pre><code>##            t  N
-## 1  0.0000000  3
-## 2  0.5337574  2
-## 3  1.0697914  3
-## 4  1.1282563  4
-## 5  1.2596319  3
-## 6  1.3290961  4
-## 7  1.7448521  5
-## 8  1.7637690  6
-## 9  1.8758167  7
-## 10 1.9615985  8
-## 11 1.9678667  7
-## 12 2.1134554  6
-## 13 2.1658615  5
-## 14 2.4499970  4
-## 15 2.4633085  5
-## 16 2.5109054  6
-## 17 2.5828974  7
-## 18 2.6340528  8
-## 19 2.8368949  9
-## 20 2.9033979 10</code></pre>
+<pre><code>##           t N
+## 1 0.0000000 3
+## 2 0.8111444 4
+## 3 0.9894213 3
+## 4 1.2578213 2
+## 5 1.5041453 1
+## 6 2.6146162 0</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>birth=0.6</em>, and <em>death=0.5</em>. The output of the function is a matrix with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data&lt;-time.series(3,200,0.6,0.5)
 plot(data, type=&quot;l&quot;)</code></pre>
