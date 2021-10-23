@@ -9,7 +9,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Exercise: Environmental Stochasticity {.tabset}
+# Environmental Stochasticity {.tabset}
 
 ## Environmental stochasticity
 
