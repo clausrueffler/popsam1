@@ -11,8 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Demographic Stochasticity {.tabset}
 
-## Demographic Stochasticity
-
 In this exercise, we will explore through stochastic simulations a simple birth-death process. In the lecture, we have seen that the deterministic equation for exponential growth,
 
 $$
@@ -20,12 +18,12 @@ $$
 $$
 describes the mean over many simulations. These simulations take into account that, even if all individuals in a population are genetically identical, they will still differ in the number of their offspring and their age at death. This is due to chance events (some people are hit by a falling tree while others are not...). Fluctuations due to such chance events acting at the level of the individual are called *demographic stochasticity*. In this exercise, we will explore the consequences of demographic stochasticity for population viability.
 
-More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a deatz or a birth. If death occurs, then population size decreases by one and if birth occurs population size increases by one. The probabilities with which these two events occur are proportional to ```d*N(t)``` and ```b*N(t)```, respectively. To implement this idea in R we can use the function ```sample(x, size, prob)```, where ```x = c(-1, 1)``` is the vector of possible events (-1 in case of a death and 1 in case of a birth), ```size = 1``` indicates how many events occur at any given point in time, and ```prob = c(d*N, b*N)``` gives the vector of probabilities with which the two evnts occur. Thus, if you evaluate the following command ten times you expect to obtain *on average* -1 four times and +1 six times.
+More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs population size increases by one. The probabilities with which these two events occur are proportional to ```d*N(t)``` and ```b*N(t)```, respectively. To implement this idea in R we can use the function ```sample(x, size, prob)```, where ```x = c(-1, 1)``` is the vector of possible events (-1 in case of a death and 1 in case of a birth), ```size = 1``` indicates how many events occur at any given point in time, and ```prob = c(d*N, b*N)``` gives the vector of probabilities with which the two evnts occur. Thus, if you evaluate the following command ten times you expect to obtain *on average* -1 four times and +1 six times.
 
 ```{r eval=FALSE}
 sample(x =c(-1, 1), size = 1, prob = c(d = 0.2, b = 0.3))
 # in fact, instead of evaluating the above line of code ten times we can simply evaluate
-sample(x =c(-1, 1), size = 10, replace = TRUE, prob = c(d = 0.2, b = 0.3)) # here we had to add the argument replace=TRUE to the function to indicate that earlier outcomes do not effect the probabilities for alternative future outcomes
+sample(x =c(-1, 1), size = 10, replace = TRUE, prob = c(d = 0.2, b = 0.3)) # here we had to add the argument replace=TRUE to the function to indicate that earlier outcomes do not effect the probabilities of future outcomes
 ```
 
 If the population wide death and birth rate are given by ```d*N``` and ```b*N```, respectively, how much time elapses between the occurence of two events? This *waiting time* depends on the probability that neither a death nor a birth event occurs at a given moment. Thus, the length of the waiting time between two events is also a random variable and its distribution is given by the exponential distribution. We can determine the length of the wating time by drawing a random number from the exponential distribution after a death or a birth has occured using ```rexp(n = 1, rate = d * N + b * N)```, where ```n = 1``` indicates that we are drawing a single waiting time and ```rate = d * N + b * N``` is the *total event rate*. For example
@@ -39,16 +37,16 @@ rexp(n = 1, rate = d * N + b * N)
 
 gives the waiting time between two events. Note that ```rexp(n = 1, rate = d * N + b * N)``` produces a different value each time you execute the above command.
 
-In the following piece of R-code we define a function that puts all these pieces together and creates a stochastic population dynamical time series. The function has four arguments: ```N0``` (the initial number of individuals in the population), ```Nmax``` (when the simulated population has reached this number the simulation stops; the simulation will also stop once the population has gone extinct (```N=0```)), ```d``` (the per capita death rate) and ```b``` (the per capita birth rate). At the heart of our function is a while loop so that the algorithm is repeated until the population is either extinct or the population size has reached ```Nmax```.
+In the following piece of R-code we define a function that puts all these pieces together and creates a stochastic population dynamical time series. The function has four arguments: ```N0``` (the initial number of individuals in the population), ```Nmax``` (when the simulated population has reached this number the simulation stops (the simulation also stops once the population has gone extinct (```N=0```)), ```d``` (the per capita death rate) and ```b``` (the per capita birth rate). At the heart of our function is a ```while```-loop so that the algorithm is repeated until the population is either extinct or the population size has reached ```Nmax```.
 
 ```{r}
-time_series <- function(N0, Nmax, d, b){# this defines a function with the name "time_series". It has four arguments: N0, Nmax, birth, death
+time_series <- function(N0, Nmax, d, b){# this defines a function with the name "time_series". It has four arguments: N0, Nmax, b, d
   N <- N0 # initial value for population size
   t <- 0 # initial value for time
   output <- data.frame(t,N) # creates a data frame with two columns (one for time and one for population size) in which we can store the results from the simulation, we could also have use a matrix instead
   while (N < Nmax & N > 0) {# loop runs until N=0 or N=Nmax
-    dt <- rexp(1, rate = d * N + b * N) # time to next event
-    event <- sample(c(-1, 1), 1, prob = c(d * N, b * N)) # determines which type of event happens by drawing a random number
+    dt <- rexp(1, rate = d * N + b * N) # time to next event drawn from exponential distribution
+    event <- sample(c(-1, 1), 1, prob = c(d * N, b * N)) # determines whether next event is birth or death
     t <- t + dt # updates time
     N <- N + event # updates population size
     output <- rbind(output, c(t, N)) # updates output by adding a new row
@@ -73,12 +71,12 @@ plot(data, type="l")
 Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached ```Nmax``` before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.
 
 ```{r}
-plot(N+1 ~ t, data, log="y", type="l")
+plot(data, log="y", type="l")
 ```
 
-You can vary the parameters ```N0```, ```Nmax```, ```d``` and ```b``` and investigate their effect on the time series, more specifically, whether or not it experiences extinction.
+You can vary the parameters ```N0```, ```Nmax```, ```d``` and ```b``` and investigate their effect on the time series, more specifically, whether or not the population goes extinct.
 
-What is the effect of our chosen set of parameters on the probability that the population size reaches ```N=Nmax``` before going extinct? To investigate this we have to look at many realisations of the simulation and it is easier to do this by automatising this process. We start by setting the parameters where we add one additional parameter, ```sim```, that determines how many times the simulation is repeated. We can do this using the same construction that we used when investigating many runs of environmental stochasticity.
+What is the effect of our chosen set of parameters on the probability that the population size reaches ```N=Nmax``` before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatising this process. We start by setting the parameters where we add one additional parameter, ```sim```, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.
 
 ```{r}
 N0 <- 3
@@ -88,17 +86,15 @@ b <- 0.3
 sim <- 10 # this sets the number of simulations
 
 results <- list() # using the list variable allows us to save results of all iterations of the function time_series, that is, we can save several data frames in it
-j <- 1 # intialize counter
 for (i in 1:sim) {# to create sim different simulations, we embedd the function time.series in a for-loop
-  results[[j]] <- time_series(N0, Nmax, d, b) # adds the result of a simulation to the results, note that we have to apply [[]] when subsetting lists
-  j = j + 1
+  results[[i]] <- time_series(N0, Nmax, d, b) # adds the result of a simulation to the results, note that we have to use [[]] to access list entries
 }
 ```
 
-In the next step, we print the results. Before we can do this we have to determine the length of the x-axis (time) in the plot. We do that by determining the length of the longest simulation run.
+Before we can plot the results we have to determine the length of the x-axis (time) in the plot. We do that by determining the length of the longest simulation run.
 
 ```{r}
-maxt <- numeric(sim) # creates a vector in which we store the length of the different time series
+maxt <- c() # creates a vector in which we store the length of the different time series
   for (i in 1:sim) {
   maxt[i] <- max(results[[i]][1]) # determines the length of the ith time series and stores the result in the object maxt
   }
@@ -109,13 +105,13 @@ Next comes the code that produces the plots.
 
 ```{r}
 colors <- rainbow(length(results)) # sets number of colours equal to number sim
-plot(N+1 ~ t, results[[1]], type="l", log="y", ylim=c(1,Nmax),xlim=c(0,tmax), col=colors[1]) # plots the first simulation
+plot(results[[1]], type="l", log="y", ylim=c(1,Nmax),xlim=c(0,tmax), col=colors[1]) # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
-  lines(N+1~t, results[[i]], type="l", col=colors[i])
+  lines(results[[i]], type="l", col=colors[i])
 }
 ```
 
-This results in a figure showing ten simulation runs. From this figure, you can visually count how many of these runs resulted in extinction and how many in exponential growth.
+This results in a figure showing ten simulation runs. From this figure, you can visually count how many of these runs result in extinction and how many in exponential growth.
 
 ### Task
 
@@ -132,26 +128,20 @@ u(N_0)=
 (\frac{d}{b})^{N_0} & \mathrm{for}\,\,\, b>d.
 \end{cases}
 $$
-Calculate the probability for extinction according to this formula for each of the parameter combinations in your table and enter these results in a second table. How well do the results from your simulations and from the above formula agree?
+The following code produces the same five by five matrix but with all entries calculated according to the analytical formula. How well do your simulation results agree with the results predicted based on the analytical formula?
 
-
-```{r echo=FALSE, eval=FALSE}
-# Remove the following code from the file for the students.
-
-# Compute the values for the above table based on this formula and compare the outcome with your simulation results.
-# Is the analytical prediction a good approximation of your result?
-results.analytical <- matrix(nrow=5,ncol=5)
+```{r eval=FALSE}
+analytical_results <- matrix(nrow = 5, ncol = 5) # defines an empty five by five matrix in which we can store the results
 
 death <- 1
-pop.sizes <- c(1,3,5,10,50)
-birth.values <- c(0.9,1,1.1,1.3,1.5)
+N0_sizes <- c(1, 3, 5, 10, 50)
+birth_rates <- c(0.9, 1, 1.1, 1.3, 1.5)
 
-for (i in 1:5){
+for (i in 1:5){ # two nested for-loops, the first one walks through the rows and the second one walks through the columns
   for (j in 1:5){
-    results.analytical[i,j] <- round(min(c(1,(death/birth.values[j])^pop.sizes[i])),3)
+    analytical_results[i,j] <- round(min(c(1,(death/birth_rates[j])^N0_sizes[i])),3) # results are rounded to three digits after the comma
   }
 }
 
-# Let's have a look at the predicted proabilities in form of a table with birth varying along rows and N0 varying along columns
-results.analytical
+analytical_results # shows the resulting matrix
 ```
