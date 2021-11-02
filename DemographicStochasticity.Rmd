@@ -61,7 +61,7 @@ We can evaluate the function by writing
 time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)
 ```
 
-Thus, in this case we have ```N0=3```, ```Nmax=10```, ```d=0.2```, and ```b=0.3```. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for *Nmax=200*).
+Thus, in this case we have ```N0=3```, ```Nmax=10```, ```d=0.2```, and ```b=0.3```. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for ```Nmax=200```).
 
 ```{r}
 data <- time_series(3, 200, 0.2, 0.3)
@@ -116,7 +116,7 @@ This results in a figure showing ten simulation runs. From this figure, you can 
 ### Task
 
   1)
-Investigating the probability of extinction in dependence of three different parameters (```N0```, ```d```, ```b```) is a bit cumbersome. Let us therefore set the death rate equal to 1 (```d=1```) and only vary ```N0``` and ```b```. Vary ```b``` according to ```b = (0.9; 1; 1.1; 1.2; 1.5)``` and initial population size ```N0``` according to ```N0 = (1; 3; 5; 10; 50)```. Varying both parameters together gives you 25 different parameter combinations that you can arrange in a table with five rows (```N0```) and five columns (```birth```). In each cell of this table, report the proportion of ten runs that result in extinction.
+Investigating the probability of extinction in dependence of four different parameters (```N0```, ```Nmax```, ```d```, ```b```) is a bit cumbersome. Let us therefore set the maximum population size to 200 (```Nmax=200```) and the death rate equal to 1 (```d=1```) and only vary ```N0``` and ```b```. Vary ```b``` according to ```b = (0.9; 1; 1.1; 1.2; 1.5)``` and initial population size ```N0``` according to ```N0 = (1; 3; 5; 10; 50)```. Varying both parameters together gives you 25 different parameter combinations that you can arrange in a table with five rows (```N0```) and five columns (```birth```). In each cell of this table, report the proportion of ten runs that result in extinction.
 Please also think which conclusions you can draw from your results about the effect of ```N0``` and ```b``` on the probability of extinction? Are there parameter combinations that you feel you need to add to your analysis to get a better understanding?
 
   2) 
