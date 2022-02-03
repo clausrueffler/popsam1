@@ -9,6 +9,10 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position = c('top', 'right'))
+```
+
 # Demographic Stochasticity {.tabset}
 
 In this exercise, we will explore through stochastic simulations a simple birth-death process. In the lecture, we have seen that the deterministic equation for exponential growth,
