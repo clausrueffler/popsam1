@@ -43,7 +43,7 @@ In the following piece of R-code we define a function that puts all these pieces
 time_series <- function(N0, Nmax, d, b){# this defines a function with the name "time_series". It has four arguments: N0, Nmax, b, d
   N <- N0 # initial value for population size
   t <- 0 # initial value for time
-  output <- data.frame(t,N) # creates a data frame with two columns (one for time and one for population size) in which we can store the results from the simulation, we could also have use a matrix instead
+  output <- data.frame(t, N) # creates a data frame with two columns (one for time and one for population size) in which we store the results from the simulation; we could also have used a matrix instead
   while (N < Nmax & N > 0) {# loop runs until N=0 or N=Nmax
     dt <- rexp(1, rate = d * N + b * N) # time to next event drawn from exponential distribution
     event <- sample(c(-1, 1), 1, prob = c(d * N, b * N)) # determines whether next event is birth or death
@@ -51,7 +51,7 @@ time_series <- function(N0, Nmax, d, b){# this defines a function with the name 
     N <- N + event # updates population size
     output <- rbind(output, c(t, N)) # updates output by adding a new row
   }
-  return(output)
+  return(output) # instruct the function to return the output data
 }
 ```
 
@@ -105,7 +105,7 @@ Next comes the code that produces the plots.
 
 ```{r}
 colors <- rainbow(length(results)) # sets number of colours equal to number sim
-plot(results[[1]], type="l", log="y", ylim=c(1,Nmax),xlim=c(0,tmax), col=colors[1]) # plots the first simulation
+plot(results[[1]], type="l", log="y", ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type="l", col=colors[i])
 }

@@ -291,7 +291,7 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 <pre class="r"><code>time_series &lt;- function(N0, Nmax, d, b){# this defines a function with the name &quot;time_series&quot;. It has four arguments: N0, Nmax, b, d
   N &lt;- N0 # initial value for population size
   t &lt;- 0 # initial value for time
-  output &lt;- data.frame(t,N) # creates a data frame with two columns (one for time and one for population size) in which we can store the results from the simulation, we could also have use a matrix instead
+  output &lt;- data.frame(t, N) # creates a data frame with two columns (one for time and one for population size) in which we store the results from the simulation; we could also have used a matrix instead
   while (N &lt; Nmax &amp; N &gt; 0) {# loop runs until N=0 or N=Nmax
     dt &lt;- rexp(1, rate = d * N + b * N) # time to next event drawn from exponential distribution
     event &lt;- sample(c(-1, 1), 1, prob = c(d * N, b * N)) # determines whether next event is birth or death
@@ -299,25 +299,17 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
     N &lt;- N + event # updates population size
     output &lt;- rbind(output, c(t, N)) # updates output by adding a new row
   }
-  return(output)
+  return(output) # instruct the function to return the output data
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##           t  N
-## 1  0.000000  3
-## 2  2.152840  2
-## 3  2.671049  3
-## 4  2.878200  2
-## 5  3.409850  3
-## 6  3.774257  4
-## 7  4.898093  5
-## 8  5.283086  6
-## 9  5.778621  7
-## 10 5.829269  8
-## 11 5.877529  7
-## 12 5.923017  8
-## 13 6.870394  9
-## 14 7.243674 10</code></pre>
+<pre><code>##           t N
+## 1 0.0000000 3
+## 2 0.3883241 2
+## 3 1.6957488 1
+## 4 2.3757890 2
+## 5 2.7569934 1
+## 6 7.3015004 0</code></pre>
 <p>Thus, in this case we have <code>N0=3</code>, <code>Nmax=10</code>, <code>d=0.2</code>, and <code>b=0.3</code>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <code>Nmax=200</code>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
@@ -345,7 +337,7 @@ for (i in 1:sim) {# to create sim different simulations, we embedd the function 
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colours equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,Nmax),xlim=c(0,tmax), col=colors[1]) # plots the first simulation
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }</code></pre>
