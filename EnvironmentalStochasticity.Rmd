@@ -20,32 +20,31 @@ klippy::klippy(position = c('top', 'right'))
 In the lecture, we derived
 
 $$
-N(t)=N(0)*(1+p_bn-p_d)^t=N(0)*\lambda^t
+N(t)=N(0)*(1+\beta-\delta)^t=N(0)*\lambda^t
 $$
-as a model for exponential growth in discrete time, where $\lambda=1+p_bn-p_d$. If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, *B*, and the number of individuals dying, *D*, at any time step will be very close to the expected values $N(t)p_bn$ and $N(t)p_d$, respectively. This is due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). We will investigate the effect of *demographic stochasticity* as it occurs in small populations in a later exercise.
+as a model for exponential growth in discrete time, where $\lambda = 1 + \beta - \delta$. If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, *B*, and the number of individuals dying, *D*, at any time step will be very close to the expected values $N(t)\beta$ and $N(t)\delta$, respectively. This is due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). We will investigate the effect of *demographic stochasticity* as it occurs in small populations in a later exercise.
 
-Importantly, the above equation assumes that the growth factor $\lambda$ does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the the probability to produce offspring, $p_b$, the average number of offspring, $n$, and the probability to die, $p_d$, of ALL individuals in a population. In short, $\lambda$ will vary in time and we indicate this by giving it a subscript, $\lambda_t$.
+Importantly, the above equation assumes that the growth factor $\lambda$ does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the average number of offspring, $\beta$, and the probability to die, $\delta$, of ALL individuals in a population. In short, $\lambda$ will vary in time and we indicate this by giving it a subscript, $\lambda_t$.
 
-In this exercise, we simulate environmental stochasticity in R. We do this by choosing a set of random postive numbers that represent the $\lambda$-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of $\lambda$-values from an interval with a lower boundary given by the parameter ```min``` and an upper boundary given by the parameter ```max```. Let us furthermore assume that eaach number of within the interval ```(min, max)``` occurs with equal probability. We can do this in R by using the command ```runif(n, min,max)```. The name runif is an abbreviation combining the words *random* and *uniform*, indicating that the command ```runif(n, min, max)``` produces a vecotor of ```max``` numbers (the length of the time series) and that these are drawn randomly from the interval ```(min, max)```. Drawing a set of random numbers from an interval corresponds to drawing numbers from a *uniform distribution*.
+In this exercise, we simulate environmental stochasticity in R. We do this by choosing a set of random postive numbers that represent the $\lambda$-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of $\lambda$-values from an interval with a lower boundary given by the parameter *min* and an upper boundary given by the parameter *max*. Let us furthermore assume that each number within the interval *(min, max)* occurs with equal probability. We can do this in *R* by using the command ```runif(n, min,max)```. The name runif is an abbreviation combining the words *random* and *uniform*, indicating that the command ```runif(n, min, max)``` produces a vecotor of *`max* numbers (the length of the time series) and that these are drawn randomly from the interval *(min, max)*.
 
 ```{r eval=FALSE}
 runif(10, 1, 2) # produces a vector of 10 random numbers between 1 and 2
 ```
 
-We could in principle decide to draw the random numbers from distributions other than the normal distribution, for example from a Normal or Poisson distribution (using the commands ```rnorm(n, mean, sd)``` and ```rpois(n, lambda)```, respectively). However, we would have to assure that we only obtain positive values, since the growth factor $\lambda$ is by definition a non-negative number.
+We could in principle decide to draw the random numbers from distributions other than the uniform distribution, for example from a Poisson distribution, using the command ```rpois(n, lambda)```.
 
-Let us dfine the parameter values of the random distributino and then draw the sequence of $\lambda$-values.
+Let us define the parameter values of the random distribution and then draw the sequence of $\lambda$-values.
 
 ```{r eval=FALSE}
 n <- 100 # lenght of time series
 min <- 0.5 # lowest possible value of the growth factor lamabda
 max <- 2 # largest possible value of the growth factor lambda
-N0 <- 10 # initial population size
 
 growth_factors <- runif(n, min, max)
 ```
 
-In the next step, we want to use the sequence of $\lambda$-values to project a population that consists of ```N0``` individuals at time  ```t=0``` ```t``` time steps into the future. Thus, we want to compute
+In the next step, we want to use the sequence of $\lambda$-values to project a population that consists of *N0* individuals at time  *t=0* *t* time steps into the future. Thus, we want to compute
 
 $$
 N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
@@ -53,7 +52,7 @@ $$
 
 ```{r eval=FALSE}
 N0 <- 10 # population size at time t=0
-time_series <- numeric(n+1) # creates an (empty) vector of length n+1 (initial values plus n later time steps) in which we will store the population time series
+time_series <- c() # creates an empty vector in which we will store the population time series
 time_series[1] <- N0 # initial population size N0 entered as first entry
 
 for (t in 1:n) {# for-loop that projects the population n time steps into the future
@@ -65,18 +64,18 @@ for (t in 1:n) {# for-loop that projects the population n time steps into the fu
 Assuming that *N* describes the *absolute population size* we in this code set any population size less than one equal to zero (half a fox does not exist). In other words, if $N < 1$ at any time *t*, then the we consider the population extinct from that time point onwards. Next, we plot the resulting time series on a log-scale.
 
 ```{r eval=FALSE}
-plot(0:n, time_series+1, type="l", log="y", ylim=c(1,max(time_series)), xlab="time", ylab="population size")
+plot(0:n, time_series+1, type="l", log="y", ylim=c(1,max(time_series)), xlab="time", ylab="population size") # Note that we add 1 to all entries in the time series. The reason is that ln(0) is not defined.
 ```
 
 At each instance this code is executed (starting from the line in which the vector ```growht_factors``` is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after *n* time steps.
 
-To confirm that the arithmetic mean of the annual grwoth factors given by
+To confirm that the arithmetic mean of the annual grwoth factors, given by
 
 $$
-\bar\lambda=\frac{1}{t}(\lambda_{t-1}+\lambda_{t-2}+\ldots+\lambda_2+\lambda_1+\lambda_0)
+\bar\lambda=\frac{1}{t}(\lambda_{t-1}+\lambda_{t-2}+\ldots+\lambda_2+\lambda_1+\lambda_0),
 $$
 
-is not informative, we can add the time series as it would result if the population would grow each time step by the factor $\bar\lambda$.
+is not informative, we can add the time series as it would result if the population would grow each time according to the factor $\bar\lambda$.
 
 ```{r eval=FALSE}
 arithmetic_mean <- mean(growth_factors) # calculates the arithmetic mean of the annual grwoth factors
@@ -86,7 +85,7 @@ arithmetic_mean # shows the value of the arithmetic mean
 Next, we add the line that shows how the population develops if it changes each year according to the arithmetic mean of the $\bar\lambda$.
 
 ```{r eval=FALSE}
-time_series_arith <- numeric(n+1) # creates an (empty) vector of length n+1 in which we will store the population time series
+time_series_arith <- c() # creates an empty vector in which we will store the population time series
 time_series_arith[1] <- N0 # first entry in this vector equals initial population size N(0)
   for (t in 1:n) {# for-loop that projects the population n time steps into the future using only the arithmetric mean
   time_series_arith[t+1] <- max(0, time_series_arith[t]*arithmetic_mean)
@@ -111,9 +110,9 @@ geometric_mean # shows the value of the geometric mean
 The following piece of code adds the desired line:
 
 ```{r eval=FALSE}
-time_series_geom <- numeric(n+1) # creates an (empty) vector of length n+1 in which we will store the population time series
-time_series_geom[1] <- N0 # first entry in this vector equals initial population size N(0)
-for (t in 1:n) {# for-loop that projects the population n time steps into the future using only the geometric mean
+time_series_geom <- c()
+time_series_geom[1] <- N0
+for (t in 1:n) {
   time_series_geom[t+1] <- max(0,time_series_geom[t]*geometric_mean)
 }
 
@@ -126,15 +125,15 @@ You might encounter simulation runs in which the population goes extinct while t
 
 ## The probability of extinction
 
-You have seen that for the chosen set of parameters ```min```, ```max```, ```n``` and ```N0``` a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? You can explore this question by changing the values for ```min```, ```max```, ```n``` and ```N0```.
+You have seen that for the chosen set of parameters *min**, *max*, *n* and *N0* a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? You can explore this question by changing the values for *min*, *max*, *n* and *N0*.
 
-To investigate this question more systematically, it is useful to somewhat automatize the process in R. We start by defining a new function to make the depency of the time series on ```min```, ```max```, ```n``` and ```N0``` explicit.
+To investigate this question more systematically, it is useful to automatize the process in *R*. We start by defining a new function to make the depency of the time series on *min*, *max*, *n* and *N0* explicit.
 
 ```{r eval=FALSE}
 environmental_stochasticity <- function(N0, n, min, max) {# function with four arguments
-  growth_factors <- runif(n, min, max) # creates vector of n random lambda-values
-  time_series <- numeric(n+1) # creates an empty vector to store time series
-  time_series[1] <- N0 # defines the N0 as the first entry in the time sereis
+  growth_factors <- runif(n, min, max)
+  time_series <- c()
+  time_series[1] <- N0
   for (t in 1:n) {
     time_series[t+1] <- if (time_series[t]*growth_factors[t] < 1) 0 else time_series[t]*growth_factors[t]
   }
@@ -142,9 +141,9 @@ environmental_stochasticity <- function(N0, n, min, max) {# function with four a
 }
 ```
 
-This function produces a population time series for a given set of parameters. The resulting population time series is stored in the vector ```time_series```.
+This function produces a population time series for a given set of parameters. The resulting population time series is stored in the vector *time_series*.
 
-The next piece of code allows us to execute the population simulation several times by putting our function inside a for-loop. How often the times series is repeated is determined by the new parameter ```sim```, below set equal to 20. Note that each time series is different from the others because it is based on a different set of random $\lambda$-values. 
+The next piece of code allows us to execute the population simulation several times by putting our function inside a for-loop. How often the times series is repeated is determined by the new parameter *sim*, below set equal to 20. Note that each time series is different from the others because it is based on a different set of random $\lambda$-values. 
 
 ```{r eval=FALSE}
 n <- 500 # lenght of time series
@@ -153,7 +152,7 @@ max <- 1.1 # largest possible value of growth factor
 N0 <- 10 # initial population size
 sim <- 20 # number of simulation runs
 
-results <- matrix(numeric(sim), nrow = n + 1, ncol = sim) # creates an empty matrix to save the results
+results <- matrix(nrow = n + 1, ncol = sim) # creates an empty matrix with n+1 rows and sim columns in which we will store the time series
 
 j <- 1 # intialize a counter
 for (i in 1:sim) {# executes the function sim times

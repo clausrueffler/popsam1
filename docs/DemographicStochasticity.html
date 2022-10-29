@@ -13,7 +13,7 @@
 
 <title>Exercise: Demographic Stochasticity</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/spacelab.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -235,7 +243,7 @@ $(document).ready(function () {
 <div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -245,7 +253,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Exercises
      
     <span class="caret"></span>
@@ -311,17 +319,25 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##          t N
-## 1 0.000000 3
-## 2 1.064397 2
-## 3 4.739532 1
-## 4 6.262906 0</code></pre>
+<pre><code>##            t  N
+## 1  0.0000000  3
+## 2  0.2958137  2
+## 3  0.5824511  3
+## 4  0.5887395  4
+## 5  1.6455452  5
+## 6  1.9762594  6
+## 7  2.1110514  7
+## 8  3.1119338  8
+## 9  3.3936843  9
+## 10 3.8183694 10</code></pre>
 <p>Thus, in this case we have <code>N0=3</code>, <code>Nmax=10</code>, <code>d=0.2</code>, and <code>b=0.3</code>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <code>Nmax=200</code>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <code>Nmax</code> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(data, log=&quot;y&quot;, type=&quot;l&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>You can vary the parameters <code>N0</code>, <code>Nmax</code>, <code>d</code> and <code>b</code> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <code>N=Nmax</code> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatising this process. We start by setting the parameters where we add one additional parameter, <code>sim</code>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
@@ -343,10 +359,8 @@ for (i in 1:sim) {# to create sim different simulations, we embedd the function 
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colours equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
-<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>

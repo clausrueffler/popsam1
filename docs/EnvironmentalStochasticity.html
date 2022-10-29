@@ -13,7 +13,7 @@
 
 <title>Exercise: Environmental Stochasticity</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/spacelab.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -235,7 +243,7 @@ $(document).ready(function () {
 <div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -245,7 +253,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Exercises
      
     <span class="caret"></span>
@@ -285,25 +293,24 @@ $(document).ready(function () {
 <h2>Environmental stochasticity</h2>
 <p>In the lecture, we derived</p>
 <p><span class="math display">\[
-N(t)=N(0)*(1+p_bn-p_d)^t=N(0)*\lambda^t
-\]</span> as a model for exponential growth in discrete time, where <span class="math inline">\(\lambda=1+p_bn-p_d\)</span>. If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, <em>B</em>, and the number of individuals dying, <em>D</em>, at any time step will be very close to the expected values <span class="math inline">\(N(t)p_bn\)</span> and <span class="math inline">\(N(t)p_d\)</span>, respectively. This is due to the <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers">law of large numbers</a>. We will investigate the effect of <em>demographic stochasticity</em> as it occurs in small populations in a later exercise.</p>
-<p>Importantly, the above equation assumes that the growth factor <span class="math inline">\(\lambda\)</span> does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the the probability to produce offspring, <span class="math inline">\(p_b\)</span>, the average number of offspring, <span class="math inline">\(n\)</span>, and the probability to die, <span class="math inline">\(p_d\)</span>, of ALL individuals in a population. In short, <span class="math inline">\(\lambda\)</span> will vary in time and we indicate this by giving it a subscript, <span class="math inline">\(\lambda_t\)</span>.</p>
-<p>In this exercise, we simulate environmental stochasticity in R. We do this by choosing a set of random postive numbers that represent the <span class="math inline">\(\lambda\)</span>-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of <span class="math inline">\(\lambda\)</span>-values from an interval with a lower boundary given by the parameter <code>min</code> and an upper boundary given by the parameter <code>max</code>. Let us furthermore assume that eaach number of within the interval <code>(min, max)</code> occurs with equal probability. We can do this in R by using the command <code>runif(n, min,max)</code>. The name runif is an abbreviation combining the words <em>random</em> and <em>uniform</em>, indicating that the command <code>runif(n, min, max)</code> produces a vecotor of <code>max</code> numbers (the length of the time series) and that these are drawn randomly from the interval <code>(min, max)</code>. Drawing a set of random numbers from an interval corresponds to drawing numbers from a <em>uniform distribution</em>.</p>
+N(t)=N(0)*(1+\beta-\delta)^t=N(0)*\lambda^t
+\]</span> as a model for exponential growth in discrete time, where <span class="math inline">\(\lambda = 1 + \beta - \delta\)</span>. If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, <em>B</em>, and the number of individuals dying, <em>D</em>, at any time step will be very close to the expected values <span class="math inline">\(N(t)\beta\)</span> and <span class="math inline">\(N(t)\delta\)</span>, respectively. This is due to the <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers">law of large numbers</a>. We will investigate the effect of <em>demographic stochasticity</em> as it occurs in small populations in a later exercise.</p>
+<p>Importantly, the above equation assumes that the growth factor <span class="math inline">\(\lambda\)</span> does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the average number of offspring, <span class="math inline">\(\beta\)</span>, and the probability to die, <span class="math inline">\(\delta\)</span>, of ALL individuals in a population. In short, <span class="math inline">\(\lambda\)</span> will vary in time and we indicate this by giving it a subscript, <span class="math inline">\(\lambda_t\)</span>.</p>
+<p>In this exercise, we simulate environmental stochasticity in R. We do this by choosing a set of random postive numbers that represent the <span class="math inline">\(\lambda\)</span>-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of <span class="math inline">\(\lambda\)</span>-values from an interval with a lower boundary given by the parameter <em>min</em> and an upper boundary given by the parameter <em>max</em>. Let us furthermore assume that each number within the interval <em>(min, max)</em> occurs with equal probability. We can do this in <em>R</em> by using the command <code>runif(n, min,max)</code>. The name runif is an abbreviation combining the words <em>random</em> and <em>uniform</em>, indicating that the command <code>runif(n, min, max)</code> produces a vecotor of <em>`max</em> numbers (the length of the time series) and that these are drawn randomly from the interval <em>(min, max)</em>.</p>
 <pre class="r"><code>runif(10, 1, 2) # produces a vector of 10 random numbers between 1 and 2</code></pre>
-<p>We could in principle decide to draw the random numbers from distributions other than the normal distribution, for example from a Normal or Poisson distribution (using the commands <code>rnorm(n, mean, sd)</code> and <code>rpois(n, lambda)</code>, respectively). However, we would have to assure that we only obtain positive values, since the growth factor <span class="math inline">\(\lambda\)</span> is by definition a non-negative number.</p>
-<p>Let us dfine the parameter values of the random distributino and then draw the sequence of <span class="math inline">\(\lambda\)</span>-values.</p>
+<p>We could in principle decide to draw the random numbers from distributions other than the uniform distribution, for example from a Poisson distribution, using the command <code>rpois(n, lambda)</code>.</p>
+<p>Let us define the parameter values of the random distribution and then draw the sequence of <span class="math inline">\(\lambda\)</span>-values.</p>
 <pre class="r"><code>n &lt;- 100 # lenght of time series
 min &lt;- 0.5 # lowest possible value of the growth factor lamabda
 max &lt;- 2 # largest possible value of the growth factor lambda
-N0 &lt;- 10 # initial population size
 
 growth_factors &lt;- runif(n, min, max)</code></pre>
-<p>In the next step, we want to use the sequence of <span class="math inline">\(\lambda\)</span>-values to project a population that consists of <code>N0</code> individuals at time <code>t=0</code> <code>t</code> time steps into the future. Thus, we want to compute</p>
+<p>In the next step, we want to use the sequence of <span class="math inline">\(\lambda\)</span>-values to project a population that consists of <em>N0</em> individuals at time <em>t=0</em> <em>t</em> time steps into the future. Thus, we want to compute</p>
 <p><span class="math display">\[
 N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
 \]</span></p>
 <pre class="r"><code>N0 &lt;- 10 # population size at time t=0
-time_series &lt;- numeric(n+1) # creates an (empty) vector of length n+1 (initial values plus n later time steps) in which we will store the population time series
+time_series &lt;- c() # creates an empty vector in which we will store the population time series
 time_series[1] &lt;- N0 # initial population size N0 entered as first entry
 
 for (t in 1:n) {# for-loop that projects the population n time steps into the future
@@ -311,17 +318,17 @@ for (t in 1:n) {# for-loop that projects the population n time steps into the fu
   else time_series[t]*growth_factors[t]
   }</code></pre>
 <p>Assuming that <em>N</em> describes the <em>absolute population size</em> we in this code set any population size less than one equal to zero (half a fox does not exist). In other words, if <span class="math inline">\(N &lt; 1\)</span> at any time <em>t</em>, then the we consider the population extinct from that time point onwards. Next, we plot the resulting time series on a log-scale.</p>
-<pre class="r"><code>plot(0:n, time_series+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
+<pre class="r"><code>plot(0:n, time_series+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # Note that we add 1 to all entries in the time series. The reason is that ln(0) is not defined.</code></pre>
 <p>At each instance this code is executed (starting from the line in which the vector <code>growht_factors</code> is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after <em>n</em> time steps.</p>
-<p>To confirm that the arithmetic mean of the annual grwoth factors given by</p>
+<p>To confirm that the arithmetic mean of the annual grwoth factors, given by</p>
 <p><span class="math display">\[
-\bar\lambda=\frac{1}{t}(\lambda_{t-1}+\lambda_{t-2}+\ldots+\lambda_2+\lambda_1+\lambda_0)
+\bar\lambda=\frac{1}{t}(\lambda_{t-1}+\lambda_{t-2}+\ldots+\lambda_2+\lambda_1+\lambda_0),
 \]</span></p>
-<p>is not informative, we can add the time series as it would result if the population would grow each time step by the factor <span class="math inline">\(\bar\lambda\)</span>.</p>
+<p>is not informative, we can add the time series as it would result if the population would grow each time according to the factor <span class="math inline">\(\bar\lambda\)</span>.</p>
 <pre class="r"><code>arithmetic_mean &lt;- mean(growth_factors) # calculates the arithmetic mean of the annual grwoth factors
 arithmetic_mean # shows the value of the arithmetic mean</code></pre>
 <p>Next, we add the line that shows how the population develops if it changes each year according to the arithmetic mean of the <span class="math inline">\(\bar\lambda\)</span>.</p>
-<pre class="r"><code>time_series_arith &lt;- numeric(n+1) # creates an (empty) vector of length n+1 in which we will store the population time series
+<pre class="r"><code>time_series_arith &lt;- c() # creates an empty vector in which we will store the population time series
 time_series_arith[1] &lt;- N0 # first entry in this vector equals initial population size N(0)
   for (t in 1:n) {# for-loop that projects the population n time steps into the future using only the arithmetric mean
   time_series_arith[t+1] &lt;- max(0, time_series_arith[t]*arithmetic_mean)
@@ -337,9 +344,9 @@ lines(0:n, time_series_arith, type=&quot;p&quot;, col=&quot;2&quot;) # adds the 
 <pre class="r"><code>geometric_mean &lt;- exp(mean(log(growth_factors))) # calculates the geometric mean of the annual grwoth factors by using Eq.(3.16) in Pasztor et al. (2016)
 geometric_mean # shows the value of the geometric mean</code></pre>
 <p>The following piece of code adds the desired line:</p>
-<pre class="r"><code>time_series_geom &lt;- numeric(n+1) # creates an (empty) vector of length n+1 in which we will store the population time series
-time_series_geom[1] &lt;- N0 # first entry in this vector equals initial population size N(0)
-for (t in 1:n) {# for-loop that projects the population n time steps into the future using only the geometric mean
+<pre class="r"><code>time_series_geom &lt;- c()
+time_series_geom[1] &lt;- N0
+for (t in 1:n) {
   time_series_geom[t+1] &lt;- max(0,time_series_geom[t]*geometric_mean)
 }
 
@@ -350,26 +357,26 @@ lines(0:n, time_series_geom, type=&quot;p&quot;, col=&quot;4&quot;) # add the li
 </div>
 <div id="the-probability-of-extinction" class="section level2">
 <h2>The probability of extinction</h2>
-<p>You have seen that for the chosen set of parameters <code>min</code>, <code>max</code>, <code>n</code> and <code>N0</code> a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? You can explore this question by changing the values for <code>min</code>, <code>max</code>, <code>n</code> and <code>N0</code>.</p>
-<p>To investigate this question more systematically, it is useful to somewhat automatize the process in R. We start by defining a new function to make the depency of the time series on <code>min</code>, <code>max</code>, <code>n</code> and <code>N0</code> explicit.</p>
+<p>You have seen that for the chosen set of parameters *min**, <em>max</em>, <em>n</em> and <em>N0</em> a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? You can explore this question by changing the values for <em>min</em>, <em>max</em>, <em>n</em> and <em>N0</em>.</p>
+<p>To investigate this question more systematically, it is useful to automatize the process in <em>R</em>. We start by defining a new function to make the depency of the time series on <em>min</em>, <em>max</em>, <em>n</em> and <em>N0</em> explicit.</p>
 <pre class="r"><code>environmental_stochasticity &lt;- function(N0, n, min, max) {# function with four arguments
-  growth_factors &lt;- runif(n, min, max) # creates vector of n random lambda-values
-  time_series &lt;- numeric(n+1) # creates an empty vector to store time series
-  time_series[1] &lt;- N0 # defines the N0 as the first entry in the time sereis
+  growth_factors &lt;- runif(n, min, max)
+  time_series &lt;- c()
+  time_series[1] &lt;- N0
   for (t in 1:n) {
     time_series[t+1] &lt;- if (time_series[t]*growth_factors[t] &lt; 1) 0 else time_series[t]*growth_factors[t]
   }
   return(time_series)
 }</code></pre>
-<p>This function produces a population time series for a given set of parameters. The resulting population time series is stored in the vector <code>time_series</code>.</p>
-<p>The next piece of code allows us to execute the population simulation several times by putting our function inside a for-loop. How often the times series is repeated is determined by the new parameter <code>sim</code>, below set equal to 20. Note that each time series is different from the others because it is based on a different set of random <span class="math inline">\(\lambda\)</span>-values.</p>
+<p>This function produces a population time series for a given set of parameters. The resulting population time series is stored in the vector <em>time_series</em>.</p>
+<p>The next piece of code allows us to execute the population simulation several times by putting our function inside a for-loop. How often the times series is repeated is determined by the new parameter <em>sim</em>, below set equal to 20. Note that each time series is different from the others because it is based on a different set of random <span class="math inline">\(\lambda\)</span>-values.</p>
 <pre class="r"><code>n &lt;- 500 # lenght of time series
 min &lt;- 0.9 # lowest possible value for growth factor
 max &lt;- 1.1 # largest possible value of growth factor
 N0 &lt;- 10 # initial population size
 sim &lt;- 20 # number of simulation runs
 
-results &lt;- matrix(numeric(sim), nrow = n + 1, ncol = sim) # creates an empty matrix to save the results
+results &lt;- matrix(nrow = n + 1, ncol = sim) # creates an empty matrix with n+1 rows and sim columns in which we will store the time series
 
 j &lt;- 1 # intialize a counter
 for (i in 1:sim) {# executes the function sim times
