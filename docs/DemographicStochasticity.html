@@ -317,45 +317,59 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##            t  N
-## 1   0.000000  3
-## 2   1.098987  2
-## 3   3.792395  3
-## 4   3.907008  4
-## 5   4.241256  5
-## 6   4.746298  6
-## 7   4.934406  5
-## 8   4.935885  4
-## 9   4.974946  5
-## 10  5.031042  6
-## 11  5.060108  7
-## 12  5.234035  6
-## 13  5.746223  7
-## 14  5.822835  6
-## 15  6.068772  7
-## 16  6.411701  8
-## 17  6.602358  7
-## 18  6.866767  6
-## 19  7.111410  5
-## 20  7.322300  4
-## 21  7.772192  5
-## 22  8.377757  6
-## 23  9.296064  7
-## 24  9.341720  6
-## 25  9.446552  7
-## 26 10.608360  6
-## 27 10.678385  5
-## 28 11.092378  6
-## 29 11.790108  7
-## 30 11.877235  8
-## 31 11.925899  7
-## 32 11.953794  6
-## 33 12.038229  7
-## 34 12.620468  8
-## 35 12.683140  7
-## 36 12.956409  8
-## 37 13.201797  9
-## 38 13.231975 10</code></pre>
+<pre><code>##             t N
+## 1   0.0000000 3
+## 2   0.1096005 2
+## 3   1.2099581 1
+## 4   8.5473733 2
+## 5   8.7119541 3
+## 6   9.9423882 2
+## 7  10.7840285 1
+## 8  11.7343478 2
+## 9  12.4369881 3
+## 10 12.6861658 2
+## 11 13.7469187 3
+## 12 14.8789861 2
+## 13 15.1093413 3
+## 14 17.0844526 4
+## 15 17.9323802 5
+## 16 17.9887400 6
+## 17 17.9956299 5
+## 18 18.0322931 6
+## 19 18.3954123 5
+## 20 18.7154814 4
+## 21 20.6110148 3
+## 22 21.9243551 4
+## 23 22.4311845 5
+## 24 24.0924291 6
+## 25 24.1236398 7
+## 26 24.1589386 6
+## 27 24.7770213 5
+## 28 25.3716111 6
+## 29 25.6968854 7
+## 30 26.0156596 8
+## 31 26.1008420 7
+## 32 26.2220397 6
+## 33 26.5412397 7
+## 34 26.5454237 6
+## 35 27.4854016 7
+## 36 27.9063495 6
+## 37 28.3021111 7
+## 38 28.3025971 6
+## 39 28.4373204 5
+## 40 28.8690569 4
+## 41 29.1758464 3
+## 42 30.1055025 4
+## 43 30.1458161 3
+## 44 30.4569398 4
+## 45 31.2145922 3
+## 46 32.8309551 4
+## 47 33.4561725 3
+## 48 33.5876103 2
+## 49 35.3843962 1
+## 50 37.4275127 2
+## 51 38.2709251 1
+## 52 38.5781224 0</code></pre>
 <p>Thus, in this case we have <code>N0=3</code>, <code>Nmax=10</code>, <code>d=0.2</code>, and <code>b=0.3</code>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <code>Nmax=200</code>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
@@ -385,8 +399,10 @@ for (i in 1:sim) {# to create sim different simulations, we embedd the function 
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colours equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation
-for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
+<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
