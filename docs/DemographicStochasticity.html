@@ -291,7 +291,7 @@ $(document).ready(function () {
 <p><span class="math display">\[
 \frac{\mathrm{d}N}{\mathrm{d}t}=N(b-d)=Nr,
 \]</span> describes the mean over many simulations. These simulations take into account that, even if all individuals in a population are genetically identical, they will still differ in the number of their offspring and their age at death. This is due to chance events (some people are hit by a falling tree while others are not…). Fluctuations due to such chance events acting at the level of the individual are called <em>demographic stochasticity</em>. In this exercise, we will explore the consequences of demographic stochasticity for population viability.</p>
-<p>More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs population size increases by one. The probabilities with which these two events occur are proportional to <code>d*N(t)</code> and <code>b*N(t)</code>, respectively. To implement this idea in R we can use the function <code>sample(x, size, prob)</code>, where <code>x = c(-1, 1)</code> is the vector of possible events (-1 in case of a death and 1 in case of a birth), <code>size = 1</code> indicates how many events occur at any given point in time, and <code>prob = c(d*N, b*N)</code> gives the vector of probabilities with which the two evnts occur. Thus, if you evaluate the following command ten times you expect to obtain <em>on average</em> -1 four times and +1 six times.</p>
+<p>More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs population size increases by one. The probabilities with which these two events occur are proportional to <span class="math inline">\(d*N(t)\)</span> and <span class="math inline">\(b*N(t)\)</span>, respectively. To implement this idea in R we can use the function <code>sample(x, size, prob)</code>, where <span class="math inline">\(x = c(-1, 1)\)</span> is the vector of possible events (-1 in case of a death and 1 in case of a birth), <span class="math inline">\(size = 1\)</span> indicates how many events occur at any given point in time, and <span class="math inline">\(prob = c(d*N, b*N)\)</span> gives the vector of probabilities with which the two events occur.</p>
 <pre class="r"><code>sample(x =c(-1, 1), size = 1, prob = c(d = 0.2, b = 0.3))
 # in fact, instead of evaluating the above line of code ten times we can simply evaluate
 sample(x =c(-1, 1), size = 10, replace = TRUE, prob = c(d = 0.2, b = 0.3)) # here we had to add the argument replace=TRUE to the function to indicate that earlier outcomes do not effect the probabilities of future outcomes</code></pre>
@@ -317,67 +317,19 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##             t N
-## 1   0.0000000 3
-## 2   0.1096005 2
-## 3   1.2099581 1
-## 4   8.5473733 2
-## 5   8.7119541 3
-## 6   9.9423882 2
-## 7  10.7840285 1
-## 8  11.7343478 2
-## 9  12.4369881 3
-## 10 12.6861658 2
-## 11 13.7469187 3
-## 12 14.8789861 2
-## 13 15.1093413 3
-## 14 17.0844526 4
-## 15 17.9323802 5
-## 16 17.9887400 6
-## 17 17.9956299 5
-## 18 18.0322931 6
-## 19 18.3954123 5
-## 20 18.7154814 4
-## 21 20.6110148 3
-## 22 21.9243551 4
-## 23 22.4311845 5
-## 24 24.0924291 6
-## 25 24.1236398 7
-## 26 24.1589386 6
-## 27 24.7770213 5
-## 28 25.3716111 6
-## 29 25.6968854 7
-## 30 26.0156596 8
-## 31 26.1008420 7
-## 32 26.2220397 6
-## 33 26.5412397 7
-## 34 26.5454237 6
-## 35 27.4854016 7
-## 36 27.9063495 6
-## 37 28.3021111 7
-## 38 28.3025971 6
-## 39 28.4373204 5
-## 40 28.8690569 4
-## 41 29.1758464 3
-## 42 30.1055025 4
-## 43 30.1458161 3
-## 44 30.4569398 4
-## 45 31.2145922 3
-## 46 32.8309551 4
-## 47 33.4561725 3
-## 48 33.5876103 2
-## 49 35.3843962 1
-## 50 37.4275127 2
-## 51 38.2709251 1
-## 52 38.5781224 0</code></pre>
+<pre><code>##           t N
+## 1 0.0000000 3
+## 2 0.3521782 2
+## 3 0.4130112 1
+## 4 3.3499641 2
+## 5 4.2342146 1
+## 6 4.8325027 0</code></pre>
 <p>Thus, in this case we have <code>N0=3</code>, <code>Nmax=10</code>, <code>d=0.2</code>, and <code>b=0.3</code>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <code>Nmax=200</code>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <code>Nmax</code> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(data, log=&quot;y&quot;, type=&quot;l&quot;)</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>You can vary the parameters <code>N0</code>, <code>Nmax</code>, <code>d</code> and <code>b</code> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <code>N=Nmax</code> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatising this process. We start by setting the parameters where we add one additional parameter, <code>sim</code>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
@@ -399,10 +351,8 @@ for (i in 1:sim) {# to create sim different simulations, we embedd the function 
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colours equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
-<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>

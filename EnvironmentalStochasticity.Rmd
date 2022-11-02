@@ -208,7 +208,7 @@ Keep *max=2* fixed and vary *min* and *n* according to
 *min = (0; 0.1; 0.2; 0.3; 0.4; 0.5)*
 and
 *n = (100; 200; 500)*,
-respectively. Varying both parameters together gives you 18 parameter combinations which you can arrange in a table with three rows (*n*) and six columns (*min*). In each cell of this table, enter the proportion of 20 runs that result in extinction. Do these simulations for *n=500*, of if this takes too long, for *n=200*.
+respectively. Varying both parameters together gives you 18 parameter combinations which you can arrange in a table with three rows (*n*) and six columns (*min*). In each cell of this table, enter the proportion of 20 runs that result in extinction. Note that the simulations for *n=500* can take quite a bit of time. If some of these simulations take too long on your computer, then ignore those parameters.
 
   (2)
 Keep *n=500* fixed and vary *min* and *max* according to
