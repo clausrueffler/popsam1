@@ -8,31 +8,8 @@ left:
       - text: "1. Excercise: Environmental Stochasticity"
         href: ./EnvironmentalStochasticity.html
 #      - text: "1. Excercise: Solutions"
-#        href: ./PopulationDynamicsSolutions.html        
-      - text: "2. Excercise: Demograhic Stochasticity"
-        href: ./DemographicStochasticity.html
+#        href: ./PopulationDynamicsSolutions.html 
+
+#      - text: "2. Excercise: Demograhic Stochasticity"
+#        href: ./DemographicStochasticity.html
 #      - text: "2. Excercise: Solutions"
-#        href: ./StructuredPopulationsSolutions.html
-#      - text: "3. Excercise: Competition"
-#       href: ./Competition.html
-#      - text: "3. Excercise: Solutions"
-#        href: ./CompetitionSolutions.html
-#      - text: "4. Excercise: Predator-Prey Interactions"
-#        href: ./PredatorPrey.html
-#      - text: "4. Excercise: Solutions"
-#        href: ./PredatorPreySolutions.html
-#      - text: "5. Excercise: Sources, sinks, and population regulation"
-#        href: ./Pulliam.html
-#      - text: "5. Excercise: Solutions"
-#        href: ./PulliamSolutions.html
-#- text: "Project"
-#    menu:
-#       - text: "Project part 1"
-#         href: ./project1.html
-#       - text: "Project part 2"
-#         href: ./project2.html
-#  - text: "1. Excercise: Population Dynamics"
-#    href: ./PopulationDynamics.html
-#right:
-#  - icon: fa-github fa-lg
-#    href: https://github.com/githubusername/mywebsite
