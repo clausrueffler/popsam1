@@ -263,6 +263,9 @@ $(document).ready(function () {
     <li>
       <a href="./EnvironmentalStochasticity.html">1. Excercise: Environmental Stochasticity</a>
     </li>
+    <li>
+      <a href="./DemographicStochasticity.html">2. Excercise: Demograhic Stochasticity</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -317,45 +320,47 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##             t  N
-## 1   0.0000000  3
-## 2   0.4155206  4
-## 3   0.5916983  3
-## 4   1.0110424  2
-## 5   2.6245376  3
-## 6   3.7306599  2
-## 7   4.3304926  3
-## 8   4.4984713  4
-## 9   4.5214335  5
-## 10  4.5764408  6
-## 11  4.9622864  7
-## 12  5.0117963  6
-## 13  5.2335703  5
-## 14  5.4224599  4
-## 15  5.7651468  3
-## 16  6.4236098  4
-## 17  7.0299142  5
-## 18  7.0308279  6
-## 19  7.1056953  7
-## 20  7.2031265  6
-## 21  7.5903280  7
-## 22  7.9230422  8
-## 23  8.2855547  7
-## 24  8.5551852  8
-## 25  9.1840416  9
-## 26  9.2269588  8
-## 27  9.3604873  7
-## 28  9.9129633  8
-## 29 10.1598004  9
-## 30 10.5852765 10</code></pre>
+<pre><code>##             t N
+## 1   0.0000000 3
+## 2   0.1554440 2
+## 3   0.5322275 3
+## 4   1.8228637 2
+## 5   1.9237458 3
+## 6   2.7083305 2
+## 7   6.8029823 3
+## 8   6.8996515 2
+## 9   7.2484437 3
+## 10  7.3138761 4
+## 11  7.4821784 3
+## 12  9.4308868 4
+## 13 10.0240505 3
+## 14 10.6586980 4
+## 15 10.9589326 3
+## 16 13.7835092 2
+## 17 14.5961008 3
+## 18 14.6595214 4
+## 19 15.5284914 3
+## 20 16.7591667 4
+## 21 17.5965191 3
+## 22 17.6293070 4
+## 23 17.6690760 5
+## 24 17.7396092 4
+## 25 18.1417568 3
+## 26 18.5675876 4
+## 27 18.6699601 3
+## 28 19.8226187 2
+## 29 21.9889745 3
+## 30 24.3713983 4
+## 31 24.8208047 3
+## 32 25.4186131 2
+## 33 25.6994936 1
+## 34 28.2503105 0</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(data, log=&quot;y&quot;, type=&quot;l&quot;)</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>

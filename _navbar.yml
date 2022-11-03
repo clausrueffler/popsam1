@@ -10,6 +10,6 @@ left:
 #      - text: "1. Excercise: Solutions"
 #        href: ./PopulationDynamicsSolutions.html 
 
-#      - text: "2. Excercise: Demograhic Stochasticity"
-#        href: ./DemographicStochasticity.html
+      - text: "2. Excercise: Demograhic Stochasticity"
+        href: ./DemographicStochasticity.html
 #      - text: "2. Excercise: Solutions"
