@@ -320,47 +320,37 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##             t N
-## 1   0.0000000 3
-## 2   0.1554440 2
-## 3   0.5322275 3
-## 4   1.8228637 2
-## 5   1.9237458 3
-## 6   2.7083305 2
-## 7   6.8029823 3
-## 8   6.8996515 2
-## 9   7.2484437 3
-## 10  7.3138761 4
-## 11  7.4821784 3
-## 12  9.4308868 4
-## 13 10.0240505 3
-## 14 10.6586980 4
-## 15 10.9589326 3
-## 16 13.7835092 2
-## 17 14.5961008 3
-## 18 14.6595214 4
-## 19 15.5284914 3
-## 20 16.7591667 4
-## 21 17.5965191 3
-## 22 17.6293070 4
-## 23 17.6690760 5
-## 24 17.7396092 4
-## 25 18.1417568 3
-## 26 18.5675876 4
-## 27 18.6699601 3
-## 28 19.8226187 2
-## 29 21.9889745 3
-## 30 24.3713983 4
-## 31 24.8208047 3
-## 32 25.4186131 2
-## 33 25.6994936 1
-## 34 28.2503105 0</code></pre>
+<pre><code>##            t  N
+## 1   0.000000  3
+## 2   1.465319  4
+## 3   1.541867  3
+## 4   2.620962  2
+## 5   2.688096  1
+## 6   2.800184  2
+## 7   6.201620  3
+## 8   7.535149  2
+## 9   8.167618  3
+## 10  8.631691  4
+## 11  8.651225  3
+## 12  9.842749  4
+## 13 10.981960  3
+## 14 12.039858  4
+## 15 12.595807  5
+## 16 12.603344  4
+## 17 13.261190  5
+## 18 13.280517  6
+## 19 13.679076  7
+## 20 14.247981  8
+## 21 14.413070  9
+## 22 14.635695 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(data, log=&quot;y&quot;, type=&quot;l&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
@@ -392,13 +382,13 @@ for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
 <h3>Task</h3>
 <ol style="list-style-type: decimal">
 <li><p>Investigating the probability of extinction in dependence of four different parameters (<em>N0</em>, <em>Nmax</em>, <em>d</em>, <em>b</em>) is a bit cumbersome. Let us therefore set the maximum population size to 200 (<em>Nmax=200</em>) and the death rate equal to 1 (<em>d=1</em>) and only vary <em>N0</em> and <em>b</em>. Vary <em>b</em> according to <em>b = (0.9; 1; 1.1; 1.2; 1.5)</em> and initial population size <em>N0</em> according to <em>N0 = (1; 3; 5; 10; 50)</em>. Varying both parameters together gives you 25 different parameter combinations that you can arrange in a table with five rows (<em>N0</em>) and five columns (<em>birth</em>). In each cell of this table, report the proportion of ten runs that result in extinction. Please also think which conclusions you can draw from your results about the effect of <em>N0</em> and <em>b</em> on the probability of extinction? Are there parameter combinations that you feel you need to add to your analysis to get a better understanding?</p></li>
-<li><p>As we have seen in the lecture, an analytical prediction for the extinction probability is given by the formula <span class="math display">\[
+<li><p>For the model above, it can be shown mathematically that the probability of extinction, <span class="math inline">\(u(N_0)\)</span>, of a population consisting originally of <span class="math inline">\(N_0\)</span> individuals is given by the following formula: <span class="math display">\[
 u(N_0)=
 \begin{cases}
 1 &amp; \mathrm{for}\,\,\, b\leq d\\
 (\frac{d}{b})^{N_0} &amp; \mathrm{for}\,\,\, b&gt;d.
 \end{cases}
-\]</span> The following code produces the same five by five matrix but with all entries calculated according to the analytical formula. How well do your simulation results agree with the results predicted based on the analytical formula?</p></li>
+\]</span> The following code produces a five matrix with the parameters as given under (1) but with all entries calculated according to the analytical formula. How well do your simulation results agree with the results predicted based on the analytical formula? If you see large differences between your results and the analytical expectation, what do you think could explain these?</p></li>
 </ol>
 <pre class="r"><code>analytical_results &lt;- matrix(nrow = 5, ncol = 5) # defines an empty five by five matrix in which we can store the results
 
