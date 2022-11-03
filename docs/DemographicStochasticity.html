@@ -295,7 +295,7 @@ $(document).ready(function () {
 <pre class="r"><code>sample(x =c(-1, 1), size = 1, prob = c(d = 0.2, b = 0.3))
 # in fact, instead of evaluating the above line of code ten times we can simply evaluate
 sample(x =c(-1, 1), size = 10, replace = TRUE, prob = c(d = 0.2, b = 0.3)) # here we had to add the argument replace=TRUE to the function to indicate that earlier outcomes do not effect the probabilities of future outcomes</code></pre>
-<p>If the population wide death and birth rate are given by <span class="math inline">\(d*N\)</span> and <span class="math inline">\(b*N\)</span>, respectively, how much time elapses between the occurrence of two events? This <em>waiting time</em> depends on the probability that neither a death nor a birth event occurs at a given moment. Thus, the length of the waiting time between two events is also a random variable and its distribution is given by the <a href="https://en.wikipedia.org/wiki/Geometric_distribution"><em>exponential distribution</em></a>. We can determine the length of the waiting time by drawing a random number from the exponential distribution after a death or a birth has occurred using <code>rexp(n = 1, rate = d * N + b * N)</code>, where <span class="math inline">\(n = 1\)</span> indicates that we are drawing a single waiting time and <span class="math inline">\(rate = d * N + b * N\)</span> is the <em>total event rate</em>. For example</p>
+<p>If the population wide death and birth rate are given by <span class="math inline">\(d*N\)</span> and <span class="math inline">\(b*N\)</span>, respectively, how much time elapses between the occurrence of two events? This <em>waiting time</em> depends on the probability that neither a death nor a birth event occurs at a given moment. Thus, the length of the waiting time between two events is also a random variable and its distribution is given by the <a href="https://en.wikipedia.org/wiki/Exponential_distribution"><em>exponential distribution</em></a>. We can determine the length of the waiting time by drawing a random number from the exponential distribution after a death or a birth has occurred using <code>rexp(n = 1, rate = d * N + b * N)</code>, where <span class="math inline">\(n = 1\)</span> indicates that we are drawing a single waiting time and <span class="math inline">\(rate = d * N + b * N\)</span> is the <em>total event rate</em>. For example</p>
 <pre class="r"><code>d &lt;- 0.2
 b &lt;- 0.3
 N &lt;- 10
@@ -317,27 +317,45 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##            t  N
-## 1  0.0000000  3
-## 2  0.4933014  4
-## 3  0.7100137  5
-## 4  0.9677866  4
-## 5  2.1251697  3
-## 6  2.7490444  4
-## 7  3.0641834  5
-## 8  3.6199136  6
-## 9  3.7583078  7
-## 10 4.0414816  6
-## 11 4.1064414  7
-## 12 4.1447071  8
-## 13 4.4317050  9
-## 14 4.7476769 10</code></pre>
+<pre><code>##             t  N
+## 1   0.0000000  3
+## 2   0.4155206  4
+## 3   0.5916983  3
+## 4   1.0110424  2
+## 5   2.6245376  3
+## 6   3.7306599  2
+## 7   4.3304926  3
+## 8   4.4984713  4
+## 9   4.5214335  5
+## 10  4.5764408  6
+## 11  4.9622864  7
+## 12  5.0117963  6
+## 13  5.2335703  5
+## 14  5.4224599  4
+## 15  5.7651468  3
+## 16  6.4236098  4
+## 17  7.0299142  5
+## 18  7.0308279  6
+## 19  7.1056953  7
+## 20  7.2031265  6
+## 21  7.5903280  7
+## 22  7.9230422  8
+## 23  8.2855547  7
+## 24  8.5551852  8
+## 25  9.1840416  9
+## 26  9.2269588  8
+## 27  9.3604873  7
+## 28  9.9129633  8
+## 29 10.1598004  9
+## 30 10.5852765 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(data, log=&quot;y&quot;, type=&quot;l&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
@@ -359,10 +377,8 @@ for (i in 1:sim) {# to create sim different simulations, we embedd the function 
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colours equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
-<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
