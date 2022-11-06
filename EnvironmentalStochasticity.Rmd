@@ -220,5 +220,5 @@ For *n=500* and a pair of *min* and *max* of your own choice explore the effect 
 *N0=(1; 2; 3; 5; 10; 50)*.
 For each value of *N(0)*, report the proportion of ten runs in which the population went extinct.
 
-For each exercise, clarify for yourself why the observed pattern makes sense. Submit your results (for example, by entering them into a data frame).
+For each exercise, explain why the observed pattern make sense. Submit your results (for example, by entering them into a data frame).
 

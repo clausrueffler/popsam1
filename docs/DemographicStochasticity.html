@@ -322,27 +322,77 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
 <pre><code>##            t  N
 ## 1   0.000000  3
-## 2   1.465319  4
-## 3   1.541867  3
-## 4   2.620962  2
-## 5   2.688096  1
-## 6   2.800184  2
-## 7   6.201620  3
-## 8   7.535149  2
-## 9   8.167618  3
-## 10  8.631691  4
-## 11  8.651225  3
-## 12  9.842749  4
-## 13 10.981960  3
-## 14 12.039858  4
-## 15 12.595807  5
-## 16 12.603344  4
-## 17 13.261190  5
-## 18 13.280517  6
-## 19 13.679076  7
-## 20 14.247981  8
-## 21 14.413070  9
-## 22 14.635695 10</code></pre>
+## 2   3.757687  4
+## 3   3.768956  5
+## 4   3.771386  4
+## 5   3.945376  5
+## 6   4.107917  6
+## 7   4.309288  5
+## 8   4.314777  4
+## 9   6.086262  3
+## 10  7.453410  2
+## 11  7.615671  3
+## 12  8.353073  4
+## 13  9.873905  5
+## 14  9.895648  4
+## 15 10.487594  5
+## 16 10.526246  6
+## 17 10.711349  7
+## 18 10.761820  6
+## 19 11.153353  5
+## 20 11.164941  6
+## 21 11.252283  5
+## 22 11.835469  6
+## 23 11.910939  7
+## 24 12.605112  8
+## 25 12.721437  7
+## 26 12.896625  6
+## 27 15.796805  5
+## 28 16.149112  6
+## 29 16.160116  5
+## 30 16.661182  6
+## 31 17.238335  5
+## 32 17.650104  4
+## 33 18.111389  3
+## 34 18.984575  2
+## 35 19.976106  3
+## 36 20.559127  2
+## 37 20.638419  3
+## 38 20.839755  4
+## 39 21.204919  5
+## 40 21.423265  6
+## 41 22.008292  7
+## 42 22.030723  8
+## 43 22.094686  9
+## 44 22.493341  8
+## 45 22.533557  7
+## 46 23.137695  6
+## 47 24.212537  5
+## 48 25.448986  6
+## 49 25.484131  7
+## 50 25.846519  6
+## 51 25.905684  5
+## 52 26.173065  6
+## 53 26.758118  7
+## 54 27.510197  8
+## 55 27.788229  7
+## 56 27.948999  8
+## 57 28.234505  7
+## 58 28.544667  6
+## 59 29.756202  5
+## 60 30.214340  6
+## 61 30.314017  5
+## 62 30.440506  4
+## 63 30.660550  5
+## 64 30.859608  6
+## 65 30.961563  7
+## 66 31.225097  8
+## 67 31.520049  7
+## 68 32.618019  6
+## 69 32.789852  7
+## 70 34.212507  8
+## 71 34.282733  9
+## 72 34.703888 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
@@ -388,7 +438,7 @@ u(N_0)=
 1 &amp; \mathrm{for}\,\,\, b\leq d\\
 (\frac{d}{b})^{N_0} &amp; \mathrm{for}\,\,\, b&gt;d.
 \end{cases}
-\]</span> The following code produces a five matrix with the parameters as given under (1) but with all entries calculated according to the analytical formula. How well do your simulation results agree with the results predicted based on the analytical formula? If you see large differences between your results and the analytical expectation, what do you think could explain these?</p></li>
+\]</span> The following code produces a five by five matrix with the parameters as given under (1) but with all entries calculated according to the analytical formula. How well do your simulation results agree with the results predicted from the analytical formula? If you see large differences between your results and the analytical expectation, what do you think could explain these?</p></li>
 </ol>
 <pre class="r"><code>analytical_results &lt;- matrix(nrow = 5, ncol = 5) # defines an empty five by five matrix in which we can store the results
 

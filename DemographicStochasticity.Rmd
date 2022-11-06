@@ -132,7 +132,7 @@ u(N_0)=
 (\frac{d}{b})^{N_0} & \mathrm{for}\,\,\, b>d.
 \end{cases}
 $$
-The following code produces a five matrix with the parameters as given under (1) but with all entries calculated according to the analytical formula. How well do your simulation results agree with the results predicted based on the analytical formula? If you see large differences between your results and the analytical expectation, what do you think could explain these?
+The following code produces a five by five matrix with the parameters as given under (1) but with all entries calculated according to the analytical formula. How well do your simulation results agree with the results predicted from  the analytical formula? If you see large differences between your results and the analytical expectation, what do you think could explain these?
 
 ```{r eval=FALSE}
 analytical_results <- matrix(nrow = 5, ncol = 5) # defines an empty five by five matrix in which we can store the results
