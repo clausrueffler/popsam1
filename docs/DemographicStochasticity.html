@@ -320,87 +320,49 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##            t  N
-## 1   0.000000  3
-## 2   3.757687  4
-## 3   3.768956  5
-## 4   3.771386  4
-## 5   3.945376  5
-## 6   4.107917  6
-## 7   4.309288  5
-## 8   4.314777  4
-## 9   6.086262  3
-## 10  7.453410  2
-## 11  7.615671  3
-## 12  8.353073  4
-## 13  9.873905  5
-## 14  9.895648  4
-## 15 10.487594  5
-## 16 10.526246  6
-## 17 10.711349  7
-## 18 10.761820  6
-## 19 11.153353  5
-## 20 11.164941  6
-## 21 11.252283  5
-## 22 11.835469  6
-## 23 11.910939  7
-## 24 12.605112  8
-## 25 12.721437  7
-## 26 12.896625  6
-## 27 15.796805  5
-## 28 16.149112  6
-## 29 16.160116  5
-## 30 16.661182  6
-## 31 17.238335  5
-## 32 17.650104  4
-## 33 18.111389  3
-## 34 18.984575  2
-## 35 19.976106  3
-## 36 20.559127  2
-## 37 20.638419  3
-## 38 20.839755  4
-## 39 21.204919  5
-## 40 21.423265  6
-## 41 22.008292  7
-## 42 22.030723  8
-## 43 22.094686  9
-## 44 22.493341  8
-## 45 22.533557  7
-## 46 23.137695  6
-## 47 24.212537  5
-## 48 25.448986  6
-## 49 25.484131  7
-## 50 25.846519  6
-## 51 25.905684  5
-## 52 26.173065  6
-## 53 26.758118  7
-## 54 27.510197  8
-## 55 27.788229  7
-## 56 27.948999  8
-## 57 28.234505  7
-## 58 28.544667  6
-## 59 29.756202  5
-## 60 30.214340  6
-## 61 30.314017  5
-## 62 30.440506  4
-## 63 30.660550  5
-## 64 30.859608  6
-## 65 30.961563  7
-## 66 31.225097  8
-## 67 31.520049  7
-## 68 32.618019  6
-## 69 32.789852  7
-## 70 34.212507  8
-## 71 34.282733  9
-## 72 34.703888 10</code></pre>
+<pre><code>##             t  N
+## 1   0.0000000  3
+## 2   0.0755670  4
+## 3   0.2820423  3
+## 4   0.4390739  2
+## 5   1.3973284  1
+## 6   2.6148887  2
+## 7   3.3094165  3
+## 8   4.7972025  2
+## 9   5.6230561  1
+## 10  5.8881803  2
+## 11  6.7825142  3
+## 12  8.5912118  4
+## 13  9.0705467  5
+## 14  9.2798964  4
+## 15  9.7686325  5
+## 16 10.0957724  4
+## 17 10.9657194  5
+## 18 11.3880855  6
+## 19 11.3989189  7
+## 20 11.6964361  6
+## 21 11.8170709  7
+## 22 11.9486952  8
+## 23 12.1399105  7
+## 24 12.2562344  6
+## 25 12.9673288  5
+## 26 12.9936301  4
+## 27 13.0689699  5
+## 28 13.1266692  4
+## 29 13.6105275  5
+## 30 14.4794324  6
+## 31 14.6764926  7
+## 32 14.8815064  8
+## 33 15.0759168  7
+## 34 15.3222412  8
+## 35 15.3984161  9
+## 36 15.4073227 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(data, log=&quot;y&quot;, type=&quot;l&quot;)</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
@@ -444,7 +406,7 @@ u(N_0)=
 
 death &lt;- 1
 N0_sizes &lt;- c(1, 3, 5, 10, 50)
-birth_rates &lt;- c(0.9, 1, 1.1, 1.3, 1.5)
+birth_rates &lt;- c(0.9, 1, 1.1, 1.2, 1.5)
 
 for (i in 1:5){ # two nested for-loops, the first one walks through the rows and the second one walks through the columns
   for (j in 1:5){
