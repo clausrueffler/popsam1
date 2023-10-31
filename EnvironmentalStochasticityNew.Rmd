@@ -29,7 +29,12 @@ Importantly, the above equation assumes that the growth factor $\lambda$ does no
 In this exercise, we simulate environmental stochasticity in *R*. We do this by choosing a set of random postive numbers that represent the $\lambda$-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of $\lambda$-values from an interval with a lower boundary given by the parameter *min* and an upper boundary given by the parameter *max*. Let us furthermore assume that each number within the interval *(min, max)* occurs with equal probability. We can do this in *R* by using the command ```runif(n, min,max)```. The name *runif* is an abbreviation combining the words *random* and *uniform*, indicating that the command ```runif(n, min, max)``` produces a vector of *n* numbers (the length of the time series) and that these are drawn randomly from the interval *(min, max)*.
 
 ```{r eval=FALSE}
-runif(10, 1, 2) # produces a vector of 10 random numbers between 1 and 2
+lambda_mean <- 1.01
+deviation <- 0.1
+possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
+probabilities <- c(0.5, 0.5)
+
+sample(x = possible_outcomes, size = 10, prob = probabilities, replace = TRUE) # produces a vector of 10 random numbers taking the value 0.91  1.11
 ```
 
 We could in principle decide to draw the random numbers from distributions other than the uniform distribution, for example from a Poisson distribution, using the command ```rpois(n, lambda)```.
@@ -37,11 +42,13 @@ We could in principle decide to draw the random numbers from distributions other
 Let us define the parameter values of the random distribution and then draw the sequence of $\lambda$-values.
 
 ```{r eval=FALSE}
-n <- 100 # length of time series
-min <- 0.5 # lowest possible value of the growth factor lambda
-max <- 2 # largest possible value of the growth factor lambda
+lambda_mean <- 1.01
+deviation <- 0.05
+possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
+probabilities <- c(0.5, 0.5)
+tmax <- 500
 
-growth_factors <- runif(n, min, max)
+growth_factors <- sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE)
 ```
 
 In the next step, we want to use the sequence of $\lambda$-values to project a population that consists of *N0* individuals at time  *t=0* *t* time steps into the future. Thus, we want to compute
@@ -49,6 +56,20 @@ In the next step, we want to use the sequence of $\lambda$-values to project a p
 $$
 N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
 $$
+
+Stochastic time series without extinction.
+
+
+```{r eval=FALSE}
+N0 <- 10 # population size at time t=0
+time_series <- c() # creates an empty vector in which we will store the population time series
+time_series[1] <- N0 # initial population size N0 entered as first entry
+
+for (t in 1:tmax) {# for-loop that projects the population n time steps into the future
+  time_series[t+1] <- time_series[t]*growth_factors[t]
+  }
+```
+
 
 ```{r eval=FALSE}
 N0 <- 10 # population size at time t=0
@@ -61,13 +82,17 @@ for (t in 1:n) {# for-loop that projects the population n time steps into the fu
   }
 ```
 
-Assuming that *N* describes the *absolute population size* we in this code set any population size less than one equal to zero (half a fox does not exist). In other words, if $N < 1$ at any time *t*, then the we consider the population extinct from that time point onwards. Next, we plot the resulting time series on a log-scale.
+Assuming that *N* describes the *absolute population size* we in this code set any population size less than one equal to zero (half a fox does not exist). In other words, if $N < 1$ at any time *t*, then the we consider the population extinct from that time point onward. Next, we plot the resulting time series on a log-scale.
 
 ```{r eval=FALSE}
-plot(0:n, time_series+1, type="l", log="y", ylim=c(1,max(time_series)), xlab="time", ylab="population size") # Note that we add 1 to all entries in the time series. The reason is that ln(0) is not defined.
+plot(0:tmax, time_series, type="l", ylim=c(0,max(time_series)), xlab="time", ylab="population size") # Note that we add 1 to all entries in the time series. The reason is that ln(0) is not defined.
 ```
 
-At each instance this code is executed (starting from the line in which the vector *growht_factors* is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after *n* time steps.
+```{r eval=FALSE}
+plot(0:tmax, time_series+1, type="l", log="y", ylim=c(1,max(time_series)), xlab="time", ylab="population size") # Note that we add 1 to all entries in the time series. The reason is that ln(0) is not defined.
+```
+
+At each instance this code is executed (starting from the line in which the vector *growth_factors* is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after *n* time steps.
 
 <!--
 To confirm that the arithmetic mean of the annual grwoth factors, given by
@@ -131,11 +156,54 @@ You have seen that for the chosen set of parameters *min*, *max*, *n* and *N0* a
 To investigate this question more systematically, it is useful to automatize the process in *R*. We start by defining a new function to make the depency of the time series on *min*, *max*, *n* and *N0* explicit.
 
 ```{r eval=FALSE}
-environmental_stochasticity <- function(N0, n, min, max) {# function with four arguments
-  growth_factors <- runif(n, min, max)
+N0 <- 10
+lambda_mean <- 1.01
+deviation <- 0.05
+possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
+probabilities <- c(0.5, 0.5)
+
+environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {# function with four arguments
+  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
   time_series <- c()
   time_series[1] <- N0
-  for (t in 1:n) {
+  for (t in 1:tmax) {
+    time_series[t+1] <- time_series[t]*growth_factors[t]
+  }
+  return(time_series)
+}
+```
+
+```{r eval=FALSE}
+sim <- 10 # number of simulation runs
+
+results <- matrix(nrow = tmax + 1, ncol = sim) # creates an empty matrix with n+1 rows and sim columns in which we will store the time series
+
+for (i in 1:sim) {# executes the function sim times
+  results[, i] <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+}
+```
+
+```{r eval=FALSE}
+cl <- rainbow(sim) # set number of colors equal to number of simulations
+
+plot(0:tmax, results[, 1]+1, type="l", log="y", ylim=c(1, max(results)), col=cl[1], xlab="time", ylab="population size") # plot the result from the first simulation
+for (i in 2:sim) {# add the results from all other simulations to the same graph
+  lines(0:tmax, results[, i]+1, type="l", col=cl[i])
+}
+```
+
+```{r eval=FALSE}
+lambda_mean <- 1.01
+deviation <- 0.05
+possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
+probabilities <- c(0.5, 0.5)
+tmax <- 500
+
+environmental_stochasticity <- function(N0, n, min, max) {# function with four arguments
+  growth_factors <- sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE)
+  time_series <- c()
+  time_series[1] <- N0
+  for (t in 1:tmax) {
     time_series[t+1] <- if (time_series[t]*growth_factors[t] < 1) 0 else time_series[t]*growth_factors[t]
   }
   return(time_series)
@@ -147,7 +215,7 @@ This function produces a population time series for a given set of parameters. T
 The next piece of code allows us to execute the population simulation several times by putting our function inside a *for*-loop. How often the times series is repeated is determined by the new parameter *sim*, below set equal to 20. Note that each time series is different from the others because it is based on a different set of random $\lambda$-values. 
 
 ```{r eval=FALSE}
-n <- 500 # lenght of time series
+n <- 500 # length of time series
 min <- 0.9 # lowest possible value for growth factor
 max <- 1.1 # largest possible value of growth factor
 N0 <- 10 # initial population size
