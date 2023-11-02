@@ -83,13 +83,13 @@ Next, we plot the resulting time series.
 ```{r eval=FALSE}
 time_series <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # runs the function
 
-plot(0:tmax, time_series, type="l", ylim=c(0,max(time_series)), xlab="time", ylab="population size")
+plot(time_series, type="l", xlab="time", ylab="population size")
 ```
 
 Alternatively, we can also plot the time series on a log-scale by taking the natural logarithm of population size.
 
 ```{r eval=FALSE}
-plot(0:tmax, log(time_series + 1), type="l", ylim=c(0,log(max(time_series + 1))), xlab="time", ylab="population size")
+plot(log(time_series + 1), type="l", xlab="time", ylab="ln(population size)")
 ```
 
 Note that for the log-scale we add 1 to all entries in the time series. The reason is that $\ln(N)$ for $N<1$ is negative.
@@ -143,16 +143,16 @@ The following piece of code adds the desired line, both on the natural and log-s
 time_series_geom <- c()
 time_series_geom[1] <- N0
 for (t in 1:tmax) {
-  time_series_geom[t+1] <- max(0,time_series_geom[t]*lambda_mean)
+  time_series_geom[t+1] <- time_series_geom[t]*lambda_mean
 }
 
 # plots on natural scale
-plot(0:tmax, time_series, type="l", ylim=c(0, max(time_series)), xlab="time", ylab="population size")
-lines(0:tmax, time_series_geom, type="l", col="Red")
+plot(time_series, type="l", ylim=c(0, max(time_series, time_series_geom)), xlab="time", ylab="population size")
+lines(time_series_geom, type="l", col="Red")
 
 # plots on log-scale
-plot(0:tmax, log(time_series +1), type="l", ylim=c(0, max(log(time_series_geom + 1))), xlab="time", ylab="population size")
-lines(0:tmax, log(time_series_geom + 1), type="l", col="Red")
+plot(log(time_series +1), type="l", ylim=c(0, log(max(time_series, time_series_geom))), xlab="time", ylab="ln(population size)")
+lines(log(time_series_geom + 1), type="l", col="Red")
 ```
 
 You might encounter simulation runs in which the population goes extinct while the projection based on the geometric mean suggests that the population should slowly increase. Can you explain this apparent contradiction?
@@ -180,11 +180,11 @@ Let us combine all time series into a single plot.
 ```{r eval=FALSE}
 cl <- rainbow(sim) # set number of colors equal to number of simulations
 
-plot(0:tmax, log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)") # plot the result from the first simulation
+plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results))), col=cl[1], xlab="time", ylab="ln(population size)") # plot the result from the first simulation
 for (i in 2:sim) {# add the results from all other simulations to the same graph
-  lines(0:tmax, log(results[, i] + 1), type="l", col=cl[i])
+  lines(log(results[, i] + 1), type="l", col=cl[i])
 }
-lines(0:tmax, log(time_series_geom + 1), type="l", col="4")
+lines(log(time_series_geom + 1), type="l", col="4")
 ```
 
 
@@ -192,18 +192,18 @@ lines(0:tmax, log(time_series_geom + 1), type="l", col="4")
 log_row_means <- rowMeans(log(results + 1))
 
 # we can add mean of all time series to the previous graph
-lines(0:tmax, log_row_means, type="l", col="Black")
+lines(log_row_means, type="l", col="Black")
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-plot(0:tmax, log(results[, 1] + 1), type="l", ylim=c(1, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
+plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
 for (i in 2:sim) {
-  lines(0:tmax, log(results[, i] + 1), type="l", col=cl[i])
+  lines(log(results[, i] + 1), type="l", col=cl[i])
 }
-lines(0:tmax, log(time_series_geom + 1), type="l", col="4")
+lines(log(time_series_geom + 1), type="l", col="4")
 
 # we can add mean of all time series to the previous graph
-lines(0:tmax, log_row_means, type="l", col="Black")
+lines(log_row_means, type="l", col="Black")
 ```
 
 For the environmental variation investigated here (with only two possible environments), one can show that the mean over many trajectories is given by
@@ -223,29 +223,29 @@ $$
 Let us add a line showing $\bar N(t)$ according to this formula to our plots.
 
 ```{r eval=FALSE}
-exp_mean_r <- exp(log(lambda_mean) + 1/2*log(1 - deviation^2 / lambda_mean^2))
+exp_mean_lambda <- exp(log(lambda_mean) + 1/2*log(1 - deviation^2 / lambda_mean^2)) # exponential of the formula in the above equation
 
 time_series_expected <- c()
 time_series_expected[1] <- N0
 for (t in 1:tmax) {
-  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_r
+  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
 }
 
 # we can add the expected mean time series to the previous graph
-lines(0:tmax, log(time_series_expected + 1), type="l", col="Gray")
+lines(log(time_series_expected + 1), type="l", col="Gray")
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-plot(0:tmax, log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
+plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results))), col=cl[1], xlab="time", ylab="ln(population size)")
 for (i in 2:sim) {
-  lines(0:tmax, log(results[, i] + 1), type="l", col=cl[i])
+  lines(log(results[, i] + 1), type="l", col=cl[i])
 }
-lines(0:tmax, log(time_series_geom + 1), type="l", col="4")
+lines(log(time_series_geom + 1), type="l", col="4")
 
 # we add mean of all time series to the previous graph
-lines(0:tmax, log_row_means, type="l", col="Black")
+lines(log_row_means, type="l", col="Black")
 # we add the expected mean trajectory to the previous graph
-lines(0:tmax, log(time_series_expected + 1), type="l", col="Black")
+lines(log(time_series_expected + 1), type="l", col="Black")
 ```
 
 ### TASKS
@@ -260,7 +260,7 @@ Summerize what you learned from these graphs. What is the effect of environmenta
   Investigate the magnitude of environmental fluctuations in more detail by varying the amplitude of the environmental fluctuations. Keep $\bar \lambda = 1.01$ fixed and vary $\epsilon$, the deviation in $\lambda$, according to
 $\epsilon = (0; 0.05; 0.1; 0.15; 0.2)$.
 For each value of $\epsilon$ report the number of simulations that result in extinction based on **20** simulation runs. Run you simulations for at least **300** time steps.
-For which value of $\epsilon$ does the expected mean trajectory starts to decline? 
+For which value of $\epsilon$ does the expected mean trajectory starts to decline?
 
   (3)
 Submit your results.

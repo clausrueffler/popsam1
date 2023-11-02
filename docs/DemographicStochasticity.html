@@ -317,13 +317,43 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##          t N
-## 1 0.000000 3
-## 2 1.794704 4
-## 3 2.839917 3
-## 4 3.135284 2
-## 5 3.937099 1
-## 6 8.898005 0</code></pre>
+<pre><code>##             t  N
+## 1   0.0000000  3
+## 2   0.3733613  2
+## 3   0.7516024  3
+## 4   1.4648535  4
+## 5   1.6389643  5
+## 6   2.3203897  4
+## 7   2.3422758  5
+## 8   2.6663244  6
+## 9   2.7903195  5
+## 10  3.1395087  4
+## 11  3.2269700  5
+## 12  3.3975190  4
+## 13  3.5159910  5
+## 14  3.7635686  4
+## 15  4.1634997  3
+## 16  4.4622961  2
+## 17  9.1677016  3
+## 18  9.2540276  2
+## 19 13.3504511  3
+## 20 14.9728541  4
+## 21 16.5958118  5
+## 22 16.8219416  4
+## 23 17.3154729  3
+## 24 19.4955486  2
+## 25 19.5985583  3
+## 26 19.7810548  4
+## 27 20.1118634  5
+## 28 20.7818964  6
+## 29 21.3739226  7
+## 30 22.4342475  6
+## 31 22.5788339  7
+## 32 22.9859607  6
+## 33 23.0226014  7
+## 34 23.6322047  8
+## 35 24.6687527  9
+## 36 24.6716552 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
@@ -353,8 +383,10 @@ for (i in 1:sim) {# to create sim different simulations, we embedd the function 
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colours equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation
-for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1]) # plots the first simulation</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
+<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>

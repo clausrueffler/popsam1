@@ -332,9 +332,9 @@ N(t)=\lambda(t-1)*\lambda(t-2)*\ldots*\lambda(2)*\lambda(1)*\lambda(0)*N(0).
 <p>Next, we plot the resulting time series.</p>
 <pre class="r"><code>time_series &lt;- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # runs the function
 
-plot(0:tmax, time_series, type=&quot;l&quot;, ylim=c(0,max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
+plot(time_series, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
 <p>Alternatively, we can also plot the time series on a log-scale by taking the natural logarithm of population size.</p>
-<pre class="r"><code>plot(0:tmax, log(time_series + 1), type=&quot;l&quot;, ylim=c(0,log(max(time_series + 1))), xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
+<pre class="r"><code>plot(log(time_series + 1), type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
 <p>Note that for the log-scale we add 1 to all entries in the time series. The reason is that <span class="math inline">\(\ln(N)\)</span> for <span class="math inline">\(N&lt;1\)</span> is negative.</p>
 <p>At each instance this code is executed (starting from the line in which the vector <em>growth_factors</em> is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after <em>tmax</em> time steps.</p>
 <!--
@@ -383,16 +383,16 @@ geometric_mean # shows the value of the geometric mean
 <pre class="r"><code>time_series_geom &lt;- c()
 time_series_geom[1] &lt;- N0
 for (t in 1:tmax) {
-  time_series_geom[t+1] &lt;- max(0,time_series_geom[t]*lambda_mean)
+  time_series_geom[t+1] &lt;- time_series_geom[t]*lambda_mean
 }
 
 # plots on natural scale
-plot(0:tmax, time_series, type=&quot;l&quot;, ylim=c(0, max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;)
-lines(0:tmax, time_series_geom, type=&quot;l&quot;, col=&quot;Red&quot;)
+plot(time_series, type=&quot;l&quot;, ylim=c(0, max(time_series, time_series_geom)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;)
+lines(time_series_geom, type=&quot;l&quot;, col=&quot;Red&quot;)
 
 # plots on log-scale
-plot(0:tmax, log(time_series +1), type=&quot;l&quot;, ylim=c(0, max(log(time_series_geom + 1))), xlab=&quot;time&quot;, ylab=&quot;population size&quot;)
-lines(0:tmax, log(time_series_geom + 1), type=&quot;l&quot;, col=&quot;Red&quot;)</code></pre>
+plot(log(time_series +1), type=&quot;l&quot;, ylim=c(0, log(max(time_series, time_series_geom))), xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)
+lines(log(time_series_geom + 1), type=&quot;l&quot;, col=&quot;Red&quot;)</code></pre>
 <p>You might encounter simulation runs in which the population goes extinct while the projection based on the geometric mean suggests that the population should slowly increase. Can you explain this apparent contradiction?</p>
 </div>
 <div id="the-probability-of-extinction" class="section level2">
@@ -410,15 +410,15 @@ for (i in 1:sim) {# executes the function sim times
 <p>Let us combine all time series into a single plot.</p>
 <pre class="r"><code>cl &lt;- rainbow(sim) # set number of colors equal to number of simulations
 
-plot(0:tmax, log(results[, 1] + 1), type=&quot;l&quot;, ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plot the result from the first simulation
+plot(log(results[, 1] + 1), type=&quot;l&quot;, ylim=c(0, log(max(time_series_geom, results))), col=cl[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plot the result from the first simulation
 for (i in 2:sim) {# add the results from all other simulations to the same graph
-  lines(0:tmax, log(results[, i] + 1), type=&quot;l&quot;, col=cl[i])
+  lines(log(results[, i] + 1), type=&quot;l&quot;, col=cl[i])
 }
-lines(0:tmax, log(time_series_geom + 1), type=&quot;l&quot;, col=&quot;4&quot;)</code></pre>
+lines(log(time_series_geom + 1), type=&quot;l&quot;, col=&quot;4&quot;)</code></pre>
 <pre class="r"><code>log_row_means &lt;- rowMeans(log(results + 1))
 
 # we can add mean of all time series to the previous graph
-lines(0:tmax, log_row_means, type=&quot;l&quot;, col=&quot;Black&quot;)</code></pre>
+lines(log_row_means, type=&quot;l&quot;, col=&quot;Black&quot;)</code></pre>
 <p>For the environmental variation investigated here (with only two possible environments), one can show that the mean over many trajectories is given by</p>
 <p><span class="math display">\[
 \begin{equation}
@@ -430,16 +430,16 @@ lines(0:tmax, log_row_means, type=&quot;l&quot;, col=&quot;Black&quot;)</code></
 \bar r = \ln \bar\lambda + \frac{1}{2} \ln \left(1 - \frac{\epsilon^2}{\bar\lambda^2}\right).
 \end{equation}
 \]</span> Let us add a line showing <span class="math inline">\(\bar N(t)\)</span> according to this formula to our plots.</p>
-<pre class="r"><code>exp_mean_r &lt;- exp(log(lambda_mean) + 1/2*log(1 - deviation^2 / lambda_mean^2))
+<pre class="r"><code>exp_mean_lambda &lt;- exp(log(lambda_mean) + 1/2*log(1 - deviation^2 / lambda_mean^2)) # exponential of the formula in the above equation
 
 time_series_expected &lt;- c()
 time_series_expected[1] &lt;- N0
 for (t in 1:tmax) {
-  time_series_expected[t+1] &lt;- time_series_expected[t]*exp_mean_r
+  time_series_expected[t+1] &lt;- time_series_expected[t]*exp_mean_lambda
 }
 
 # we can add the expected mean time series to the previous graph
-lines(0:tmax, log(time_series_expected + 1), type=&quot;l&quot;, col=&quot;Gray&quot;)</code></pre>
+lines(log(time_series_expected + 1), type=&quot;l&quot;, col=&quot;Gray&quot;)</code></pre>
 <div id="tasks" class="section level3">
 <h3>TASKS</h3>
 <p>From our graphs, one can determine the number of simulation runs in which the population goes extinct, simply by counting the number of simulations that hit zero.</p>
