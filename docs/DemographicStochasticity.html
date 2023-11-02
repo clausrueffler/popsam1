@@ -317,17 +317,31 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##            t  N
-## 1  0.0000000  3
-## 2  0.2432315  4
-## 3  1.1144811  5
-## 4  1.2464693  6
-## 5  1.2800392  7
-## 6  1.3541930  8
-## 7  1.4623349  7
-## 8  1.7869464  8
-## 9  1.7881089  9
-## 10 1.9301516 10</code></pre>
+<pre><code>##             t  N
+## 1   0.0000000  3
+## 2   0.7844701  2
+## 3   2.4926287  3
+## 4   2.7200888  4
+## 5   2.8843864  3
+## 6   6.4124352  4
+## 7   6.4187495  5
+## 8   9.3079199  4
+## 9   9.9400823  5
+## 10 10.6052814  6
+## 11 11.2680813  7
+## 12 11.4900476  8
+## 13 11.7899461  7
+## 14 12.0284110  8
+## 15 12.0617225  7
+## 16 13.0314352  6
+## 17 13.4061153  5
+## 18 13.4775737  4
+## 19 13.5428307  5
+## 20 14.3809097  6
+## 21 14.4303426  7
+## 22 14.7003492  8
+## 23 14.8985590  9
+## 24 15.2127618 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>

@@ -307,7 +307,7 @@ tmax &lt;- 200 # length of the time series
 sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE) # produces a vector of tmax random numbers taking the value 0.51  1.51</code></pre>
 <p>In the next step, we want to use the sequence of <span class="math inline">\(\lambda\)</span>-values to project a population that consists of <em>N0</em> individuals at time <em>t=0</em> <em>t</em> time steps into the future. Thus, we want to compute</p>
 <p><span class="math display">\[
-N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
+N(t)=\lambda(t-1)*\lambda(t-2)*\ldots*\lambda(2)*\lambda(1)*\lambda(0)*N(0).
 \]</span></p>
 <p>In the following, we define a function that produces a stochastic time series.</p>
 <pre class="r"><code>environmental_stochasticity &lt;- function(N0, tmax, possible_outcomes, probabilities) {
@@ -325,8 +325,7 @@ N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
   time_series &lt;- c()
   time_series[1] &lt;- N0
   for (t in 1:tmax) {
-    time_series[t+1] &lt;- if (time_series[t]*growth_factors[t] &lt; 1) 0 # sets the population vector to 0 in case N drops below 1
-  else time_series[t]*growth_factors[t]
+    time_series[t+1] &lt;- ifelse(time_series[t]*growth_factors[t] &lt; 1, 0, time_series[t]*growth_factors[t]) # sets the population vector to 0 in case N drops below 1
   }
   return(time_series)
 }</code></pre>
@@ -419,7 +418,7 @@ lines(0:tmax, log(time_series_geom + 1), type=&quot;l&quot;, col=&quot;4&quot;)<
 <pre class="r"><code>log_row_means &lt;- rowMeans(log(results + 1))
 
 # we can add mean of all time series to the previous graph
-lines(0:tmax, log_row_means+1, type=&quot;l&quot;, col=&quot;Black&quot;)</code></pre>
+lines(0:tmax, log_row_means, type=&quot;l&quot;, col=&quot;Black&quot;)</code></pre>
 <p>For the environmental variation investigated here (with only two possible environments), one can show that the mean over many trajectories is given by</p>
 <p><span class="math display">\[
 \begin{equation}

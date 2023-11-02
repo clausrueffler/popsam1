@@ -47,7 +47,7 @@ sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE)
 In the next step, we want to use the sequence of $\lambda$-values to project a population that consists of *N0* individuals at time  *t=0* *t* time steps into the future. Thus, we want to compute
 
 $$
-N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
+N(t)=\lambda(t-1)*\lambda(t-2)*\ldots*\lambda(2)*\lambda(1)*\lambda(0)*N(0).
 $$
 
 In the following, we define a function that produces a stochastic time series.
@@ -72,8 +72,7 @@ environmental_stochasticity_ext <- function(N0, tmax, possible_outcomes, probabi
   time_series <- c()
   time_series[1] <- N0
   for (t in 1:tmax) {
-    time_series[t+1] <- if (time_series[t]*growth_factors[t] < 1) 0 # sets the population vector to 0 in case N drops below 1
-  else time_series[t]*growth_factors[t]
+    time_series[t+1] <- ifelse(time_series[t]*growth_factors[t] < 1, 0, time_series[t]*growth_factors[t]) # sets the population vector to 0 in case N drops below 1
   }
   return(time_series)
 }
@@ -193,7 +192,7 @@ lines(0:tmax, log(time_series_geom + 1), type="l", col="4")
 log_row_means <- rowMeans(log(results + 1))
 
 # we can add mean of all time series to the previous graph
-lines(0:tmax, log_row_means+1, type="l", col="Black")
+lines(0:tmax, log_row_means, type="l", col="Black")
 ```
 
 ```{r eval=FALSE, echo=FALSE}
