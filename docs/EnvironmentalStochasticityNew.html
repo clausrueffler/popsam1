@@ -263,6 +263,9 @@ $(document).ready(function () {
     <li>
       <a href="./EnvironmentalStochasticityNew.html">1. Excercise: Environmental Stochasticity</a>
     </li>
+    <li>
+      <a href="./DemographicStochasticity.html">2. Excercise: Demograhic Stochasticity</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -285,6 +288,11 @@ $(document).ready(function () {
   addClassKlippyTo("pre.r, pre.markdown");
   addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
 </script>
+<!--
+Implement to improvements to the below code.
+(i) Draw the random values for lambda inside the for loop, that is one new value at each iteration of the loop. I think this is more intuitive.
+(ii) Use the "<<-" command to export time series produced by a function directly to the global environment. This should slightly simplify the code.
+-->
 <div id="environmental-stochasticity" class="section level1 tabset">
 <h1 class="tabset">Environmental Stochasticity</h1>
 <div id="environmental-stochasticity-1" class="section level2">
@@ -337,49 +345,7 @@ plot(time_series, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;populati
 <pre class="r"><code>plot(log(time_series + 1), type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
 <p>Note that for the log-scale we add 1 to all entries in the time series. The reason is that <span class="math inline">\(\ln(N)\)</span> for <span class="math inline">\(N&lt;1\)</span> is negative.</p>
 <p>At each instance this code is executed (starting from the line in which the vector <em>growth_factors</em> is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after <em>tmax</em> time steps.</p>
-<!--
-To confirm that the arithmetic mean of the annual grwoth factors, given by
-
-$$
-\bar\lambda=\frac{1}{t}(\lambda_{t-1}+\lambda_{t-2}+\ldots+\lambda_2+\lambda_1+\lambda_0),
-$$
-
-is not informative, we can add the time series as it would result if the population would grow each time according to the factor $\bar\lambda$.
-
-
-```r
-arithmetic_mean <- mean(growth_factors) # calculates the arithmetic mean of the annual grwoth factors
-arithmetic_mean # shows the value of the arithmetic mean
-```
-
-Next, we add the line that shows how the population develops if it changes each year according to the arithmetic mean of the $\bar\lambda$.
-
-
-```r
-time_series_arith <- c() # creates an empty vector in which we will store the population time series
-time_series_arith[1] <- N0 # first entry in this vector equals initial population size N(0)
-  for (t in 1:n) {# for-loop that projects the population n time steps into the future using only the arithmetric mean
-  time_series_arith[t+1] <- max(0, time_series_arith[t]*arithmetic_mean)
-  }
-
-plot(0:n, time_series+1, type="l", log="y", ylim=c(1,max(time_series)), xlab="time", ylab="population size") # repeats the plot with the stochastic time series
-lines(0:n, time_series_arith, type="p", col="2") # adds the line based on arithmetric mean to the plot
-```
-
-As expected, the arithmetic mean growth factor is not very accurate in predicting the fate of the population.
--->
-<p>Next, let us add a line that shows how the population changes if each year it grows according to the arithmetic mean growth factor <span class="math inline">\(\bar\lambda\)</span>.</p>
-<!--
-$$
-\tilde\lambda:=(\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0)^{\frac{1}{t}}
-$$
-
-```r
-geometric_mean <- exp(mean(log(growth_factors))) # calculates the geometric mean of the annual growth factors (can you derive the formula that is used here?) 
-geometric_mean # shows the value of the geometric mean
-```
--->
-<p>The following piece of code adds the desired line, both on the natural and log-scale</p>
+<p>Next, let us add a line that shows how the population changes if each year it grows according to the arithmetic mean growth factor <span class="math inline">\(\bar\lambda\)</span>. The following piece of code adds the desired line, both on the natural and log-scale</p>
 <pre class="r"><code>time_series_geom &lt;- c()
 time_series_geom[1] &lt;- N0
 for (t in 1:tmax) {
