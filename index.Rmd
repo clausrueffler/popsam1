@@ -6,7 +6,7 @@ output:
 ---
 *Claus' Exercises*
 
-This website contains the exercises for the parts "Introduction to modeling" and "Intraspecific competition". Click the exercise button and select from the differnt exercises in the drop-down menu. Please do the exercises by copying the R-code and pasting it in the skript window of your R-Studio application.
+This website contains the exercises for the parts "Introduction to modeling" and "Intraspecific competition". Click the exercise button and select from the different exercises in the drop-down menu. Please do the exercises by copying the R-code and pasting it into the script window of your R-Studio application.
 
 **Enjoy!**
 
