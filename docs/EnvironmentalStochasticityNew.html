@@ -429,7 +429,7 @@ lines(0:tmax, log_row_means, type=&quot;l&quot;, col=&quot;Black&quot;)</code></
 \begin{equation}\label{eq:bar_r}
 \bar r = \ln \bar\lambda + \frac{1}{2} \ln \left(1 - \frac{\epsilon^2}{\bar\lambda^2}\right).
 \end{equation}
-\]</span> Let us add a line showing <span class="math inline">\(\hat N(t)\)</span> according to this formula to our plots.</p>
+\]</span> Let us add a line showing <span class="math inline">\(\bar N(t)\)</span> according to this formula to our plots.</p>
 <pre class="r"><code>exp_mean_r &lt;- exp(log(lambda_mean) + 1/2*log(1 - deviation^2 / lambda_mean^2))
 
 time_series_expected &lt;- c()
