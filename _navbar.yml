@@ -6,10 +6,10 @@ left:
   - text: "Exercises"
     menu:
       - text: "1. Excercise: Environmental Stochasticity"
-        href: ./EnvironmentalStochasticity.html
+        href: ./EnvironmentalStochasticityNew.html
 #      - text: "1. Excercise: Solutions"
 #        href: ./PopulationDynamicsSolutions.html 
 
-      - text: "2. Excercise: Demograhic Stochasticity"
-        href: ./DemographicStochasticity.html
+#      - text: "2. Excercise: Demograhic Stochasticity"
+#        href: ./DemographicStochasticity.html
 #      - text: "2. Excercise: Solutions"

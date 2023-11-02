@@ -261,10 +261,7 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="./EnvironmentalStochasticity.html">1. Excercise: Environmental Stochasticity</a>
-    </li>
-    <li>
-      <a href="./DemographicStochasticity.html">2. Excercise: Demograhic Stochasticity</a>
+      <a href="./EnvironmentalStochasticityNew.html">1. Excercise: Environmental Stochasticity</a>
     </li>
   </ul>
 </li>
@@ -320,73 +317,25 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##             t  N
-## 1   0.0000000  3
-## 2   0.5211237  2
-## 3   0.9552531  3
-## 4   1.0930222  2
-## 5   1.0937153  1
-## 6   5.6445925  2
-## 7   6.3277139  3
-## 8   7.1820722  4
-## 9   8.7169110  5
-## 10  8.8484253  4
-## 11  9.1703364  3
-## 12  9.7436245  4
-## 13 10.1189465  3
-## 14 11.2593084  4
-## 15 11.2822160  3
-## 16 11.6506739  2
-## 17 12.5545947  3
-## 18 12.8703613  4
-## 19 13.0635414  5
-## 20 13.3128304  4
-## 21 14.0491169  3
-## 22 14.3854169  4
-## 23 14.6511809  3
-## 24 15.3256925  4
-## 25 15.3558555  3
-## 26 15.8297754  4
-## 27 15.8882692  5
-## 28 15.9468955  6
-## 29 16.0293604  5
-## 30 16.8342251  6
-## 31 17.0816771  7
-## 32 17.1486920  6
-## 33 17.3085214  5
-## 34 18.5945338  4
-## 35 18.8682705  5
-## 36 18.9079086  6
-## 37 18.9561587  5
-## 38 19.0966941  4
-## 39 19.2092221  3
-## 40 19.9536822  4
-## 41 19.9873890  5
-## 42 20.2828427  4
-## 43 20.4006351  3
-## 44 21.0299396  4
-## 45 21.0369883  3
-## 46 21.6442968  2
-## 47 21.7224245  3
-## 48 22.1487321  4
-## 49 22.5135269  5
-## 50 22.5817793  6
-## 51 24.7380931  7
-## 52 25.3630652  8
-## 53 25.4081250  9
-## 54 25.4997304  8
-## 55 25.8995676  7
-## 56 25.9652960  8
-## 57 26.1595877  9
-## 58 26.5157608  8
-## 59 26.5700422  9
-## 60 26.5912955 10</code></pre>
+<pre><code>##            t  N
+## 1  0.0000000  3
+## 2  0.2432315  4
+## 3  1.1144811  5
+## 4  1.2464693  6
+## 5  1.2800392  7
+## 6  1.3541930  8
+## 7  1.4623349  7
+## 8  1.7869464  8
+## 9  1.7881089  9
+## 10 1.9301516 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>data &lt;- time_series(3, 200, 0.2, 0.3)
 plot(data, type=&quot;l&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(data, log=&quot;y&quot;, type=&quot;l&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>

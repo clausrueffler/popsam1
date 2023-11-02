@@ -24,31 +24,24 @@ N(t)=N(0)*(1+\beta-\delta)^t=N(0)*\lambda^t
 $$
 as a model for exponential growth in discrete time, where $\lambda = 1 + \beta - \delta$.
 <!--If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, *B*, and the number of individuals dying, *D*, at any time step will be very close to the expected values $N(t)\beta$ and $N(t)\delta$, respectively. This is due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). We will investigate the effect of *demographic stochasticity* as it occurs in small populations in a later exercise.-->
-Importantly, the above equation assumes that the growth factor $\lambda$ does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the average number of offspring, $\beta$, and the probability to die, $\delta$, of ALL individuals in a population. In short, $\lambda$ will vary in time and we indicate this by giving it a subscript, $\lambda_t$.
+Importantly, the above equation assumes that the growth factor $\lambda$ does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the average number of offspring, $\beta$, and the probability to die, $\delta$, of ALL individuals in a population. In short, $\lambda$ will vary in time and we indicate this by adding $t$ as an argument, $\lambda(t)$.
 
-In this exercise, we simulate environmental stochasticity in *R*. We do this by choosing a set of random postive numbers that represent the $\lambda$-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of $\lambda$-values from an interval with a lower boundary given by the parameter *min* and an upper boundary given by the parameter *max*. Let us furthermore assume that each number within the interval *(min, max)* occurs with equal probability. We can do this in *R* by using the command ```runif(n, min,max)```. The name *runif* is an abbreviation combining the words *random* and *uniform*, indicating that the command ```runif(n, min, max)``` produces a vector of *n* numbers (the length of the time series) and that these are drawn randomly from the interval *(min, max)*.
-
-```{r eval=FALSE}
-lambda_mean <- 1.01
-deviation <- 0.1
-possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
-probabilities <- c(0.5, 0.5)
-
-sample(x = possible_outcomes, size = 10, prob = probabilities, replace = TRUE) # produces a vector of 10 random numbers taking the value 0.91  1.11
-```
-
-We could in principle decide to draw the random numbers from distributions other than the uniform distribution, for example from a Poisson distribution, using the command ```rpois(n, lambda)```.
-
-Let us define the parameter values of the random distribution and then draw the sequence of $\lambda$-values.
+In this exercise, we simulate environmental stochasticity in *R*. We do this for the simplest possible case, namely, that $\lambda(t)$ can take one of two different values:
+$$
+\lambda_1 = \bar \lambda + \epsilon\\
+\lambda_2 = \bar \lambda - \epsilon
+$$
+For simplicity, let us furthermore assume that each environment occurs with equal probability. We can do this in *R* by using the function ```sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE)```:
 
 ```{r eval=FALSE}
 lambda_mean <- 1.01
-deviation <- 0.05
+deviation <- 0.2
 possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
 probabilities <- c(0.5, 0.5)
-tmax <- 500
+N0 <- 10 # initial population size
+tmax <- 200 # length of the time series
 
-growth_factors <- sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE)
+sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE) # produces a vector of tmax random numbers taking the value 0.51  1.51
 ```
 
 In the next step, we want to use the sequence of $\lambda$-values to project a population that consists of *N0* individuals at time  *t=0* *t* time steps into the future. Thus, we want to compute
@@ -57,42 +50,52 @@ $$
 N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
 $$
 
-Stochastic time series without extinction.
-
+In the following, we define a function that produces a stochastic time series.
 
 ```{r eval=FALSE}
-N0 <- 10 # population size at time t=0
-time_series <- c() # creates an empty vector in which we will store the population time series
-time_series[1] <- N0 # initial population size N0 entered as first entry
-
-for (t in 1:tmax) {# for-loop that projects the population n time steps into the future
-  time_series[t+1] <- time_series[t]*growth_factors[t]
+environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {
+  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
+  time_series <- c()
+  time_series[1] <- N0
+  for (t in 1:tmax) {
+    time_series[t+1] <- time_series[t]*growth_factors[t]
   }
+  return(time_series)
+}
 ```
 
+We can also introduce an *extinction threshold*. If the population size drops below this threshold, then the population is extinct and cannot recover. A natural choice for such a threshold is 1.
 
 ```{r eval=FALSE}
-N0 <- 10 # population size at time t=0
-time_series <- c() # creates an empty vector in which we will store the population time series
-time_series[1] <- N0 # initial population size N0 entered as first entry
-
-for (t in 1:n) {# for-loop that projects the population n time steps into the future
-  time_series[t+1] <- if (time_series[t]*growth_factors[t] < 1) 0 # sets the population vector to 0 in case N drops below 1
+environmental_stochasticity_ext <- function(N0, tmax, possible_outcomes, probabilities) {
+  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
+  time_series <- c()
+  time_series[1] <- N0
+  for (t in 1:tmax) {
+    time_series[t+1] <- if (time_series[t]*growth_factors[t] < 1) 0 # sets the population vector to 0 in case N drops below 1
   else time_series[t]*growth_factors[t]
   }
+  return(time_series)
+}
 ```
 
-Assuming that *N* describes the *absolute population size* we in this code set any population size less than one equal to zero (half a fox does not exist). In other words, if $N < 1$ at any time *t*, then the we consider the population extinct from that time point onward. Next, we plot the resulting time series on a log-scale.
+Next, we plot the resulting time series.
 
 ```{r eval=FALSE}
-plot(0:tmax, time_series, type="l", ylim=c(0,max(time_series)), xlab="time", ylab="population size") # Note that we add 1 to all entries in the time series. The reason is that ln(0) is not defined.
+time_series <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # runs the function
+
+plot(0:tmax, time_series, type="l", ylim=c(0,max(time_series)), xlab="time", ylab="population size")
 ```
+
+Alternatively, we can also plot the time series on a log-scale by taking the natural logarithm of population size.
 
 ```{r eval=FALSE}
-plot(0:tmax, time_series+1, type="l", log="y", ylim=c(1,max(time_series)), xlab="time", ylab="population size") # Note that we add 1 to all entries in the time series. The reason is that ln(0) is not defined.
+plot(0:tmax, log(time_series + 1), type="l", ylim=c(0,log(max(time_series + 1))), xlab="time", ylab="population size")
 ```
 
-At each instance this code is executed (starting from the line in which the vector *growth_factors* is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after *n* time steps.
+Note that for the log-scale we add 1 to all entries in the time series. The reason is that $\ln(N)$ for $N<1$ is negative.
+
+At each instance this code is executed (starting from the line in which the vector *growth_factors* is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after *tmax* time steps.
 
 <!--
 To confirm that the arithmetic mean of the annual grwoth factors, given by
@@ -124,8 +127,9 @@ lines(0:n, time_series_arith, type="p", col="2") # adds the line based on arithm
 As expected, the arithmetic mean growth factor is not very accurate in predicting the fate of the population.
 -->
 
-Next, let us add a line that shows how the population changes if each year it grows according to the geometric mean, $\tilde\lambda$, of the annual growth factors, defined as
+Next, let us add a line that shows how the population changes if each year it grows according to the arithmetic mean growth factor $\bar\lambda$.
 
+<!--
 $$
 \tilde\lambda:=(\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0)^{\frac{1}{t}}
 $$
@@ -133,45 +137,34 @@ $$
 geometric_mean <- exp(mean(log(growth_factors))) # calculates the geometric mean of the annual growth factors (can you derive the formula that is used here?) 
 geometric_mean # shows the value of the geometric mean
 ```
-
-The following piece of code adds the desired line:
+-->
+The following piece of code adds the desired line, both on the natural and log-scale
 
 ```{r eval=FALSE}
 time_series_geom <- c()
 time_series_geom[1] <- N0
-for (t in 1:n) {
-  time_series_geom[t+1] <- max(0,time_series_geom[t]*geometric_mean)
+for (t in 1:tmax) {
+  time_series_geom[t+1] <- max(0,time_series_geom[t]*lambda_mean)
 }
 
-plot(0:n, time_series+1, type="l", log="y", ylim=c(1,max(time_series)), xlab="time", ylab="population size") # repeats the plot with the stochastic time series
-lines(0:n, time_series_geom, type="p", col="4") # add the line based on geometric mean in blue
+# plots on natural scale
+plot(0:tmax, time_series, type="l", ylim=c(0, max(time_series)), xlab="time", ylab="population size")
+lines(0:tmax, time_series_geom, type="l", col="Red")
+
+# plots on log-scale
+plot(0:tmax, log(time_series +1), type="l", ylim=c(0, max(log(time_series_geom + 1))), xlab="time", ylab="population size")
+lines(0:tmax, log(time_series_geom + 1), type="l", col="Red")
 ```
 
 You might encounter simulation runs in which the population goes extinct while the projection based on the geometric mean suggests that the population should slowly increase. Can you explain this apparent contradiction?
 
 ## The probability of extinction
 
-You have seen that for the chosen set of parameters *min*, *max*, *n* and *N0* a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? You can explore this question by changing the values for *min*, *max*, *n* and *N0*.
+You have seen that for the chosen set of parameters $\bar \lambda$ and $\epsilon$ a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? Let us explore this question by changing the value of $\epsilon$.
 
-To investigate this question more systematically, it is useful to automatize the process in *R*. We start by defining a new function to make the depency of the time series on *min*, *max*, *n* and *N0* explicit.
+To investigate this question more systematically, it is useful to automatize the process in *R*, so that we can produce many time series in one step. For this part, we use the function with the extinction threshold and plot the time series on a log scale.
 
-```{r eval=FALSE}
-N0 <- 10
-lambda_mean <- 1.01
-deviation <- 0.05
-possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
-probabilities <- c(0.5, 0.5)
-
-environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {# function with four arguments
-  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
-  time_series <- c()
-  time_series[1] <- N0
-  for (t in 1:tmax) {
-    time_series[t+1] <- time_series[t]*growth_factors[t]
-  }
-  return(time_series)
-}
-```
+Specifically, the next piece of code allows us to execute the population simulation several times by putting our function inside a *for*-loop. How often the times series is repeated is determined by the new parameter *sim*, below set equal to 10. Note that each time series is different from the others because it is based on a different set of random $\lambda$-values. 
 
 ```{r eval=FALSE}
 sim <- 10 # number of simulation runs
@@ -179,114 +172,97 @@ sim <- 10 # number of simulation runs
 results <- matrix(nrow = tmax + 1, ncol = sim) # creates an empty matrix with n+1 rows and sim columns in which we will store the time series
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+  results[, i] <- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
 }
 ```
+
+Let us combine all time series into a single plot.
 
 ```{r eval=FALSE}
 cl <- rainbow(sim) # set number of colors equal to number of simulations
 
-plot(0:tmax, results[, 1]+1, type="l", log="y", ylim=c(1, max(results)), col=cl[1], xlab="time", ylab="population size") # plot the result from the first simulation
+plot(0:tmax, log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)") # plot the result from the first simulation
 for (i in 2:sim) {# add the results from all other simulations to the same graph
-  lines(0:tmax, results[, i]+1, type="l", col=cl[i])
+  lines(0:tmax, log(results[, i] + 1), type="l", col=cl[i])
 }
+lines(0:tmax, log(time_series_geom + 1), type="l", col="4")
 ```
+
 
 ```{r eval=FALSE}
-lambda_mean <- 1.01
-deviation <- 0.05
-possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
-probabilities <- c(0.5, 0.5)
-tmax <- 500
+log_row_means <- rowMeans(log(results + 1))
 
-environmental_stochasticity <- function(N0, n, min, max) {# function with four arguments
-  growth_factors <- sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE)
-  time_series <- c()
-  time_series[1] <- N0
-  for (t in 1:tmax) {
-    time_series[t+1] <- if (time_series[t]*growth_factors[t] < 1) 0 else time_series[t]*growth_factors[t]
-  }
-  return(time_series)
-}
+# we can add mean of all time series to the previous graph
+lines(0:tmax, log_row_means+1, type="l", col="Black")
 ```
 
-This function produces a population time series for a given set of parameters. The resulting population time series is stored in the vector *time_series*.
+```{r eval=FALSE, echo=FALSE}
+plot(0:tmax, log(results[, 1] + 1), type="l", ylim=c(1, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
+for (i in 2:sim) {
+  lines(0:tmax, log(results[, i] + 1), type="l", col=cl[i])
+}
+lines(0:tmax, log(time_series_geom + 1), type="l", col="4")
 
-The next piece of code allows us to execute the population simulation several times by putting our function inside a *for*-loop. How often the times series is repeated is determined by the new parameter *sim*, below set equal to 20. Note that each time series is different from the others because it is based on a different set of random $\lambda$-values. 
+# we can add mean of all time series to the previous graph
+lines(0:tmax, log_row_means, type="l", col="Black")
+```
+
+For the environmental variation investigated here (with only two possible environments), one can show that the mean over many trajectories is given by
+
+$$
+\begin{equation}
+\bar N(t) = N_0 \exp(\bar r t),
+\end{equation}
+$$
+where
+
+$$
+\begin{equation}\label{eq:bar_r}
+\bar r = \ln \bar\lambda + \frac{1}{2} \ln \left(1 - \frac{\epsilon^2}{\bar\lambda^2}\right).
+\end{equation}
+$$
+Let us add a line showing $\hat N(t)$ according to this formula to our plots.
 
 ```{r eval=FALSE}
-n <- 500 # length of time series
-min <- 0.9 # lowest possible value for growth factor
-max <- 1.1 # largest possible value of growth factor
-N0 <- 10 # initial population size
-sim <- 20 # number of simulation runs
+exp_mean_r <- exp(log(lambda_mean) + 1/2*log(1 - deviation^2 / lambda_mean^2))
 
-results <- matrix(nrow = n + 1, ncol = sim) # creates an empty matrix with n+1 rows and sim columns in which we will store the time series
-
-for (i in 1:sim) {# executes the function sim times
-  results[, i] <- environmental_stochasticity(N0, n, min, max) # produces a time series and stores it in the jth column of the matrix results
+time_series_expected <- c()
+time_series_expected[1] <- N0
+for (t in 1:tmax) {
+  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_r
 }
+
+# we can add the expected mean time series to the previous graph
+lines(0:tmax, log(time_series_expected + 1), type="l", col="Gray")
 ```
 
-The following code plots all time series on a log scale in a single figure:
-
-```{r eval=FALSE}
-cl <- rainbow(sim) # set number of colors equal to number of simulations
-
-plot(0:n, results[, 1]+1, type="l", log="y", ylim=c(1, max(results)), col=cl[1], xlab="time", ylab="population size") # plot the result from the first simulation
-for (i in 2:sim) {# add the results from all other simulations to the same graph
-  lines(0:n, results[, i]+1, type="l", col=cl[i])
+```{r eval=FALSE, echo=FALSE}
+plot(0:tmax, log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
+for (i in 2:sim) {
+  lines(0:tmax, log(results[, i] + 1), type="l", col=cl[i])
 }
+lines(0:tmax, log(time_series_geom + 1), type="l", col="4")
+
+# we add mean of all time series to the previous graph
+lines(0:tmax, log_row_means, type="l", col="Black")
+# we add the expected mean trajectory to the previous graph
+lines(0:tmax, log(time_series_expected + 1), type="l", col="Black")
 ```
-
-```{r echo=FALSE, eval=FALSE}
-# the same code as above but using a list to save the data
-n <- 500 # lenght of time series
-min <- 0.9 # lowest possible value for growth factor
-max <- 1.1 # largest possible value of growth factor
-N0 <- 10 # initial population size
-sim <- 20 # number of simulation runs
-
-results <- list() # initializes a list variable to save results
-j <- 1 # initialize a counter
-for (i in 1:sim) {# executes the function sim times
-  results[[j]] <- environmental_stochasticity(N0, n, min, max) # produces a time series in stores it in the results
-  j = j + 1 # updates the counter by increasing it by 1
-}
-
-cl <- rainbow(sim) # set number of colors equal to number of iterations
-
-maxN <- numeric(sim) # next, we determine how long the y-axis has to be
-for (i in 1:sim) {# we do this by determining the largest population size that is reached in any of the simulations
-  maxN[i] <- max(results[[i]])
-}
-
-plot(0:n, results[[1]]+1, type="l", log="y", ylim=c(1,max(maxN)), col=cl[1], xlab="time", ylab="population size") # plot the result from the first simulation
-for (i in 2:sim) {# add the results from all other simulations to the same graph
-  lines(0:n, results[[i]]+1, type="l", col=cl[i])
-}
-```
-
-From these graphs, you can determine the number of simulation runs in which the population goes extinct.
 
 ### TASKS
 
-  (1)
-Keep *max=2* fixed and vary *min* and *n* according to
-*min = (0; 0.1; 0.2; 0.3; 0.4; 0.5)*
-and
-*n = (100; 200; 500)*,
-respectively. Varying both parameters together gives you 18 parameter combinations which you can arrange in a table with three rows (*n*) and six columns (*min*). In each cell of this table, enter the proportion of 20 runs that result in extinction. Note that the simulations for *n=500* can take quite a bit of time. If some of these simulations take too long on your computer, then ignore those parameters.
+From our graphs, one can determine the number of simulation runs in which the population goes extinct, simply by counting the number of simulations that hit zero.
 
+  (1)
+  In your latest plot, you have combined four types of line: (i) simulated stochastic time series, (ii) the mean over these simulated time series, (iii) the mathematically calculated *expected* mean trajectory, and (iv) the trajectory predicted by the arithmetic mean growth factor $\bar\lambda$.
+Summerize what you learned from these graphs. What is the effect of environmental stochasticity on population growth and population survival?
+  
   (2)
-Keep *n=500* fixed and vary *min* and *max* according to
-*min/max = (0.9/1.1; 0.8/1.2; 0.7/1.3; 0.5/1.5; 0.2/1.8)*.
-For each *min/max* report the proportion of 20 runs in which the population goes extinct.
+  Investigate the magnitude of environmental fluctuations in more detail by varying the amplitude of the environmental fluctuations. Keep $\bar \lambda = 1.01$ fixed and vary $\epsilon$, the deviation in $\lambda$, according to
+$\epsilon = (0; 0.05; 0.1; 0.15; 0.2)$.
+For each value of $\epsilon$ report the number of simulations that result in extinction based on **20** simulation runs. Run you simulations for at least **300** time steps.
+For which value of $\epsilon$ does the expected mean trajectory starts to decline? 
 
   (3)
-For *n=500* and a pair of *min* and *max* of your own choice explore the effect of *N(0)* by varying it according to
-*N0=(1; 2; 3; 5; 10; 50)*.
-For each value of *N(0)*, report the proportion of ten runs in which the population went extinct.
-
-For each exercise, explain why the observed pattern make sense. Submit your results (for example, by entering them into a data frame).
+Submit your results.
 
