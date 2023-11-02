@@ -18,7 +18,7 @@ stochastic.time.series <- function(N, Nmax, b, d, Dt){
 
 result <- stochastic.time.series(10, 20, 1.0, 1.1, 0.001)
 
-plot(result)
+plot(result, type = "l", xlab = "time", ylab = "population size")
 
 
 rexp(1, rate = 2)
