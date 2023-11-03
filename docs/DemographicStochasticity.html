@@ -320,23 +320,21 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##           t  N
-## 1  0.000000  3
-## 2  1.123717  2
-## 3  2.117217  3
-## 4  3.729470  4
-## 5  3.904615  5
-## 6  5.641888  6
-## 7  6.921410  7
-## 8  6.936454  6
-## 9  7.200125  5
-## 10 7.840597  4
-## 11 8.376979  5
-## 12 9.396650  6
-## 13 9.530611  7
-## 14 9.671394  8
-## 15 9.804002  9
-## 16 9.960752 10</code></pre>
+<pre><code>##            t  N
+## 1  0.0000000  3
+## 2  0.7269422  4
+## 3  0.7702494  5
+## 4  0.8019543  6
+## 5  0.8230682  7
+## 6  0.9366487  8
+## 7  1.8350859  9
+## 8  1.9555166  8
+## 9  2.1716714  7
+## 10 2.3294764  8
+## 11 2.3788806  9
+## 12 2.6053922  8
+## 13 2.6312108  9
+## 14 2.8110183 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
@@ -365,10 +363,8 @@ for (i in 1:sim) {# to create sim different simulations, we embed the function t
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colors equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plots the first simulation</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
-<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }
 
