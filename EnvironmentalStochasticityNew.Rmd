@@ -42,12 +42,14 @@ For simplicity, let us furthermore assume that each environment occurs with equa
 ```{r eval=FALSE}
 lambda_mean <- 1.01
 deviation <- 0.2
-possible_outcomes <- c(lambda_mean - deviation, lambda_mean + deviation)
+lambda1 <- (lambda_mean + deviation)
+lambda2 <- (lambda_mean - deviation)
+possible_outcomes <- c(lambda1, lambda2)
 probabilities <- c(0.5, 0.5)
 N0 <- 10 # initial population size
 tmax <- 200 # length of the time series
 
-sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE) # produces a vector of tmax random numbers taking the value 0.51  1.51
+sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE) # produces a vector of tmax random numbers taking the value 0.21  1.21
 ```
 
 In the next step, we want to use the sequence of $\lambda$-values to project a population that consists of *N0* individuals at time  *t=0* *t* time steps into the future. Thus, we want to compute
@@ -131,12 +133,12 @@ To investigate this question more systematically, it is useful to automatize the
 Specifically, the next piece of code allows us to execute the population simulation several times by putting our function inside a *for*-loop. How often the times series is repeated is determined by the new parameter *sim*, below set equal to 10. Note that each time series is different from the others because it is based on a different set of random $\lambda$-values. 
 
 ```{r eval=FALSE}
-sim <- 10 # number of simulation runs
+sim <- 20 # number of simulation runs
 
 results <- matrix(nrow = tmax + 1, ncol = sim) # creates an empty matrix with n+1 rows and sim columns in which we will store the time series
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] <- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+  results[, i] <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
 }
 ```
 
@@ -161,14 +163,55 @@ lines(log_row_means, type="l", col="Black")
 ```
 
 ```{r eval=FALSE, echo=FALSE}
+# code for making plots for the script
+
+lambda_mean <- 1.01
+deviation <- 0.2
+lambda1 <- (lambda_mean + deviation)
+lambda2 <- (lambda_mean - deviation)
+possible_outcomes <- c(lambda1, lambda2)
+probabilities <- c(0.5, 0.5)
+N0 <- 10 # initial population size
+tmax <- 200 # length of the time series
+
+environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {
+  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
+  time_series <- c()
+  time_series[1] <- N0
+  for (t in 1:tmax) {
+    time_series[t+1] <- time_series[t]*growth_factors[t]
+  }
+  return(time_series)
+}
+
+sim <- 40 # number of simulation runs
+
+results <- matrix(nrow = tmax + 1, ncol = sim)
+
+for (i in 1:sim) {# executes the function sim times
+  results[, i] <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+}
+
+cl <- rainbow(sim)
 plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
 for (i in 2:sim) {
   lines(log(results[, i] + 1), type="l", col=cl[i])
 }
 lines(log(time_series_geom + 1), type="l", col="4")
 
-# we can add mean of all time series to the previous graph
+log_row_means <- rowMeans(log(results + 1))
 lines(log_row_means, type="l", col="Black")
+
+exp_mean_lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
+
+time_series_expected <- c()
+time_series_expected[1] <- N0
+for (t in 1:tmax) {
+  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
+}
+
+# we can add the expected mean time series to the previous graph
+lines(log(time_series_expected + 1), type="l", col="Black")
 ```
 
 For the environmental variation investigated here (with only two possible environments), one can show that the mean over many trajectories is given by
@@ -201,15 +244,142 @@ lines(log(time_series_expected + 1), type="l", col="Gray")
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results))), col=cl[1], xlab="time", ylab="ln(population size)")
+## code used for figures for lecture notes
+# first, simulations without extinction threshold (both log- and normal scale)
+####################
+lambda_mean <- 1.01
+deviation <- 0.2
+lambda1 <- (lambda_mean + deviation)
+lambda2 <- (lambda_mean - deviation)
+possible_outcomes <- c(lambda1, lambda2)
+probabilities <- c(0.5, 0.5)
+N0 <- 10 # initial population size
+tmax <- 200 # length of the time series
+
+environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {
+  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
+  time_series <- c()
+  time_series[1] <- N0
+  for (t in 1:tmax) {
+    time_series[t+1] <- time_series[t]*growth_factors[t]
+  }
+  return(time_series)
+}
+
+sim <- 40 # number of simulation runs
+
+results <- matrix(nrow = tmax + 1, ncol = sim)
+
+for (i in 1:sim) {# executes the function sim times
+  results[, i] <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+}
+
+time_series_geom <- c()
+time_series_geom[1] <- N0
+for (t in 1:tmax) {
+  time_series_geom[t+1] <- time_series_geom[t]*lambda_mean
+}
+
+cl <- rainbow(sim)
+
+plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
 for (i in 2:sim) {
   lines(log(results[, i] + 1), type="l", col=cl[i])
 }
+
 lines(log(time_series_geom + 1), type="l", col="4")
 
-# we add mean of all time series to the previous graph
+log_row_means <- rowMeans(log(results + 1))
 lines(log_row_means, type="l", col="Black")
-# we add the expected mean trajectory to the previous graph
+
+exp_mean_lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
+
+time_series_expected <- c()
+time_series_expected[1] <- N0
+for (t in 1:tmax) {
+  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
+}
+
+lines(log(time_series_expected + 1), type="l", col="Black")
+
+# plot on normal scale
+plot(results[, 1], type="l", ylim=c(0, max(time_series_geom, results)), col=cl[1], xlab="time", ylab="population size")
+for (i in 2:sim) {
+  lines(results[, i], type="l", col=cl[i])
+}
+
+lines(time_series_geom, type="l", col="4")
+
+log_row_means <- rowMeans(results)
+lines(log_row_means, type="l", col="Black")
+
+exp_mean_lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
+
+time_series_expected <- c()
+time_series_expected[1] <- N0
+for (t in 1:tmax) {
+  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
+}
+
+lines(time_series_expected, type="l", col="Black")
+
+####################
+# second, simulations WITH extinction threshold (only log-scale)
+####################
+
+lambda_mean <- 1.01
+deviation <- 0.05
+lambda1 <- (lambda_mean + deviation)
+lambda2 <- (lambda_mean - deviation)
+possible_outcomes <- c(lambda1, lambda2)
+probabilities <- c(0.5, 0.5)
+N0 <- 10 # initial population size
+tmax <- 200 # length of the time series
+
+environmental_stochasticity_ext <- function(N0, tmax, possible_outcomes, probabilities) {
+  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
+  time_series <- c()
+  time_series[1] <- N0
+  for (t in 1:tmax) {
+    time_series[t+1] <- ifelse(time_series[t]*growth_factors[t] < 1, 0, time_series[t]*growth_factors[t]) # sets the population vector to 0 in case N drops below 1
+  }
+  return(time_series)
+}
+
+sim <- 40 # number of simulation runs
+
+results <- matrix(nrow = tmax + 1, ncol = sim)
+
+for (i in 1:sim) {# executes the function sim times
+  results[, i] <- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+}
+
+time_series_geom <- c()
+time_series_geom[1] <- N0
+for (t in 1:tmax) {
+  time_series_geom[t+1] <- time_series_geom[t]*lambda_mean
+}
+
+cl <- rainbow(sim)
+
+plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
+for (i in 2:sim) {
+  lines(log(results[, i] + 1), type="l", col=cl[i])
+}
+
+lines(log(time_series_geom + 1), type="l", col="4")
+
+#log_row_means <- rowMeans(log(results + 1))
+#lines(log_row_means, type="l", col="Black")
+
+exp_mean_lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
+
+time_series_expected <- c()
+time_series_expected[1] <- N0
+for (t in 1:tmax) {
+  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
+}
+
 lines(log(time_series_expected + 1), type="l", col="Black")
 ```
 
