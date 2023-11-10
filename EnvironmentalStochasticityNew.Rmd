@@ -62,25 +62,11 @@ In the following, we define a function that produces a stochastic time series.
 
 ```{r eval=FALSE}
 environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {
-  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
   time_series <- c()
   time_series[1] <- N0
   for (t in 1:tmax) {
-    time_series[t+1] <- time_series[t]*growth_factors[t]
-  }
-  return(time_series)
-}
-```
-
-We can also introduce an *extinction threshold*. If the population size drops below this threshold, then the population is extinct and cannot recover. A natural choice for such a threshold is 1.
-
-```{r eval=FALSE}
-environmental_stochasticity_ext <- function(N0, tmax, possible_outcomes, probabilities) {
-  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
-  time_series <- c()
-  time_series[1] <- N0
-  for (t in 1:tmax) {
-    time_series[t+1] <- ifelse(time_series[t]*growth_factors[t] < 1, 0, time_series[t]*growth_factors[t]) # sets the population vector to 0 in case N drops below 1
+    lambda <- sample(possible_outcomes, 1, probabilities, replace = TRUE)
+    time_series[t+1] <- time_series[t]*lambda
   }
   return(time_series)
 }
@@ -102,8 +88,6 @@ plot(log(time_series + 1), type="l", xlab="time", ylab="ln(population size)")
 
 Note that for the log-scale we add 1 to all entries in the time series. The reason is that $\ln(N)$ for $N<1$ is negative.
 
-At each instance this code is executed (starting from the line in which the vector *growth_factors* is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after *tmax* time steps.
-
 Next, let us add a line that shows how the population changes if each year it grows according to the arithmetic mean growth factor $\bar\lambda$. The following piece of code adds the desired line, both on the natural and log-scale
 
 ```{r eval=FALSE}
@@ -122,7 +106,28 @@ plot(log(time_series +1), type="l", ylim=c(0, log(max(time_series, time_series_g
 lines(log(time_series_geom + 1), type="l", col="Red")
 ```
 
-You might encounter simulation runs in which the population goes extinct while the projection based on the geometric mean suggests that the population should slowly increase. Can you explain this apparent contradiction?
+At each instance this code is executed, we obtain a different random time series. If you produce several time series, you will note that in some cases the population decreases to very low values. In real life, this might mean that a population goes extinct. To incorporate this into our simulations, we can introduce an *extinction threshold*. If the population size drops below this threshold, then the population is extinct and cannot recover. A natural choice for such a threshold is 1. In the following code, we thus set population size to zero whenever *N(t)* drops below 1:
+
+```{r eval=FALSE}
+environmental_stochasticity_ext <- function(N0, tmax, possible_outcomes, probabilities) {
+  time_series <- c()
+  time_series[1] <- N0
+  for (t in 1:tmax) {
+    lambda <- sample(possible_outcomes, 1, probabilities, replace = TRUE)
+    time_series[t+1] <- ifelse(time_series[t] * lambda < 1, 0, time_series[t] * lambda) # sets the population vector to 0 in case N drops below 1
+  }
+  return(time_series)
+}
+
+time_series_ext <- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # runs the function
+N0
+plot(time_series_ext, type="l", xlab="time", ylab="population size")
+lines(time_series_geom, type="l", col="Red")
+
+plot(log(time_series_ext + 1), type="l", xlab="time", ylab="ln(population size)") # same data on a log-scale
+lines(log(time_series_geom+1), type="l", col="Red")
+```
+You might encounter simulation runs in which the population goes extinct while the projection based on the geometric mean suggests that the population should slowly increase. How can we explain this apparent contradiction?
 
 ## The probability of extinction
 
@@ -133,7 +138,7 @@ To investigate this question more systematically, it is useful to automatize the
 Specifically, the next piece of code allows us to execute the population simulation several times by putting our function inside a *for*-loop. How often the times series is repeated is determined by the new parameter *sim*, below set equal to 10. Note that each time series is different from the others because it is based on a different set of random $\lambda$-values. 
 
 ```{r eval=FALSE}
-sim <- 20 # number of simulation runs
+sim <- 10 # number of simulation runs
 
 results <- matrix(nrow = tmax + 1, ncol = sim) # creates an empty matrix with n+1 rows and sim columns in which we will store the time series
 
