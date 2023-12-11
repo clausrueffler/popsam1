@@ -48,8 +48,6 @@ possible_outcomes <- c(lambda1, lambda2)
 probabilities <- c(0.5, 0.5)
 N0 <- 10 # initial population size
 tmax <- 200 # length of the time series
-
-sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE) # produces a vector of tmax random numbers taking the value 0.21  1.21
 ```
 
 In the next step, we want to use the sequence of $\lambda$-values to project a population that consists of *N0* individuals at time  *t=0* *t* time steps into the future. Thus, we want to compute
@@ -262,11 +260,11 @@ N0 <- 10 # initial population size
 tmax <- 200 # length of the time series
 
 environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {
-  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
   time_series <- c()
   time_series[1] <- N0
   for (t in 1:tmax) {
-    time_series[t+1] <- time_series[t]*growth_factors[t]
+    lambda <- sample(possible_outcomes, 1, probabilities, replace = TRUE)
+    time_series[t+1] <- time_series[t] * lambda
   }
   return(time_series)
 }
