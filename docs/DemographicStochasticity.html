@@ -364,20 +364,36 @@ population is either extinct or the population size has reached
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
 <pre><code>##            t  N
-## 1  0.0000000  3
-## 2  0.5442719  4
-## 3  0.5964761  5
-## 4  1.3940505  4
-## 5  1.9348835  5
-## 6  2.7509973  6
-## 7  2.7790384  5
-## 8  3.2105880  6
-## 9  3.3379583  7
-## 10 3.3831284  6
-## 11 4.2773285  7
-## 12 4.5206801  8
-## 13 4.6897192  9
-## 14 4.7751752 10</code></pre>
+## 1   0.000000  3
+## 2   1.004107  4
+## 3   1.365746  5
+## 4   1.389958  4
+## 5   1.480000  5
+## 6   1.942270  4
+## 7   2.739122  5
+## 8   2.890413  4
+## 9   3.511788  3
+## 10  4.120635  4
+## 11  4.275990  5
+## 12  5.516122  6
+## 13  5.749649  7
+## 14  6.058173  6
+## 15  6.235938  7
+## 16  6.653095  6
+## 17  6.856361  7
+## 18  7.017165  6
+## 19  7.422923  7
+## 20  7.547917  6
+## 21  7.797842  7
+## 22  7.895321  8
+## 23  7.927292  7
+## 24  8.602814  8
+## 25  9.352132  7
+## 26  9.528391  8
+## 27  9.593078  9
+## 28  9.601119  8
+## 29  9.754161  9
+## 30 10.067180 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>,
 <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data
 frame with two columns. The first column gives the time at which an
@@ -394,6 +410,8 @@ so, execute the function again to see whether it might then have reached
 stochastic version of exponential growth we might want to plot the
 population size on a log-scale.</p>
 <pre class="r"><code>plot(demographic.stoch, log=&quot;y&quot;, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code># note that the option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale</code></pre>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em>
@@ -427,8 +445,10 @@ the longest simulation run.</p>
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colors equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plots the first simulation
-for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plots the first simulation</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
+<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }
 
