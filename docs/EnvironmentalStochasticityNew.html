@@ -323,9 +323,7 @@ lambda2 &lt;- (lambda_mean - deviation)
 possible_outcomes &lt;- c(lambda1, lambda2)
 probabilities &lt;- c(0.5, 0.5)
 N0 &lt;- 10 # initial population size
-tmax &lt;- 200 # length of the time series
-
-sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE) # produces a vector of tmax random numbers taking the value 0.21  1.21</code></pre>
+tmax &lt;- 200 # length of the time series</code></pre>
 <p>In the next step, we want to use the sequence of <span
 class="math inline">\(\lambda\)</span>-values to project a population
 that consists of <em>N0</em> individuals at time <em>t=0</em> <em>t</em>
