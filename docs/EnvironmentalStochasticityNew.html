@@ -13,7 +13,7 @@
 
 <title>Exercise: Environmental Stochasticity</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/spacelab.min.css" rel="stylesheet" />
@@ -182,8 +182,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -191,9 +191,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -282,9 +289,7 @@ $(document).ready(function () {
   addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
 </script>
 <!--
-Implement to improvements to the below code.
-(i) Draw the random values for lambda inside the for loop, that is one new value at each iteration of the loop. I think this is more intuitive.
-(ii) Use the "<<-" command to export time series produced by a function directly to the global environment. This should slightly simplify the code.
+(i) Use the "<<-" command to export time series produced by a function directly to the global environment. This should slightly simplify the code.
 -->
 <div id="environmental-stochasticity" class="section level1 tabset">
 <h1 class="tabset">Environmental Stochasticity</h1>
@@ -293,29 +298,11 @@ Implement to improvements to the below code.
 <p>In the lecture, we derived</p>
 <p><span class="math display">\[
 N(t)=N(0)*(1+\beta-\delta)^t=N(0)*\lambda^t
-\]</span> as a model for exponential growth in discrete time, where
-<span class="math inline">\(\lambda = 1 + \beta - \delta\)</span>.
-<!--If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, *B*, and the number of individuals dying, *D*, at any time step will be very close to the expected values $N(t)\beta$ and $N(t)\delta$, respectively. This is due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). We will investigate the effect of *demographic stochasticity* as it occurs in small populations in a later exercise.-->
-Importantly, the above equation assumes that the growth factor <span
-class="math inline">\(\lambda\)</span> does not vary in time. In this
-exercise, we will relax this assumption. For example, climatic
-conditions vary among years and this might affect the average number of
-offspring, <span class="math inline">\(\beta\)</span>, and the
-probability to die, <span class="math inline">\(\delta\)</span>, of ALL
-individuals in a population. In short, <span
-class="math inline">\(\lambda\)</span> will vary in time and we indicate
-this by adding <span class="math inline">\(t\)</span> as an argument,
-<span class="math inline">\(\lambda(t)\)</span>.</p>
-<p>In this exercise, we simulate environmental stochasticity in
-<em>R</em>. We do this for the simplest possible case, namely, that
-<span class="math inline">\(\lambda(t)\)</span> can take one of two
-different values: <span class="math display">\[
+\]</span> as a model for exponential growth in discrete time, where <span class="math inline">\(\lambda = 1 + \beta - \delta\)</span>. <!--If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, *B*, and the number of individuals dying, *D*, at any time step will be very close to the expected values $N(t)\beta$ and $N(t)\delta$, respectively. This is due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). We will investigate the effect of *demographic stochasticity* as it occurs in small populations in a later exercise.--> Importantly, the above equation assumes that the growth factor <span class="math inline">\(\lambda\)</span> does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the average number of offspring, <span class="math inline">\(\beta\)</span>, and the probability to die, <span class="math inline">\(\delta\)</span>, of ALL individuals in a population. In short, <span class="math inline">\(\lambda\)</span> will vary in time and we indicate this by adding <span class="math inline">\(t\)</span> as an argument, <span class="math inline">\(\lambda(t)\)</span>.</p>
+<p>In this exercise, we simulate environmental stochasticity in <em>R</em>. We do this for the simplest possible case, namely, that <span class="math inline">\(\lambda(t)\)</span> can take one of two different values: <span class="math display">\[
 \lambda_1 = \bar \lambda + \epsilon\\
 \lambda_2 = \bar \lambda - \epsilon
-\]</span> For simplicity, let us furthermore assume that each
-environment occurs with equal probability. We can do this in <em>R</em>
-by using the function
-<code>sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE)</code>:</p>
+\]</span> For simplicity, let us furthermore assume that each environment occurs with equal probability. We can do this in <em>R</em> by using the function <code>sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE)</code>:</p>
 <pre class="r"><code>lambda_mean &lt;- 1.01
 deviation &lt;- 0.2
 lambda1 &lt;- (lambda_mean + deviation)
@@ -323,16 +310,14 @@ lambda2 &lt;- (lambda_mean - deviation)
 possible_outcomes &lt;- c(lambda1, lambda2)
 probabilities &lt;- c(0.5, 0.5)
 N0 &lt;- 10 # initial population size
-tmax &lt;- 200 # length of the time series</code></pre>
-<p>In the next step, we want to use the sequence of <span
-class="math inline">\(\lambda\)</span>-values to project a population
-that consists of <em>N0</em> individuals at time <em>t=0</em> <em>t</em>
-time steps into the future. Thus, we want to compute</p>
+tmax &lt;- 200 # length of the time series
+
+sample(x = possible_outcomes, size = tmax, prob = probabilities, replace = TRUE) # example of stochastic sequence of lambda-values</code></pre>
+<p>In the next step, we want to use the sequence of <span class="math inline">\(\lambda\)</span>-values to project a population that consists at time <em>t=0</em> of <em>N(0)</em> individuals <em>t</em> time steps into the future. Thus, we want to compute</p>
 <p><span class="math display">\[
 N(t)=\lambda(t-1)*\lambda(t-2)*\ldots*\lambda(2)*\lambda(1)*\lambda(0)*N(0).
 \]</span></p>
-<p>In the following, we define a function that produces a stochastic
-time series.</p>
+<p>In the following, we define a function that produces a stochastic time series.</p>
 <pre class="r"><code>environmental_stochasticity &lt;- function(N0, tmax, possible_outcomes, probabilities) {
   time_series &lt;- c()
   time_series[1] &lt;- N0
@@ -346,39 +331,12 @@ time series.</p>
 <pre class="r"><code>time_series &lt;- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # runs the function
 
 plot(time_series, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
-<p>Alternatively, we can also plot the time series on a log-scale by
-taking the natural logarithm of population size.</p>
+<p>Alternatively, we can plot the time series on a log-scale by taking the natural logarithm of population size.</p>
 <pre class="r"><code>plot(log(time_series + 1), type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
-<p>Note that for the log-scale we add 1 to all entries in the time
-series. The reason is that <span class="math inline">\(\ln(N)\)</span>
-for <span class="math inline">\(N&lt;1\)</span> is negative.</p>
-<p>Next, let us add a line that shows how the population changes if each
-year it grows according to the arithmetic mean growth factor <span
-class="math inline">\(\bar\lambda\)</span>. The following piece of code
-adds the desired line, both on the natural and log-scale</p>
-<pre class="r"><code>time_series_geom &lt;- c()
-time_series_geom[1] &lt;- N0
-for (t in 1:tmax) {
-  time_series_geom[t+1] &lt;- time_series_geom[t]*lambda_mean
-}
-
-# plots on natural scale
-plot(time_series, type=&quot;l&quot;, ylim=c(0, max(time_series, time_series_geom)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;)
-lines(time_series_geom, type=&quot;l&quot;, col=&quot;Red&quot;)
-
-# plots on log-scale
-plot(log(time_series +1), type=&quot;l&quot;, ylim=c(0, log(max(time_series, time_series_geom))), xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)
-lines(log(time_series_geom + 1), type=&quot;l&quot;, col=&quot;Red&quot;)</code></pre>
-<p>At each instance this code is executed, we obtain a different random
-time series. If you produce several time series, you will note that in
-some cases the population decreases to very low values. In real life,
-this might mean that a population goes extinct. To incorporate this into
-our simulations, we can introduce an <em>extinction threshold</em>. If
-the population size drops below this threshold, then the population is
-extinct and cannot recover. A natural choice for such a threshold is 1.
-In the following code, we thus set population size to zero whenever
-<em>N(t)</em> drops below 1:</p>
-<pre class="r"><code>environmental_stochasticity_ext &lt;- function(N0, tmax, possible_outcomes, probabilities) {
+<p>Note that for the log-scale we add 1 to all entries in the time series. The reason is that <span class="math inline">\(\ln(N)\)</span> for <span class="math inline">\(N&lt;1\)</span> is negative.</p>
+<p>Each time this code is executed, you obtain a different random time series. If you do this often enough, you will note that in some cases the population decreases to very low values. In real life, this might mean that a population goes extinct. To incorporate this into our simulations, we can introduce an <em>extinction threshold</em>. If the population size drops below this threshold, then the population is extinct and cannot recover. A natural choice for such a threshold is 1. In the following code, we thus set population size to zero whenever <em>N(t)</em> drops below 1:</p>
+<pre class="r"><code># new function that incorporates extinction
+environmental_stochasticity_ext &lt;- function(N0, tmax, possible_outcomes, probabilities) {
   time_series &lt;- c()
   time_series[1] &lt;- N0
   for (t in 1:tmax) {
@@ -388,107 +346,110 @@ In the following code, we thus set population size to zero whenever
   return(time_series)
 }
 
-time_series_ext &lt;- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # runs the function
+time_series &lt;- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # runs the function
 N0
-plot(time_series_ext, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)
-lines(time_series_geom, type=&quot;l&quot;, col=&quot;Red&quot;)
+plot(time_series, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)
 
-plot(log(time_series_ext + 1), type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # same data on a log-scale
-lines(log(time_series_geom+1), type=&quot;l&quot;, col=&quot;Red&quot;)</code></pre>
-<p>You might encounter simulation runs in which the population goes
-extinct while the projection based on the geometric mean suggests that
-the population should slowly increase. How can we explain this apparent
-contradiction?</p>
-</div>
-<div id="the-probability-of-extinction" class="section level2">
-<h2>The probability of extinction</h2>
-<p>You have seen that for the chosen set of parameters <span
-class="math inline">\(\bar \lambda\)</span> and <span
-class="math inline">\(\epsilon\)</span> a certain proportion of
-simulation runs results in extinction. How does the probability of
-extinction depend on these parameters? Let us explore this question by
-changing the value of <span class="math inline">\(\epsilon\)</span>.</p>
-<p>To investigate this question more systematically, it is useful to
-automatize the process in <em>R</em>, so that we can produce many time
-series in one step. For this part, we use the function with the
-extinction threshold and plot the time series on a log scale.</p>
-<p>Specifically, the next piece of code allows us to execute the
-population simulation several times by putting our function inside a
-<em>for</em>-loop. How often the times series is repeated is determined
-by the new parameter <em>sim</em>, below set equal to 10. Note that each
-time series is different from the others because it is based on a
-different set of random <span
-class="math inline">\(\lambda\)</span>-values.</p>
-<pre class="r"><code>sim &lt;- 10 # number of simulation runs
+plot(log(time_series_ext + 1), type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # same data on a log-scale</code></pre>
+<p>Let us investigate the possibility of extinction more systematically by plotting many time series in the same graph. This can be done by putting the function inside a <em>for</em>-loop. How often the times series is repeated is determined by the new parameter <em>sim</em>.</p>
+<pre class="r"><code>sim &lt;- 40 # number of simulation runs
 
-results &lt;- matrix(nrow = tmax + 1, ncol = sim) # creates an empty matrix with n+1 rows and sim columns in which we will store the time series
+results &lt;- matrix(nrow = tmax + 1, ncol = sim) # Creates an empty matrix with n+1 rows and as many columns as determined by the parameter &quot;sim&quot;. We will store each time series in one column of this matrix. 
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] &lt;- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
-}</code></pre>
-<p>Let us combine all time series into a single plot.</p>
-<pre class="r"><code>cl &lt;- rainbow(sim) # set number of colors equal to number of simulations
-
-plot(log(results[, 1] + 1), type=&quot;l&quot;, ylim=c(0, log(max(time_series_geom, results))), col=cl[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plot the result from the first simulation
-for (i in 2:sim) {# add the results from all other simulations to the same graph
-  lines(log(results[, i] + 1), type=&quot;l&quot;, col=cl[i])
+  results[, i] &lt;- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the i-th column of the matrix results
 }
-lines(log(time_series_geom + 1), type=&quot;l&quot;, col=&quot;4&quot;)</code></pre>
-<pre class="r"><code>log_row_means &lt;- rowMeans(log(results + 1))
+
+# Let us combine all time series into a single plot.
+
+cl &lt;- rainbow(sim) # set number of colors equal to number of simulations
+
+plot(results[, 1], type=&quot;l&quot;, ylim=c(0, max(time_series_arith, results)), col=cl[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plots the result from the first simulation
+for (i in 2:sim) {# adds the results from all other simulations to the same graph
+  lines(results[, i], type=&quot;l&quot;, col=cl[i])
+}</code></pre>
+<p>You probably obtained a figure in which you cannot distinguish the different simulations very well since many of them have similarly low values. It is therefore useful view these time series on a log-scale.</p>
+<pre class="r"><code>plot(log(results[, 1]+1), type=&quot;l&quot;, ylim=c(0, log(max(time_series_arith, results)+1)), col=cl[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plots the result from the first simulation on a log-scale
+for (i in 2:sim) {# adds the results from all other simulations to the same graph
+  lines(log(results[, i]+1), type=&quot;l&quot;, col=cl[i])
+}</code></pre>
+<p>Based on your simulations, you should be able to make the following observations:</p>
+<ol style="list-style-type: decimal">
+<li>Each realization is different (because simulations are <em>stochastic</em>).</li>
+<li>Some simulation result in extinction while others do not.</li>
+<li>The variance across simulation runs increases with time. Thus, predictions become less accurate the longer we look into the future.</li>
+<li>The endpoints of the different simulations are highly skewed, with a few simulations reaching very high values and many quite low values.</li>
+</ol>
+</div>
+<div id="average-population-trajectory" class="section level2">
+<h2>Average population trajectory</h2>
+<p>You have seen that as time proceeds, the different simulation runs increasingly differ from each other and some time series go extinct. But what happens to the average over all time series? This average is given by the mean over all time series $N_i(t) at each point in time, defined as <span class="math display">\[
+\bar N(t) = \frac{N_1(t)+ \ldots + N_n(t)}{n} = \frac{\sum_{i=1}^n N_i(t)}{n}.
+\]</span> Let us add this average to our plot. First, we repeat the code that produces <em>sim=10</em> time series with an extinction threshold on a log-scale.</p>
+<pre class="r"><code>sim &lt;- 10
+
+results &lt;- matrix(nrow = tmax + 1, ncol = sim)
+
+for (i in 1:sim) {
+  results[, i] &lt;- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities)
+}
+
+# Let us combine all time series into a single plot.
+
+cl &lt;- rainbow(sim)
+
+plot(log(results[, 1]+1), type=&quot;l&quot;, ylim=c(0, log(max(time_series_arith, results)+1)), col=cl[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;)
+for (i in 2:sim) {
+  lines(log(results[, i]+1), type=&quot;l&quot;, col=cl[i])
+}</code></pre>
+<p>To add the average is easy. In the above code, we stored the time series in a matrix called <em>results</em>. Each column contains a different time series. To calculate the mean population size at a certain point in time we have to take the mean over all values within a row. This can be done with the command <code>rowMeans</code>.</p>
+<pre class="r"><code>row_means &lt;- rowMeans(log(results + 1))
+
+# adds the mean of all time series to the previous graph
+lines(row_means, type=&quot;l&quot;, col=&quot;Black&quot;)</code></pre>
+<p>You should now see a black wiggly line appearing in you plot. This line should become smoother the higher the number of simulations (try it).</p>
+<p>Is there a way to predict the average trajectory? It might be tempting to think that the average should follow <span class="math display">\[
+\bar N(t) = N(0) \bar \lambda^t,
+\]</span> where <span class="math inline">\(\bar \lambda = \sum_{i=0}^{t-1} \lambda(i)\)</span> is the  of the annual growth factors. In our current scenario, we have <span class="math inline">\(\bar\lambda =\)</span><em>lambda_mean</em>. Let us add this line.</p>
+<pre class="r"><code># function computing a time series given that the population changes by the arithmetic mean lambda value
+time_series_arith &lt;- c() # creates an empty vector
+time_series_arith[1] &lt;- N0 # adds N0 as first entry
+for (t in 1:tmax) {# for loop creating the time series
+  time_series_arith[t+1] &lt;- time_series_arith[t]*lambda_mean
+}
 
 # we can add mean of all time series to the previous graph
-lines(log_row_means, type=&quot;l&quot;, col=&quot;Black&quot;)</code></pre>
-<p>For the environmental variation investigated here (with only two
-possible environments), one can show that the mean over many
-trajectories is given by</p>
-<p><span class="math display">\[
-\begin{equation}
-\bar N(t) = N_0 \exp(\bar r t),
-\end{equation}
-\]</span> where</p>
-<p><span class="math display">\[
-\begin{equation}\label{eq:bar_r}
-\bar r = \ln \bar\lambda + \frac{1}{2} \ln \left(1 -
-\frac{\epsilon^2}{\bar\lambda^2}\right).
-\end{equation}
-\]</span> Let us add a line showing <span class="math inline">\(\bar
-N(t)\)</span> according to this formula to our plots.</p>
-<pre class="r"><code>exp_mean_lambda &lt;- exp(log(lambda_mean) + 1/2*log(1 - deviation^2 / lambda_mean^2)) # exponential of the formula in the above equation
-
-time_series_expected &lt;- c()
-time_series_expected[1] &lt;- N0
-for (t in 1:tmax) {
-  time_series_expected[t+1] &lt;- time_series_expected[t]*exp_mean_lambda
+lines(log(time_series_arith+1), type=&quot;l&quot;, col=&quot;4&quot;)</code></pre>
+<p>You should now see a smooth blue line showing exponential growth. It shows how the population should grow if it would change by the factor <span class="math inline">\(\bar \lambda\)</span> from one year to the next. Well, this line does not seem to do a good job in predicting the average population trajectory (the black wiggly line).</p>
+<p>Next, let us add a line that shows how the time series develops if the population would grow according the the <em>geometric mean</em> <span class="math inline">\(\bar\lambda_{\mathrm G}\)</span> from one year to the next. Given our current assumptions of two possible environmental states (<em>good</em> and <em>bad</em> years), each occurring with probability <span class="math inline">\(1/2\)</span>, we have <span class="math display">\[
+\bar \lambda_{\mathrm G} = \sqrt{\lambda_1 \lambda_2} = \left((\bar \lambda + \epsilon)(\bar \lambda - \epsilon) \right)^\frac{1}{2} = \left(\bar \lambda^2  - \epsilon^2 \right)^\frac{1}{2}
+\]</span></p>
+<pre class="r"><code># function computing a time series given that the population changes by the geometric mean lambda value
+lambda_geo &lt;- (lambda_mean^2-deviation^2)^(1/2) # calculates the geometric mean lambda value according to the above formula
+lambda_geo
+time_series_geo &lt;- c() # creates an empty vector
+time_series_geo[1] &lt;- N0 # adds N0 as first entry
+for (t in 1:tmax) {# for loop creating the time series
+  time_series_geo[t+1] &lt;- time_series_geo[t]*lambda_geo
 }
 
-# we can add the expected mean time series to the previous graph
-lines(log(time_series_expected + 1), type=&quot;l&quot;, col=&quot;Gray&quot;)</code></pre>
+# we can add mean of all time series to the previous graph
+lines(log(time_series_geo+1), type=&quot;l&quot;, col=&quot;Black&quot;)</code></pre>
+<p>This new smooth black line much better approximates the average trajectory (given by the wiggly black line). Indeed, one can prove that the average trajectory <span class="math inline">\(\bar N(t)\)</span> is given by <span class="math display">\[
+\begin{equation}
+\bar N(t) = N(0) \bar \lambda_{\mathrm G}^t.
+\end{equation}
+\]</span></p>
+</div>
+<div id="probability-of-extinction" class="section level2">
+<h2>Probability of extinction</h2>
+<p>You have seen that for the chosen set of parameters <span class="math inline">\(\bar \lambda\)</span> and <span class="math inline">\(\epsilon\)</span> a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? Let us explore this question by changing the value of <span class="math inline">\(\epsilon\)</span>. For this part, we use the function with the extinction threshold and plot the time series on a log-scale.</p>
 <div id="tasks" class="section level3">
 <h3>TASKS</h3>
-<p>From our graphs, one can determine the number of simulation runs in
-which the population goes extinct, simply by counting the number of
-simulations that hit zero.</p>
+<p>From our graphs, one can determine the number of simulation runs in which the population goes extinct, simply by counting the number of simulations that hit zero.</p>
 <ol style="list-style-type: decimal">
-<li><p>In your latest plot, you have combined four types of line: (i)
-simulated stochastic time series, (ii) the mean over these simulated
-time series, (iii) the mathematically calculated <em>expected</em> mean
-trajectory, and (iv) the trajectory predicted by the arithmetic mean
-growth factor <span class="math inline">\(\bar\lambda\)</span>.
-Summerize what you learned from these graphs. What is the effect of
-environmental stochasticity on population growth and population
-survival?</p></li>
-<li><p>Investigate the magnitude of environmental fluctuations in more
-detail by varying the amplitude of the environmental fluctuations. Keep
-<span class="math inline">\(\bar \lambda = 1.01\)</span> fixed and vary
-<span class="math inline">\(\epsilon\)</span>, the deviation in <span
-class="math inline">\(\lambda\)</span>, according to <span
-class="math inline">\(\epsilon = (0; 0.05; 0.1; 0.15; 0.2)\)</span>. For
-each value of <span class="math inline">\(\epsilon\)</span> report the
-number of simulations that result in extinction based on
-<strong>20</strong> simulation runs. Run you simulations for at least
-<strong>300</strong> time steps. For which value of <span
-class="math inline">\(\epsilon\)</span> does the expected mean
-trajectory starts to decline?</p></li>
+<li><p>In your latest plot, you have combined four types of line: (i) simulated stochastic time series, (ii) the mean over these simulated time series, (iii) the mathematically calculated <em>expected</em> mean trajectory (based on the <em>geometric mean</em>), and (iv) the trajectory predicted by the <em>arithmetic mean</em> growth factor <span class="math inline">\(\bar\lambda\)</span>. Summerize what you learned from these graphs. What is the effect of environmental stochasticity on population growth and population survival?</p></li>
+<li><p>Investigate the magnitude of environmental fluctuations in more detail by varying the amplitude of the environmental fluctuations. Keep <span class="math inline">\(\bar \lambda = 1.01\)</span> fixed and vary <span class="math inline">\(\epsilon\)</span>, the deviation from the mean <span class="math inline">\(\lambda\)</span>-value, according to <span class="math inline">\(\epsilon = (0; 0.05; 0.1; 0.15; 0.2)\)</span>. For each value of <span class="math inline">\(\epsilon\)</span>, report the number of simulations that result in extinction based on <strong>20</strong> simulation runs. Run you simulations for at least <strong>300</strong> time steps. For which value of <span class="math inline">\(\epsilon\)</span> does the expected mean trajectory starts to decline?</p></li>
 <li><p>Submit your results.</p></li>
 </ol>
 </div>
