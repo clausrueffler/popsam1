@@ -59,10 +59,10 @@ In the following, we define a function that produces a stochastic time series.
 
 ```{r eval=FALSE}
 environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {
-  time_series <- c()
-  time_series[1] <- N0
-  for (t in 1:tmax) {
-    lambda <- sample(possible_outcomes, 1, probabilities, replace = TRUE)
+  time_series <- c() # creates an empty vector in which the time series will be stored
+  time_series[1] <- N0 # enters the starting value in the first position of that vector
+  for (t in 1:tmax) {# for loop that iterates the population dynamics tmax times
+    lambda <- sample(possible_outcomes, 1, probabilities, replace = TRUE) # new lambda value is chosen randomly
     time_series[t+1] <- time_series[t]*lambda
   }
   return(time_series)
