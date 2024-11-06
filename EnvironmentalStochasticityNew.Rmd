@@ -111,7 +111,7 @@ sim <- 40 # number of simulation runs
 results <- matrix(nrow = tmax + 1, ncol = sim) # Creates an empty matrix with n+1 rows and as many columns as determined by the parameter "sim". We will store each time series in one column of this matrix. 
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] <- environmental.stochasticity.ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the i-th column of the matrix results
+  results[, i] <- environmental.stochasticity.ext(N0, tmax, possible.outcomes, probabilities) # produces a time series and stores it in the i-th column of the matrix results
 }
 
 # Let us combine all time series into a single plot.
@@ -174,7 +174,7 @@ Is there a way to predict the average trajectory? It might be tempting to think 
 $$
 \bar N(t) = N(0) \bar \lambda^t,
 $$
-where $\bar \lambda = \sum_{i=0}^{t-1} \lambda(i)$ is the \textit{arithmetic mean} of the annual growth factors. In our current scenario, we have $\bar\lambda =$*lambda_mean*. Let us add this line.
+where $\bar \lambda = \sum_{i=0}^{t-1} \lambda(i)$ is the \textit{arithmetic mean} of the annual growth factors. In our current scenario, we have $\bar\lambda =$*lambda.mean*. Let us add this line.
 
 ```{r eval=FALSE}
 # function computing a time series given that the population changes by the arithmetic mean lambda value
@@ -237,23 +237,23 @@ Submit your results.
 ## code used for figures for lecture notes
 # first, simulations without extinction threshold (both log- and normal scale)
 ####################
-lambda_mean <- 1.01
+lambda.mean <- 1.01
 deviation <- 0.2
-lambda1 <- (lambda_mean + deviation)
-lambda2 <- (lambda_mean - deviation)
-possible_outcomes <- c(lambda1, lambda2)
+lambda1 <- (lambda.mean + deviation)
+lambda2 <- (lambda.mean - deviation)
+possible.outcomes <- c(lambda1, lambda2)
 probabilities <- c(0.5, 0.5)
 N0 <- 10 # initial population size
 tmax <- 200 # length of the time series
 
-environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {
-  time_series <- c()
-  time_series[1] <- N0
+environmental.stochasticity <- function(N0, tmax, possible.outcomes, probabilities) {
+  time.series <- c()
+  time.series[1] <- N0
   for (t in 1:tmax) {
-    lambda <- sample(possible_outcomes, 1, probabilities, replace = TRUE)
-    time_series[t+1] <- time_series[t] * lambda
+    lambda <- sample(possible.outcomes, 1, probabilities, replace = TRUE)
+    time.series[t+1] <- time.series[t] * lambda
   }
-  return(time_series)
+  return(time.series)
 }
 
 sim <- 40 # number of simulation runs
@@ -261,79 +261,79 @@ sim <- 40 # number of simulation runs
 results <- matrix(nrow = tmax + 1, ncol = sim)
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+  results[, i] <- environmental.stochasticity(N0, tmax, possible.outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
 }
 
-time_series_geom <- c()
-time_series_geom[1] <- N0
+time.series.geom <- c()
+time.series.geom[1] <- N0
 for (t in 1:tmax) {
-  time_series_geom[t+1] <- time_series_geom[t]*lambda_mean
+  time.series.geom[t+1] <- time.series.geom[t]*lambda.mean
 }
 
 cl <- rainbow(sim)
 
-plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
+plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time.series.geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
 for (i in 2:sim) {
   lines(log(results[, i] + 1), type="l", col=cl[i])
 }
 
-lines(log(time_series_geom + 1), type="l", col="4")
+lines(log(time.series.geom + 1), type="l", col="4")
 
-log_row_means <- rowMeans(log(results + 1))
-lines(log_row_means, type="l", col="Black")
+log.row.means <- rowMeans(log(results + 1))
+lines(log.row.means, type="l", col="Black")
 
-exp_mean_lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
+exp.mean.lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
 
-time_series_expected <- c()
-time_series_expected[1] <- N0
+time.series.expected <- c()
+time.series.expected[1] <- N0
 for (t in 1:tmax) {
-  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
+  time.series.expected[t+1] <- time.series.expected[t]*exp.mean.lambda
 }
 
-lines(log(time_series_expected + 1), type="l", col="Black")
+lines(log(time.series.expected + 1), type="l", col="Black")
 
 # plot on normal scale
-plot(results[, 1], type="l", ylim=c(0, max(time_series_geom, results)), col=cl[1], xlab="time", ylab="population size")
+plot(results[, 1], type="l", ylim=c(0, max(time.series.geom, results)), col=cl[1], xlab="time", ylab="population size")
 for (i in 2:sim) {
   lines(results[, i], type="l", col=cl[i])
 }
 
-lines(time_series_geom, type="l", col="4")
+lines(time.series.geom, type="l", col="4")
 
-log_row_means <- rowMeans(results)
-lines(log_row_means, type="l", col="Black")
+log.row.means <- rowMeans(results)
+lines(log.row.means, type="l", col="Black")
 
-exp_mean_lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
+exp.mean.lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
 
-time_series_expected <- c()
-time_series_expected[1] <- N0
+time.series.expected <- c()
+time.series.expected[1] <- N0
 for (t in 1:tmax) {
-  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
+  time.series.expected[t+1] <- time.series.expected[t]*exp.mean.lambda
 }
 
-lines(time_series_expected, type="l", col="Black")
+lines(time.series.expected, type="l", col="Black")
 
 ####################
 # second, simulations WITH extinction threshold (only log-scale)
 ####################
 
-lambda_mean <- 1.01
+lambda.mean <- 1.01
 deviation <- 0.05
-lambda1 <- (lambda_mean + deviation)
-lambda2 <- (lambda_mean - deviation)
-possible_outcomes <- c(lambda1, lambda2)
+lambda1 <- (lambda.mean + deviation)
+lambda2 <- (lambda.mean - deviation)
+possible.outcomes <- c(lambda1, lambda2)
 probabilities <- c(0.5, 0.5)
 N0 <- 10 # initial population size
 tmax <- 200 # length of the time series
 
-environmental_stochasticity_ext <- function(N0, tmax, possible_outcomes, probabilities) {
-  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
-  time_series <- c()
-  time_series[1] <- N0
+environmental.stochasticity.ext <- function(N0, tmax, possible.outcomes, probabilities) {
+  growth.factors <- sample(possible.outcomes, tmax, probabilities, replace = TRUE)
+  time.series <- c()
+  time.series[1] <- N0
   for (t in 1:tmax) {
-    time_series[t+1] <- ifelse(time_series[t]*growth_factors[t] < 1, 0, time_series[t]*growth_factors[t]) # sets the population vector to 0 in case N drops below 1
+    time.series[t+1] <- ifelse(time.series[t]*growth.factors[t] < 1, 0, time.series[t]*growth.factors[t]) # sets the population vector to 0 in case N drops below 1
   }
-  return(time_series)
+  return(time.series)
 }
 
 sim <- 40 # number of simulation runs
@@ -341,58 +341,58 @@ sim <- 40 # number of simulation runs
 results <- matrix(nrow = tmax + 1, ncol = sim)
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] <- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+  results[, i] <- environmental.stochasticity.ext(N0, tmax, possible.outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
 }
 
-time_series_geom <- c()
-time_series_geom[1] <- N0
+time.series.geom <- c()
+time.series.geom[1] <- N0
 for (t in 1:tmax) {
-  time_series_geom[t+1] <- time_series_geom[t]*lambda_mean
+  time.series.geom[t+1] <- time.series.geom[t]*lambda.mean
 }
 
 cl <- rainbow(sim)
 
-plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
+plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time.series.geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
 for (i in 2:sim) {
   lines(log(results[, i] + 1), type="l", col=cl[i])
 }
 
-lines(log(time_series_geom + 1), type="l", col="4")
+lines(log(time.series.geom + 1), type="l", col="4")
 
-#log_row_means <- rowMeans(log(results + 1))
-#lines(log_row_means, type="l", col="Black")
+#log.row.means <- rowMeans(log(results + 1))
+#lines(log.row.means, type="l", col="Black")
 
-exp_mean_lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
+exp.mean.lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
 
-time_series_expected <- c()
-time_series_expected[1] <- N0
+time.series.expected <- c()
+time.series.expected[1] <- N0
 for (t in 1:tmax) {
-  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
+  time.series.expected[t+1] <- time.series.expected[t]*exp.mean.lambda
 }
 
-lines(log(time_series_expected + 1), type="l", col="Black")
+lines(log(time.series.expected + 1), type="l", col="Black")
 ```
 
 ```{r eval=FALSE, echo=FALSE}
 # code for making plots for the lecture notes
 
-lambda_mean <- 1.01
+lambda.mean <- 1.01
 deviation <- 0.2
-lambda1 <- (lambda_mean + deviation)
-lambda2 <- (lambda_mean - deviation)
-possible_outcomes <- c(lambda1, lambda2)
+lambda1 <- (lambda.mean + deviation)
+lambda2 <- (lambda.mean - deviation)
+possible.outcomes <- c(lambda1, lambda2)
 probabilities <- c(0.5, 0.5)
 N0 <- 10 # initial population size
 tmax <- 200 # length of the time series
 
-environmental_stochasticity <- function(N0, tmax, possible_outcomes, probabilities) {
-  growth_factors <- sample(possible_outcomes, tmax, probabilities, replace = TRUE)
-  time_series <- c()
-  time_series[1] <- N0
+environmental.stochasticity <- function(N0, tmax, possible.outcomes, probabilities) {
+  growth.factors <- sample(possible.outcomes, tmax, probabilities, replace = TRUE)
+  time.series <- c()
+  time.series[1] <- N0
   for (t in 1:tmax) {
-    time_series[t+1] <- time_series[t]*growth_factors[t]
+    time.series[t+1] <- time.series[t]*growth.factors[t]
   }
-  return(time_series)
+  return(time.series)
 }
 
 sim <- 40 # number of simulation runs
@@ -400,27 +400,27 @@ sim <- 40 # number of simulation runs
 results <- matrix(nrow = tmax + 1, ncol = sim)
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] <- environmental_stochasticity(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
+  results[, i] <- environmental.stochasticity(N0, tmax, possible.outcomes, probabilities) # produces a time series and stores it in the jth column of the matrix results
 }
 
 cl <- rainbow(sim)
-plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time_series_geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
+plot(log(results[, 1] + 1), type="l", ylim=c(0, log(max(time.series.geom, results) + 1)), col=cl[1], xlab="time", ylab="ln(population size)")
 for (i in 2:sim) {
   lines(log(results[, i] + 1), type="l", col=cl[i])
 }
-lines(log(time_series_geom + 1), type="l", col="4")
+lines(log(time.series.geom + 1), type="l", col="4")
 
-log_row_means <- rowMeans(log(results + 1))
-lines(log_row_means, type="l", col="Black")
+log.row.means <- rowMeans(log(results + 1))
+lines(log.row.means, type="l", col="Black")
 
-exp_mean_lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
+exp.mean.lambda <- sqrt(lambda1*lambda2) # exponential of the formula in the above equation
 
-time_series_expected <- c()
-time_series_expected[1] <- N0
+time.series.expected <- c()
+time.series.expected[1] <- N0
 for (t in 1:tmax) {
-  time_series_expected[t+1] <- time_series_expected[t]*exp_mean_lambda
+  time.series.expected[t+1] <- time.series.expected[t]*exp.mean.lambda
 }
 
 # we can add the expected mean time series to the previous graph
-lines(log(time_series_expected + 1), type="l", col="Black")
+lines(log(time.series.expected + 1), type="l", col="Black")
 ```

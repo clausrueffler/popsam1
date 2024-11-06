@@ -355,7 +355,7 @@ plot(log(data+1), type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(popul
 results &lt;- matrix(nrow = tmax + 1, ncol = sim) # Creates an empty matrix with n+1 rows and as many columns as determined by the parameter &quot;sim&quot;. We will store each time series in one column of this matrix. 
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] &lt;- environmental.stochasticity.ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the i-th column of the matrix results
+  results[, i] &lt;- environmental.stochasticity.ext(N0, tmax, possible.outcomes, probabilities) # produces a time series and stores it in the i-th column of the matrix results
 }
 
 # Let us combine all time series into a single plot.
@@ -400,7 +400,7 @@ matlines(row.means, type=&quot;l&quot;, col=&quot;Black&quot;)</code></pre>
 <p>You should now see a black wiggly line appearing in you plot. This line should become smoother the higher the number of simulations (try it).</p>
 <p>Is there a way to predict the average trajectory? It might be tempting to think that the average should follow <span class="math display">\[
 \bar N(t) = N(0) \bar \lambda^t,
-\]</span> where <span class="math inline">\(\bar \lambda = \sum_{i=0}^{t-1} \lambda(i)\)</span> is the  of the annual growth factors. In our current scenario, we have <span class="math inline">\(\bar\lambda =\)</span><em>lambda_mean</em>. Let us add this line.</p>
+\]</span> where <span class="math inline">\(\bar \lambda = \sum_{i=0}^{t-1} \lambda(i)\)</span> is the  of the annual growth factors. In our current scenario, we have <span class="math inline">\(\bar\lambda =\)</span><em>lambda.mean</em>. Let us add this line.</p>
 <pre class="r"><code># function computing a time series given that the population changes by the arithmetic mean lambda value
 time.series.arith &lt;- c(N0)
 for (t in 1:tmax) {

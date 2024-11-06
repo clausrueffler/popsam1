@@ -320,25 +320,41 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##             t  N
-## 1  0.00000000  3
-## 2  0.01744494  4
-## 3  1.32843975  5
-## 4  1.38677570  6
-## 5  1.68637742  7
-## 6  1.95742700  6
-## 7  2.09608439  7
-## 8  2.77605859  8
-## 9  3.07199571  9
-## 10 3.40808331  8
-## 11 3.44626712  9
-## 12 3.45915433 10</code></pre>
+<pre><code>##            t  N
+## 1   0.000000  3
+## 2   1.480326  2
+## 3   2.541302  1
+## 4   6.384145  2
+## 5   7.738479  3
+## 6   7.917562  4
+## 7   8.019755  3
+## 8   8.443318  4
+## 9   8.511186  5
+## 10  8.818341  4
+## 11  9.785855  5
+## 12 10.048027  6
+## 13 10.638741  5
+## 14 11.069716  6
+## 15 11.633256  7
+## 16 11.754118  6
+## 17 12.847014  7
+## 18 13.085833  8
+## 19 13.417859  7
+## 20 13.673197  6
+## 21 13.729702  7
+## 22 14.038645  6
+## 23 14.047497  7
+## 24 14.585395  8
+## 25 14.862692  9
+## 26 15.039958 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(demographic.stoch, log=&quot;y&quot;, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code># note that the option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale</code></pre>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
