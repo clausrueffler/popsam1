@@ -320,47 +320,19 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##            t  N
-## 1   0.000000  3
-## 2   2.177704  4
-## 3   2.202496  3
-## 4   3.217905  4
-## 5   4.865833  5
-## 6   4.957659  4
-## 7   5.081818  3
-## 8   5.682783  2
-## 9   6.290837  3
-## 10  6.522393  4
-## 11  6.586011  5
-## 12  6.601983  4
-## 13  6.809358  3
-## 14  7.146302  4
-## 15  7.933248  5
-## 16  8.581151  4
-## 17  8.709612  5
-## 18  8.870874  6
-## 19  8.894208  5
-## 20  9.083012  4
-## 21  9.129183  5
-## 22  9.217637  4
-## 23 11.013050  3
-## 24 11.145954  4
-## 25 12.124269  5
-## 26 12.209629  6
-## 27 12.257866  7
-## 28 12.682297  6
-## 29 13.367439  7
-## 30 13.745570  6
-## 31 14.131996  7
-## 32 14.211175  8
-## 33 14.253816  9
-## 34 14.565502  8
-## 35 14.605129  7
-## 36 14.650602  8
-## 37 14.784018  7
-## 38 15.469536  8
-## 39 15.668736  9
-## 40 15.985127 10</code></pre>
+<pre><code>##             t  N
+## 1  0.00000000  3
+## 2  0.01744494  4
+## 3  1.32843975  5
+## 4  1.38677570  6
+## 5  1.68637742  7
+## 6  1.95742700  6
+## 7  2.09608439  7
+## 8  2.77605859  8
+## 9  3.07199571  9
+## 10 3.40808331  8
+## 11 3.44626712  9
+## 12 3.45915433 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>

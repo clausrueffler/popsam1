@@ -111,7 +111,7 @@ sim <- 40 # number of simulation runs
 results <- matrix(nrow = tmax + 1, ncol = sim) # Creates an empty matrix with n+1 rows and as many columns as determined by the parameter "sim". We will store each time series in one column of this matrix. 
 
 for (i in 1:sim) {# executes the function sim times
-  results[, i] <- environmental_stochasticity_ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the i-th column of the matrix results
+  results[, i] <- environmental.stochasticity.ext(N0, tmax, possible_outcomes, probabilities) # produces a time series and stores it in the i-th column of the matrix results
 }
 
 # Let us combine all time series into a single plot.
