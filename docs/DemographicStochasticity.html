@@ -294,7 +294,7 @@ $(document).ready(function () {
 <p><span class="math display">\[
 \frac{\mathrm{d}N}{\mathrm{d}t}=N(b-d)=Nr
 \]</span> describes the mean over many simulations. These simulations take into account that, even if all individuals in a population are genetically identical, they will still differ in the number of their offspring and their age at death. This is due to chance events (some people are hit by a falling tree while others are not…). Fluctuations due to such chance events acting at the level of the individual are called <em>demographic stochasticity</em>. In this exercise, we will explore the consequences of demographic stochasticity for population viability.</p>
-<p>More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs, population size increases by one. The probabilities with which these two events occur are proportional to <span class="math inline">\(d*N(t)\)</span> and <span class="math inline">\(b*N(t)\)</span>, respectively. To implement this idea in <em>R</em> we can use the function <code>sample(x, size, prob)</code>, where <span class="math inline">\(x = c(-1, 1)\)</span> is the vector of possible events (-1 in case of a death and 1 in case of a birth), <span class="math inline">\(size = 1\)</span> indicates how many events occur at any given point in time, and <span class="math inline">\(prob = c(d*N, b*N)\)</span> gives the vector of probabilities with which the two events occur.</p>
+<p>More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs, population size increases by one. The probabilities with which these two events occur are proportional to <span class="math inline">\(d*N(t)\)</span> and <span class="math inline">\(b*N(t)\)</span>, respectively. To implement this idea in <em>R</em> we can use the function <code>sample(x, size, prob)</code>, where <span class="math inline">\(x = c(-1, 1)\)</span> is the vector of possible events (-1 in case of a death and 1 in case of a birth), <span class="math inline">\(size = 1\)</span> indicates how many events occur at any given point in time, and <span class="math inline">\(prob = c(d*N, b*N)\)</span> gives the vector of probabilities with which the two events occur. Since only the magnitude of birth and death relative to each other matters, we can also use <span class="math inline">\(prob = c(d, b)\)</span>.</p>
 <pre class="r"><code>sample(x =c(-1, 1), size = 1, prob = c(d = 0.2, b = 0.3))
 # in fact, instead of evaluating the above line of code ten times we can simply evaluate
 sample(x =c(-1, 1), size = 10, prob = c(d = 0.2, b = 0.3), replace = TRUE) # here we had to add the argument replace=TRUE to the function to indicate that earlier outcomes do not effect the probabilities of future outcomes</code></pre>
@@ -320,33 +320,13 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##            t  N
-## 1   0.000000  3
-## 2   1.480326  2
-## 3   2.541302  1
-## 4   6.384145  2
-## 5   7.738479  3
-## 6   7.917562  4
-## 7   8.019755  3
-## 8   8.443318  4
-## 9   8.511186  5
-## 10  8.818341  4
-## 11  9.785855  5
-## 12 10.048027  6
-## 13 10.638741  5
-## 14 11.069716  6
-## 15 11.633256  7
-## 16 11.754118  6
-## 17 12.847014  7
-## 18 13.085833  8
-## 19 13.417859  7
-## 20 13.673197  6
-## 21 13.729702  7
-## 22 14.038645  6
-## 23 14.047497  7
-## 24 14.585395  8
-## 25 14.862692  9
-## 26 15.039958 10</code></pre>
+<pre><code>##           t N
+## 1 0.0000000 3
+## 2 0.4874748 4
+## 3 0.9358979 3
+## 4 1.4060102 2
+## 5 2.7288437 1
+## 6 2.8514140 0</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
@@ -356,7 +336,7 @@ plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;po
 <pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
 ## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<pre class="r"><code># note that the option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale</code></pre>
+<pre class="r"><code># The option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale. However, you will get a warning whenever your simulation results in extinction because the logarithm of 0 is minus infinity.</code></pre>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
 <pre class="r"><code>N0 &lt;- 3
