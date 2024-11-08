@@ -139,7 +139,7 @@ time.series <- function(N0, tmax, possible_outcomes, probabilities){
 
 
 lambda_mean <- 1.01
-deviation <- 0.1
+deviation <- 0.2
 lambda1 <- (lambda_mean + deviation)
 lambda2 <- (lambda_mean - deviation)
 possible_outcomes <- c(lambda1, lambda2)

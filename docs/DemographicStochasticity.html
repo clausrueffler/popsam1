@@ -320,21 +320,33 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##           t N
-## 1 0.0000000 3
-## 2 0.4874748 4
-## 3 0.9358979 3
-## 4 1.4060102 2
-## 5 2.7288437 1
-## 6 2.8514140 0</code></pre>
+<pre><code>##            t  N
+## 1  0.0000000  3
+## 2  0.2447087  4
+## 3  0.4741625  3
+## 4  1.2880117  4
+## 5  2.1111303  3
+## 6  2.3108291  4
+## 7  2.7003413  5
+## 8  2.9499619  6
+## 9  3.0517846  7
+## 10 3.1208745  8
+## 11 4.2392180  7
+## 12 4.9281089  6
+## 13 5.2888170  7
+## 14 6.1201293  8
+## 15 6.2549262  9
+## 16 6.3965181  8
+## 17 6.3999558  9
+## 18 6.4318555  8
+## 19 6.5704365  9
+## 20 6.5708303 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(demographic.stoch, log=&quot;y&quot;, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code># The option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale. However, you will get a warning whenever your simulation results in extinction because the logarithm of 0 is minus infinity.</code></pre>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
