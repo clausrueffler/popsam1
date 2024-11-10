@@ -129,7 +129,6 @@ Which conclusions you can draw from your results about the effect of *N0* and *b
 
   2) 
 For the model above, it can be shown mathematically that the probability of extinction, $u(N_0)$, of a population consisting originally of $N_0$ individuals is given by the following formula:
-
 $$
 u(N_0)=
 \begin{cases}
