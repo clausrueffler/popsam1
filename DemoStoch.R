@@ -47,3 +47,17 @@ for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
 
 # Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
 curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
+
+
+# Adrienne's results
+A1 <- matrix(1:25, nrow = 5, ncol = 5, dimnames = list(c("1","3","5","10","50"), c("0.9", "1", "1.1", "1.2", "1.5")))
+A1[,1] <- c("1","1","1","1","1")
+A1[,2] <- c("1","1","1","0.9", "0.8")
+A1[,3] <- c("1", "0.8", "0.9", "0.3","0")
+A1[,4] <- c("0.9","0.5","0.6", "0.2", "0")
+A1[,5] <- c("0.9","0.1","0.6","0","0")
+A1
+
+# Lisa's results
+diff.variables <- matrix( data =c(1,1,1,1,1,1,0.9,0.9,0.9,1,1,0.8,0.7,0.3,0,1,0.6,0.2,0.1,0,0.9,0.5,0.2,0,0  ), nrow = 5, ncol = 5)
+diff.variables

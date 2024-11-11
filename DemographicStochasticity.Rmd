@@ -153,3 +153,17 @@ for (i in 1:5){ # two nested for-loops, the first one walks through the rows and
 
 analytical_results # shows the resulting matrix
 ```
+
+analytical_results <- matrix(nrow = 5, ncol = 5) # defines an empty five by five matrix in which we can store the results
+
+death <- 1
+N0_sizes <- c(1, 3, 5, 10, 50)
+birth_rates <- c(0.9, 1, 1.1, 1.2, 1.5)
+
+for (i in 1:5){ # two nested for-loops, the first one walks through the rows and the second one walks through the columns
+  for (j in 1:5){
+    analytical_results[i,j] <- round(min(c(1,(death/birth_rates[j])^N0_sizes[i])), 3) # results are rounded to three digits after the comma
+  }
+}
+
+analytical_results # shows the resulting matrix
