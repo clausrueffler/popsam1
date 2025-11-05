@@ -119,6 +119,36 @@ for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
 curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
 ```
 
+```{r eval=FALSE, echo=FALSE}
+# plot for ecology-D slides
+N0 <- 10
+Nmax <- 50
+d <- 0.5
+b <- 0.55
+sim <- 10 # this sets the number of simulations
+
+results <- list() # using the list variable allows us to save results of all iterations of the function time_series, that is, we can save several data frames in it
+for (i in 1:sim) {# to create sim different simulations, we embed the function time.series into a for-loop
+  results[[i]] <- time_series(N0, Nmax, d, b) # adds the result of a simulation to the results, note that we have to use [[]] to access list entries
+}
+
+maxt <- c() # creates a vector in which we store the length of the different time series
+  for (i in 1:sim) {
+  maxt[i] <- max(results[[i]][1]) # determines the length of the ith time series and stores the result in the object maxt
+  }
+tmax <- max(maxt) # the length of the longest time series is assigned to the parameter tmax
+
+colors <- rainbow(length(results)) # sets number of colors equal to number sim
+plot(results[[1]], type="l", log="y", ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="ln(population size)") # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+  lines(results[[i]], type="l", col=colors[i])
+}
+
+# Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
+curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
+```
+
+
 This results in a figure showing ten simulation runs. From this figure, you can visually count how many of these runs result in extinction and how many in exponential growth.
 
 ### Task

@@ -165,8 +165,7 @@ To add the average is easy. In the above code, we stored the time series in a ma
 ```{r eval=FALSE}
 row.means <- rowMeans(log(results + 1))
 
-# the command "matlines" adds a line to a plot made with matplot
-matlines(row.means, type="l", lwd = 2, col="Black")
+lines(row.means, type="l", lwd = 2, col="Black")
 ```
 You should now see a black wiggly line appearing in you plot. This line should become smoother the higher the number of simulations (try it).
 
@@ -184,7 +183,7 @@ for (t in 1:tmax) {
 }
 
 # adds a line with the time series "time.series.arith" to the figure
-matlines(log(time.series.arith+1), type="l", lwd = 2, col="4")
+lines(log(time.series.arith+1), type="l", lwd = 2, col="4")
 ```
 You should now see a straight blue line showing exponential growth on a log-scale. It shows how the population should grow if it would change by the factor $\bar \lambda$ from one year to the next. Well, this line does not seem to do a good job in predicting the average population trajectory (the black wiggly line).
 
@@ -203,7 +202,7 @@ for (t in 1:tmax) {
 }
 
 # adds a line with the time series "time.series.geo" to the figure
-matlines(log(time.series.geo+1), type="l", lwd = 2, col="Black")
+lines(log(time.series.geo+1), type="l", lwd = 2, col="Black")
 ```
 This new smooth black line much better approximates the average trajectory (given by the wiggly black line). Indeed, one can prove that the average trajectory $\bar N(t)$ is given by
 $$
