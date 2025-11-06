@@ -13,7 +13,7 @@
 
 <title>Exercise: Demographic Stochasticity</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/spacelab.min.css" rel="stylesheet" />
@@ -182,8 +182,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -191,9 +191,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -283,73 +290,21 @@ $(document).ready(function () {
 </script>
 <div id="demographic-stochasticity" class="section level1 tabset">
 <h1 class="tabset">Demographic Stochasticity</h1>
-<p>In this exercise, we will explore through stochastic simulations a
-simple birth-death process. In the lecture, we have seen that the
-deterministic equation for exponential growth,</p>
+<p>In this exercise, we will explore through stochastic simulations a simple birth-death process. In the lecture, we have seen that the deterministic equation for exponential growth,</p>
 <p><span class="math display">\[
 \frac{\mathrm{d}N}{\mathrm{d}t}=N(b-d)=Nr
-\]</span> describes the mean over many simulations. These simulations
-take into account that, even if all individuals in a population are
-genetically identical, they will still differ in the number of their
-offspring and their age at death. This is due to chance events (some
-people are hit by a falling tree while others are not…). Fluctuations
-due to such chance events acting at the level of the individual are
-called <em>demographic stochasticity</em>. In this exercise, we will
-explore the consequences of demographic stochasticity for population
-viability.</p>
-<p>More specifically, stochasticity enters our simulation by deciding
-randomly whether the next event in a population is a death or a birth.
-If death occurs, then population size decreases by one and if birth
-occurs, population size increases by one. The probabilities with which
-these two events occur are proportional to <span
-class="math inline">\(d*N(t)\)</span> and <span
-class="math inline">\(b*N(t)\)</span>, respectively. To implement this
-idea in <em>R</em> we can use the function
-<code>sample(x, size, prob)</code>, where <span class="math inline">\(x
-= c(-1, 1)\)</span> is the vector of possible events (-1 in case of a
-death and 1 in case of a birth), <span class="math inline">\(size =
-1\)</span> indicates how many events occur at any given point in time,
-and <span class="math inline">\(prob = c(d*N, b*N)\)</span> gives the
-vector of probabilities with which the two events occur. Since only the
-magnitude of birth and death relative to each other matters, we can also
-use <span class="math inline">\(prob = c(d, b)\)</span>.</p>
+\]</span> describes the mean over many simulations. These simulations take into account that, even if all individuals in a population are genetically identical, they will still differ in the number of their offspring and their age at death. This is due to chance events (some people are hit by a falling tree while others are not…). Fluctuations due to such chance events acting at the level of the individual are called <em>demographic stochasticity</em>. In this exercise, we will explore the consequences of demographic stochasticity for population viability.</p>
+<p>More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs, population size increases by one. The probabilities with which these two events occur are proportional to <span class="math inline">\(d*N(t)\)</span> and <span class="math inline">\(b*N(t)\)</span>, respectively. To implement this idea in <em>R</em> we can use the function <code>sample(x, size, prob)</code>, where <span class="math inline">\(x = c(-1, 1)\)</span> is the vector of possible events (-1 in case of a death and 1 in case of a birth), <span class="math inline">\(size = 1\)</span> indicates how many events occur at any given point in time, and <span class="math inline">\(prob = c(d*N, b*N)\)</span> gives the vector of probabilities with which the two events occur. Since only the magnitude of birth and death relative to each other matters, we can also use <span class="math inline">\(prob = c(d, b)\)</span>.</p>
 <pre class="r"><code>sample(x =c(-1, 1), size = 1, prob = c(d = 0.2, b = 0.3))
 # in fact, instead of evaluating the above line of code ten times we can simply evaluate
 sample(x =c(-1, 1), size = 10, prob = c(d = 0.2, b = 0.3), replace = TRUE) # here we had to add the argument replace=TRUE to the function to indicate that earlier outcomes do not effect the probabilities of future outcomes</code></pre>
-<p>If the population death and birth rates are given by <span
-class="math inline">\(d*N\)</span> and <span
-class="math inline">\(b*N\)</span>, respectively, how much time elapses
-between the occurrence of two events? This <em>waiting time</em> depends
-on the probability that neither a death nor a birth event occurs at a
-given moment. Thus, the length of the waiting time between two events is
-also a random variable and its distribution is given by the <a
-href="https://en.wikipedia.org/wiki/Exponential_distribution"><em>exponential
-distribution</em></a>. We can determine the length of the waiting time
-by drawing a random number from the exponential distribution after a
-death or a birth has occurred using
-<code>rexp(n = 1, rate = d * N + b * N)</code>, where <span
-class="math inline">\(n = 1\)</span> indicates that we are drawing a
-single waiting time and <span class="math inline">\(rate = d * N + b *
-N\)</span> is the <em>total event rate</em>. For example</p>
+<p>If the population death and birth rates are given by <span class="math inline">\(d*N\)</span> and <span class="math inline">\(b*N\)</span>, respectively, how much time elapses between the occurrence of two events? This <em>waiting time</em> depends on the probability that neither a death nor a birth event occurs at a given moment. Thus, the length of the waiting time between two events is also a random variable and its distribution is given by the <a href="https://en.wikipedia.org/wiki/Exponential_distribution"><em>exponential distribution</em></a>. We can determine the length of the waiting time by drawing a random number from the exponential distribution after a death or a birth has occurred using <code>rexp(n = 1, rate = d * N + b * N)</code>, where <span class="math inline">\(n = 1\)</span> indicates that we are drawing a single waiting time and <span class="math inline">\(rate = d * N + b * N\)</span> is the <em>total event rate</em>. For example</p>
 <pre class="r"><code>d &lt;- 0.2
 b &lt;- 0.3
 N &lt;- 10
 rexp(n = 1, rate = d * N + b * N)</code></pre>
-<p>gives the waiting time between two events. Importantly,
-<code>rexp(n = 1, rate = d * N + b * N)</code> produces a different
-value each time you execute the above command, this waiting time is also
-a ransom variable.</p>
-<p>In the following piece of <em>R</em>-code, we define a function that
-puts all these pieces together and creates a stochastic population
-dynamical time series. The function has four arguments: <em>N0</em> (the
-initial number of individuals in the population), <em>Nmax</em> (when
-the simulated population has reached this number the simulation stops
-(the simulation also stops once the population has gone extinct
-(<em>N=0</em>)), <em>d</em> (the per-capita death rate) and <em>b</em>
-(the per-capita birth rate). At the heart of our function is a
-<em>while</em>-loop, so that the algorithm is repeated until the
-population is either extinct or the population size has reached
-<em>Nmax</em>.</p>
+<p>gives the waiting time between two events. Importantly, <code>rexp(n = 1, rate = d * N + b * N)</code> produces a different value each time you execute the above command, this waiting time is also a ransom variable.</p>
+<p>In the following piece of <em>R</em>-code, we define a function that puts all these pieces together and creates a stochastic population dynamical time series. The function has four arguments: <em>N0</em> (the initial number of individuals in the population), <em>Nmax</em> (when the simulated population has reached this number the simulation stops (the simulation also stops once the population has gone extinct (<em>N=0</em>)), <em>d</em> (the per-capita death rate) and <em>b</em> (the per-capita birth rate). At the heart of our function is a <em>while</em>-loop, so that the algorithm is repeated until the population is either extinct or the population size has reached <em>Nmax</em>.</p>
 <pre class="r"><code>time_series &lt;- function(N0, Nmax, d, b){# this defines a function with the name &quot;time_series&quot;. It has four arguments: N0, Nmax, b, d
   N &lt;- N0 # initial value for population size
   t &lt;- 0 # initial value for time
@@ -365,52 +320,31 @@ population is either extinct or the population size has reached
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##           t  N
-## 1  0.000000  3
-## 2  1.741725  4
-## 3  2.108611  5
-## 4  2.828039  6
-## 5  2.829366  7
-## 6  3.024676  6
-## 7  3.440564  7
-## 8  3.621142  6
-## 9  3.781395  7
-## 10 3.817214  6
-## 11 3.982865  7
-## 12 4.038164  8
-## 13 4.098749  9
-## 14 4.156057 10</code></pre>
-<p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>,
-<em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data
-frame with two columns. The first column gives the time at which an
-event occurs and the second column gives the updated population size.
-Each time you evaluate the function you obtain a different output. This
-is due to the stochastic nature of the simulation. Let us visualize a
-time series (now for <em>Nmax=200</em>).</p>
+<pre><code>##            t  N
+## 1  0.0000000  3
+## 2  0.9118872  4
+## 3  1.9995767  3
+## 4  2.7934085  4
+## 5  2.9992586  5
+## 6  3.1230713  6
+## 7  3.8796708  7
+## 8  3.9321569  8
+## 9  4.2371151  9
+## 10 4.2781972  8
+## 11 4.3909463  9
+## 12 4.7611612  8
+## 13 4.9266926  9
+## 14 5.2434947 10</code></pre>
+<p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>Maybe in your particular simulation the population went extinct? If
-so, execute the function again to see whether it might then have reached
-<em>Nmax</em> before going extinct. Since we are dealing with a
-stochastic version of exponential growth we might want to plot the
-population size on a log-scale.</p>
+<p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(demographic.stoch, log=&quot;y&quot;, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code># The option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale. However, you will get a warning whenever your simulation results in extinction because the logarithm of 0 is minus infinity.</code></pre>
-<p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em>
-and <em>b</em> and investigate their effect on the time series, more
-specifically, whether or not the population goes extinct.</p>
-<p>What is the effect of our chosen set of parameters on the probability
-that the population size reaches <em>N=Nmax</em> before it goes extinct?
-To investigate this, we have to look at many realisations of the
-simulation and it is easier to do this by automatizing this process. We
-start by setting the parameters where we add one additional parameter,
-<em>sim</em>, that determines how many times the simulation is repeated.
-We can do this using the same construction we used when investigating
-many runs of environmental stochasticity.</p>
+<p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
+<p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
 <pre class="r"><code>N0 &lt;- 3
 Nmax &lt;- 50
 d &lt;- 0.2
@@ -421,9 +355,7 @@ results &lt;- list() # using the list variable allows us to save results of all 
 for (i in 1:sim) {# to create sim different simulations, we embed the function time.series into a for-loop
   results[[i]] &lt;- time_series(N0, Nmax, d, b) # adds the result of a simulation to the results, note that we have to use [[]] to access list entries
 }</code></pre>
-<p>Before we can plot the results, we have to determine the length of
-the x-axis (time) in the plot. We do that by determining the length of
-the longest simulation run.</p>
+<p>Before we can plot the results, we have to determine the length of the x-axis (time) in the plot. We do that by determining the length of the longest simulation run.</p>
 <pre class="r"><code>maxt &lt;- c() # creates a vector in which we store the length of the different time series
   for (i in 1:sim) {
   maxt[i] &lt;- max(results[[i]][1]) # determines the length of the ith time series and stores the result in the object maxt
@@ -441,43 +373,18 @@ plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=
 # Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
 curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>This results in a figure showing ten simulation runs. From this
-figure, you can visually count how many of these runs result in
-extinction and how many in exponential growth.</p>
+<p>This results in a figure showing ten simulation runs. From this figure, you can visually count how many of these runs result in extinction and how many in exponential growth.</p>
 <div id="task" class="section level3">
 <h3>Task</h3>
 <ol style="list-style-type: decimal">
-<li><p>Investigating the probability of extinction in dependence of four
-different parameters (<em>N0</em>, <em>Nmax</em>, <em>d</em>,
-<em>b</em>) is a bit cumbersome. Let us therefore set the maximum
-population size to 200 (<em>Nmax=200</em>) and the death rate equal to 1
-(<em>d=1</em>) and only vary <em>N0</em> and <em>b</em>. Vary <em>b</em>
-according to <em>b = (0.9; 1; 1.1; 1.2; 1.5)</em> and initial population
-size <em>N0</em> according to <em>N0 = (1; 3; 5; 10; 50)</em>. Varying
-both parameters together gives you 25 different parameter combinations
-that you can arrange in a table with five rows (<em>N0</em>) and five
-columns (<em>birth</em>). In each cell of this table, report the
-proportion of ten runs that result in extinction. Which conclusions you
-can draw from your results about the effect of <em>N0</em> and
-<em>b</em> on the probability of extinction? Are there parameter
-combinations that you feel you need to add to your analysis to get a
-better understanding?</p></li>
-<li><p>For the model above, it can be shown mathematically that the
-probability of extinction, <span class="math inline">\(u(N_0)\)</span>,
-of a population consisting originally of <span
-class="math inline">\(N_0\)</span> individuals is given by the following
-formula: <span class="math display">\[
+<li><p>Investigating the probability of extinction in dependence of four different parameters (<em>N0</em>, <em>Nmax</em>, <em>d</em>, <em>b</em>) is a bit cumbersome. Let us therefore set the maximum population size to 200 (<em>Nmax=200</em>) and the death rate equal to 1 (<em>d=1</em>) and only vary <em>N0</em> and <em>b</em>. Vary <em>b</em> according to <em>b = (0.9; 1; 1.1; 1.2; 1.5)</em> and initial population size <em>N0</em> according to <em>N0 = (1; 3; 5; 10; 50)</em>. Varying both parameters together gives you 25 different parameter combinations that you can arrange in a table with five rows (<em>N0</em>) and five columns (<em>birth</em>). In each cell of this table, report the proportion of ten runs that result in extinction. Which conclusions you can draw from your results about the effect of <em>N0</em> and <em>b</em> on the probability of extinction? Are there parameter combinations that you feel you need to add to your analysis to get a better understanding?</p></li>
+<li><p>For the model above, it can be shown mathematically that the probability of extinction, <span class="math inline">\(u(N_0)\)</span>, of a population consisting originally of <span class="math inline">\(N_0\)</span> individuals is given by the following formula: <span class="math display">\[
 u(N_0)=
 \begin{cases}
 1 &amp; \mathrm{for}\,\,\, b\leq d\\
 (\frac{d}{b})^{N_0} &amp; \mathrm{for}\,\,\, b&gt;d.
 \end{cases}
-\]</span> The following code produces a five by five matrix with the
-parameters as given under (1) but with all entries calculated according
-to the analytical formula. How well do your simulation results agree
-with the results predicted based on the analytical formula? If you see
-large differences between your results and the analytical expectation,
-what do you think could be the explanation?</p></li>
+\]</span> The following code produces a five by five matrix with the parameters as given under (1) but with all entries calculated according to the analytical formula. How well do your simulation results agree with the results predicted based on the analytical formula? If you see large differences between your results and the analytical expectation, what do you think could be the explanation?</p></li>
 </ol>
 <pre class="r"><code>analytical_results &lt;- matrix(nrow = 5, ncol = 5) # defines an empty five by five matrix in which we can store the results
 
@@ -492,15 +399,9 @@ for (i in 1:5){ # two nested for-loops, the first one walks through the rows and
 }
 
 analytical_results # shows the resulting matrix</code></pre>
-<p>analytical_results &lt;- matrix(nrow = 5, ncol = 5) # defines an
-empty five by five matrix in which we can store the results</p>
-<p>death &lt;- 1 N0_sizes &lt;- c(1, 3, 5, 10, 50) birth_rates &lt;-
-c(0.9, 1, 1.1, 1.2, 1.5)</p>
-<p>for (i in 1:5){ # two nested for-loops, the first one walks through
-the rows and the second one walks through the columns for (j in 1:5){
-analytical_results[i,j] &lt;-
-round(min(c(1,(death/birth_rates[j])^N0_sizes[i])), 3) # results are
-rounded to three digits after the comma } }</p>
+<p>analytical_results &lt;- matrix(nrow = 5, ncol = 5) # defines an empty five by five matrix in which we can store the results</p>
+<p>death &lt;- 1 N0_sizes &lt;- c(1, 3, 5, 10, 50) birth_rates &lt;- c(0.9, 1, 1.1, 1.2, 1.5)</p>
+<p>for (i in 1:5){ # two nested for-loops, the first one walks through the rows and the second one walks through the columns for (j in 1:5){ analytical_results[i,j] &lt;- round(min(c(1,(death/birth_rates[j])^N0_sizes[i])), 3) # results are rounded to three digits after the comma } }</p>
 <p>analytical_results # shows the resulting matrix</p>
 </div>
 </div>

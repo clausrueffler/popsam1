@@ -13,7 +13,7 @@
 
 <title>Exercise: Environmental Stochasticity</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/spacelab.min.css" rel="stylesheet" />
@@ -182,8 +182,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -191,9 +191,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -288,51 +295,17 @@ $(document).ready(function () {
 <p>In the lecture, we derived</p>
 <p><span class="math display">\[
 N(t)=N(0)*(1+\beta-\delta)^t=N(0)*\lambda^t
-\]</span> as a model for exponential growth in discrete time, where
-<span class="math inline">\(\lambda = 1 + \beta - \delta\)</span>.
-<!--If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, *B*, and the number of individuals dying, *D*, at any time step will be very close to the expected values $N(t)\beta$ and $N(t)\delta$, respectively. This is due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). We will investigate the effect of *demographic stochasticity* as it occurs in small populations in a later exercise.-->
-Importantly, the above equation assumes that the growth factor <span
-class="math inline">\(\lambda\)</span> does not vary in time. In this
-exercise, we will relax this assumption. For example, climatic
-conditions vary among years and this might affect the average number of
-offspring, <span class="math inline">\(\beta\)</span>, and the
-probability to die, <span class="math inline">\(\delta\)</span>, of ALL
-individuals in a population. In short, <span
-class="math inline">\(\lambda\)</span> will vary in time and we indicate
-this by giving it a subscript, <span
-class="math inline">\(\lambda_t\)</span>.</p>
-<p>In this exercise, we simulate environmental stochasticity in
-<em>R</em>. We do this by choosing a set of random positive numbers that
-represent the <span class="math inline">\(\lambda\)</span>-values in
-different years. More concretely, let us assume that we can represent
-the fluctuation in the environment by drawing a sequence of <span
-class="math inline">\(\lambda\)</span>-values from an interval with a
-lower boundary given by the parameter <em>min</em> and an upper boundary
-given by the parameter <em>max</em>. Let us furthermore assume that each
-number within the interval <em>(min, max)</em> occurs with equal
-probability. We can do this in <em>R</em> by using the command
-<code>runif(n, min,max)</code>. The name <em>runif</em> is an
-abbreviation combining the words <em>random</em> and <em>uniform</em>,
-indicating that the command <code>runif(n, min, max)</code> produces a
-vector of <em>n</em> numbers (the length of the time series) and that
-these are drawn randomly from the interval <em>(min, max)</em>.</p>
+\]</span> as a model for exponential growth in discrete time, where <span class="math inline">\(\lambda = 1 + \beta - \delta\)</span>. <!--If the population size is sufficiently large, this becomes a deterministic model because the number of offspring produced, *B*, and the number of individuals dying, *D*, at any time step will be very close to the expected values $N(t)\beta$ and $N(t)\delta$, respectively. This is due to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). We will investigate the effect of *demographic stochasticity* as it occurs in small populations in a later exercise.--> Importantly, the above equation assumes that the growth factor <span class="math inline">\(\lambda\)</span> does not vary in time. In this exercise, we will relax this assumption. For example, climatic conditions vary among years and this might affect the average number of offspring, <span class="math inline">\(\beta\)</span>, and the probability to die, <span class="math inline">\(\delta\)</span>, of ALL individuals in a population. In short, <span class="math inline">\(\lambda\)</span> will vary in time and we indicate this by giving it a subscript, <span class="math inline">\(\lambda_t\)</span>.</p>
+<p>In this exercise, we simulate environmental stochasticity in <em>R</em>. We do this by choosing a set of random positive numbers that represent the <span class="math inline">\(\lambda\)</span>-values in different years. More concretely, let us assume that we can represent the fluctuation in the environment by drawing a sequence of <span class="math inline">\(\lambda\)</span>-values from an interval with a lower boundary given by the parameter <em>min</em> and an upper boundary given by the parameter <em>max</em>. Let us furthermore assume that each number within the interval <em>(min, max)</em> occurs with equal probability. We can do this in <em>R</em> by using the command <code>runif(n, min,max)</code>. The name <em>runif</em> is an abbreviation combining the words <em>random</em> and <em>uniform</em>, indicating that the command <code>runif(n, min, max)</code> produces a vector of <em>n</em> numbers (the length of the time series) and that these are drawn randomly from the interval <em>(min, max)</em>.</p>
 <pre class="r"><code>runif(10, 1, 2) # produces a vector of 10 random numbers between 1 and 2</code></pre>
-<p>We could in principle decide to draw the random numbers from
-distributions other than the uniform distribution, for example from a
-Poisson distribution, using the command
-<code>rpois(n, lambda)</code>.</p>
-<p>Let us define the parameter values of the random distribution and
-then draw the sequence of <span
-class="math inline">\(\lambda\)</span>-values.</p>
+<p>We could in principle decide to draw the random numbers from distributions other than the uniform distribution, for example from a Poisson distribution, using the command <code>rpois(n, lambda)</code>.</p>
+<p>Let us define the parameter values of the random distribution and then draw the sequence of <span class="math inline">\(\lambda\)</span>-values.</p>
 <pre class="r"><code>n &lt;- 100 # length of time series
 min &lt;- 0.5 # lowest possible value of the growth factor lambda
 max &lt;- 2 # largest possible value of the growth factor lambda
 
 growth_factors &lt;- runif(n, min, max)</code></pre>
-<p>In the next step, we want to use the sequence of <span
-class="math inline">\(\lambda\)</span>-values to project a population
-that consists of <em>N0</em> individuals at time <em>t=0</em> <em>t</em>
-time steps into the future. Thus, we want to compute</p>
+<p>In the next step, we want to use the sequence of <span class="math inline">\(\lambda\)</span>-values to project a population that consists of <em>N0</em> individuals at time <em>t=0</em> <em>t</em> time steps into the future. Thus, we want to compute</p>
 <p><span class="math display">\[
 N(t)=\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0*N(0).
 \]</span></p>
@@ -344,18 +317,9 @@ for (t in 1:n) {# for-loop that projects the population n time steps into the fu
   time_series[t+1] &lt;- if (time_series[t]*growth_factors[t] &lt; 1) 0 # sets the population vector to 0 in case N drops below 1
   else time_series[t]*growth_factors[t]
   }</code></pre>
-<p>Assuming that <em>N</em> describes the <em>absolute population
-size</em> we in this code set any population size less than one equal to
-zero (half a fox does not exist). In other words, if <span
-class="math inline">\(N &lt; 1\)</span> at any time <em>t</em>, then the
-we consider the population extinct from that time point onwards. Next,
-we plot the resulting time series on a log-scale.</p>
+<p>Assuming that <em>N</em> describes the <em>absolute population size</em> we in this code set any population size less than one equal to zero (half a fox does not exist). In other words, if <span class="math inline">\(N &lt; 1\)</span> at any time <em>t</em>, then the we consider the population extinct from that time point onwards. Next, we plot the resulting time series on a log-scale.</p>
 <pre class="r"><code>plot(0:n, time_series+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # Note that we add 1 to all entries in the time series. The reason is that ln(0) is not defined.</code></pre>
-<p>At each instance this code is executed (starting from the line in
-which the vector <em>growht_factors</em> is defined), we obtain a
-different random time series. If you produce several time series, you
-will note that in some cases the population goes extinct while in others
-the population is still present after <em>n</em> time steps.</p>
+<p>At each instance this code is executed (starting from the line in which the vector <em>growht_factors</em> is defined), we obtain a different random time series. If you produce several time series, you will note that in some cases the population goes extinct while in others the population is still present after <em>n</em> time steps.</p>
 <!--
 To confirm that the arithmetic mean of the annual grwoth factors, given by
 
@@ -387,10 +351,7 @@ lines(0:n, time_series_arith, type="p", col="2") # adds the line based on arithm
 
 As expected, the arithmetic mean growth factor is not very accurate in predicting the fate of the population.
 -->
-<p>Next, let us add a line that shows how the population changes if each
-year it grows according to the geometric mean, <span
-class="math inline">\(\tilde\lambda\)</span>, of the annual growth
-factors, defined as</p>
+<p>Next, let us add a line that shows how the population changes if each year it grows according to the geometric mean, <span class="math inline">\(\tilde\lambda\)</span>, of the annual growth factors, defined as</p>
 <p><span class="math display">\[
 \tilde\lambda:=(\lambda_{t-1}*\lambda_{t-2}*\ldots*\lambda_2*\lambda_1*\lambda_0)^{\frac{1}{t}}
 \]</span></p>
@@ -405,23 +366,12 @@ for (t in 1:n) {
 
 plot(0:n, time_series+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1,max(time_series)), xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # repeats the plot with the stochastic time series
 lines(0:n, time_series_geom, type=&quot;p&quot;, col=&quot;4&quot;) # add the line based on geometric mean in blue</code></pre>
-<p>You might encounter simulation runs in which the population goes
-extinct while the projection based on the geometric mean suggests that
-the population should slowly increase. Can you explain this apparent
-contradiction?</p>
+<p>You might encounter simulation runs in which the population goes extinct while the projection based on the geometric mean suggests that the population should slowly increase. Can you explain this apparent contradiction?</p>
 </div>
 <div id="the-probability-of-extinction" class="section level2">
 <h2>The probability of extinction</h2>
-<p>You have seen that for the chosen set of parameters <em>min</em>,
-<em>max</em>, <em>n</em> and <em>N0</em> a certain proportion of
-simulation runs results in extinction. How does the probability of
-extinction depend on these parameters? You can explore this question by
-changing the values for <em>min</em>, <em>max</em>, <em>n</em> and
-<em>N0</em>.</p>
-<p>To investigate this question more systematically, it is useful to
-automatize the process in <em>R</em>. We start by defining a new
-function to make the depency of the time series on <em>min</em>,
-<em>max</em>, <em>n</em> and <em>N0</em> explicit.</p>
+<p>You have seen that for the chosen set of parameters <em>min</em>, <em>max</em>, <em>n</em> and <em>N0</em> a certain proportion of simulation runs results in extinction. How does the probability of extinction depend on these parameters? You can explore this question by changing the values for <em>min</em>, <em>max</em>, <em>n</em> and <em>N0</em>.</p>
+<p>To investigate this question more systematically, it is useful to automatize the process in <em>R</em>. We start by defining a new function to make the depency of the time series on <em>min</em>, <em>max</em>, <em>n</em> and <em>N0</em> explicit.</p>
 <pre class="r"><code>environmental_stochasticity &lt;- function(N0, n, min, max) {# function with four arguments
   growth_factors &lt;- runif(n, min, max)
   time_series &lt;- c()
@@ -431,15 +381,8 @@ function to make the depency of the time series on <em>min</em>,
   }
   return(time_series)
 }</code></pre>
-<p>This function produces a population time series for a given set of
-parameters. The resulting population time series is stored in the vector
-<em>time_series</em>.</p>
-<p>The next piece of code allows us to execute the population simulation
-several times by putting our function inside a <em>for</em>-loop. How
-often the times series is repeated is determined by the new parameter
-<em>sim</em>, below set equal to 20. Note that each time series is
-different from the others because it is based on a different set of
-random <span class="math inline">\(\lambda\)</span>-values.</p>
+<p>This function produces a population time series for a given set of parameters. The resulting population time series is stored in the vector <em>time_series</em>.</p>
+<p>The next piece of code allows us to execute the population simulation several times by putting our function inside a <em>for</em>-loop. How often the times series is repeated is determined by the new parameter <em>sim</em>, below set equal to 20. Note that each time series is different from the others because it is based on a different set of random <span class="math inline">\(\lambda\)</span>-values.</p>
 <pre class="r"><code>n &lt;- 500 # lenght of time series
 min &lt;- 0.9 # lowest possible value for growth factor
 max &lt;- 1.1 # largest possible value of growth factor
@@ -451,41 +394,22 @@ results &lt;- matrix(nrow = n + 1, ncol = sim) # creates an empty matrix with n+
 for (i in 1:sim) {# executes the function sim times
   results[, i] &lt;- environmental_stochasticity(N0, n, min, max) # produces a time series and stores it in the jth column of the matrix results
 }</code></pre>
-<p>The following code plots all time series on a log scale in a single
-figure:</p>
+<p>The following code plots all time series on a log scale in a single figure:</p>
 <pre class="r"><code>cl &lt;- rainbow(sim) # set number of colors equal to number of simulations
 
 plot(0:n, results[, 1]+1, type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, max(results)), col=cl[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plot the result from the first simulation
 for (i in 2:sim) {# add the results from all other simulations to the same graph
   lines(0:n, results[, i]+1, type=&quot;l&quot;, col=cl[i])
 }</code></pre>
-<p>From these graphs, you can determine the number of simulation runs in
-which the population goes extinct.</p>
+<p>From these graphs, you can determine the number of simulation runs in which the population goes extinct.</p>
 <div id="tasks" class="section level3">
 <h3>TASKS</h3>
 <ol style="list-style-type: decimal">
-<li><p>Keep <em>max=2</em> fixed and vary <em>min</em> and <em>n</em>
-according to <em>min = (0; 0.1; 0.2; 0.3; 0.4; 0.5)</em> and <em>n =
-(100; 200; 500)</em>, respectively. Varying both parameters together
-gives you 18 parameter combinations which you can arrange in a table
-with three rows (<em>n</em>) and six columns (<em>min</em>). In each
-cell of this table, enter the proportion of 20 runs that result in
-extinction. Note that the simulations for <em>n=500</em> can take quite
-a bit of time. If some of these simulations take too long on your
-computer, then ignore those parameters.</p></li>
-<li><p>Keep <em>n=500</em> fixed and vary <em>min</em> and <em>max</em>
-according to <em>min/max = (0.9/1.1; 0.8/1.2; 0.7/1.3; 0.5/1.5;
-0.2/1.8)</em>. For each <em>min/max</em> report the proportion of 20
-runs in which the population goes extinct.</p></li>
-<li><p>For <em>n=500</em> and a pair of <em>min</em> and <em>max</em> of
-your own choice explore the effect of <em>N(0)</em> by varying it
-according to <em>N0=(1; 2; 3; 5; 10; 50)</em>. For each value of
-<em>N(0)</em>, report the proportion of ten runs in which the population
-went extinct.</p></li>
+<li><p>Keep <em>max=2</em> fixed and vary <em>min</em> and <em>n</em> according to <em>min = (0; 0.1; 0.2; 0.3; 0.4; 0.5)</em> and <em>n = (100; 200; 500)</em>, respectively. Varying both parameters together gives you 18 parameter combinations which you can arrange in a table with three rows (<em>n</em>) and six columns (<em>min</em>). In each cell of this table, enter the proportion of 20 runs that result in extinction. Note that the simulations for <em>n=500</em> can take quite a bit of time. If some of these simulations take too long on your computer, then ignore those parameters.</p></li>
+<li><p>Keep <em>n=500</em> fixed and vary <em>min</em> and <em>max</em> according to <em>min/max = (0.9/1.1; 0.8/1.2; 0.7/1.3; 0.5/1.5; 0.2/1.8)</em>. For each <em>min/max</em> report the proportion of 20 runs in which the population goes extinct.</p></li>
+<li><p>For <em>n=500</em> and a pair of <em>min</em> and <em>max</em> of your own choice explore the effect of <em>N(0)</em> by varying it according to <em>N0=(1; 2; 3; 5; 10; 50)</em>. For each value of <em>N(0)</em>, report the proportion of ten runs in which the population went extinct.</p></li>
 </ol>
-<p>For each exercise, explain why the observed pattern make sense.
-Submit your results (for example, by entering them into a data
-frame).</p>
+<p>For each exercise, explain why the observed pattern make sense. Submit your results (for example, by entering them into a data frame).</p>
 </div>
 </div>
 </div>
