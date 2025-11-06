@@ -217,7 +217,7 @@ $$
 \bar N(t) = N(0) \bar \lambda_{\mathrm G}^t.
 \end{equation}
 $$
-Note that this statement is true for the verion of the model without extinction threshold.
+Note that this statement is true for the version of the model without extinction threshold. Furthermore, note that in the case with many decreasing trajectories, we see a larger difference between the average trajectory and trajectory based on the geometric mean. This is because if trajectories reach very low numbers, then the fact that we add +1 to our data becomes visible. 
 
 ## Probability of extinction
 
