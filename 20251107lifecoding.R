@@ -4,9 +4,9 @@ lambda1 <- (lambda.mean + deviation)
 lambda2 <- (lambda.mean - deviation)
 possible.outcomes <- c(lambda1, lambda2)
 probabilities <- c(0.5, 0.5)
-N0 <- 10 # initial population size
+N0 <- 100 # initial population size
 tmax <- 200 # length of the time series
-sim <- 40 # number of simulation runs
+sim <- 100 # number of simulation runs
 
 environmental.stochasticity <- function(N0, tmax, possible.outcomes, probabilities) {
   time.series <- c(N0)
@@ -66,3 +66,26 @@ row.means <- rowMeans(log(results + 1))
 lines(row.means, type="l", lwd = 2, col="Black")
 lines(log(time.series.arith+1), type="l", lwd = 2, col="4")
 lines(log(time.series.geo+1), type="l", lwd = 2, col="Black")
+
+###########
+# Demographic stochasticity
+
+N0 <- 5
+b <- 0.3
+d <- 0.2
+rate <- b + d
+event <- c(1, -1)
+
+t <- 0
+N <- N0
+time.series <- data.frame(t, N)
+  
+for (i in 1:100) {
+  dt <- rexp(1, rate)
+  changeN <- sample(event, 1, c(b/rate, d/rate), replace = TRUE)
+  t <- t + dt
+  N <- N + changeN
+  time.series <- rbind(time.series, c(t, N))
+}
+
+plot(time.series, type = "s")

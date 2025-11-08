@@ -322,16 +322,26 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
 <pre><code>##           t N
 ## 1 0.0000000 3
-## 2 0.8661118 2
-## 3 0.8739137 1
-## 4 2.2045493 0</code></pre>
+## 2 0.7983079 4
+## 3 1.0677396 3
+## 4 1.7802822 2
+## 5 2.0767662 1
+## 6 2.9119249 0</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
-<pre class="r"><code>plot(demographic.stoch, log=&quot;y&quot;, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
+<p>Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached <em>Nmax</em> before going extinct.</p>
+<p>It is also informative to use the plot-option <code>type = "s"</code> (<em>s</em> for step), which reveals the discrete nature of the model we are studying: a change in population size occurs through either an increase of 1 or a decrease of 1.</p>
+<pre class="r"><code>demographic.stoch &lt;- time_series(3, 50, 0.2, 0.3)
+plot(demographic.stoch, type=&quot;s&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>This option also reveals more clearly that the time span between events is variable (because events occur randomly and the time span between events is determined by a draw from a exponential distribution). Furthermore, we can see that time span between events decrease as population size increases. This is because the population wide birth rate (<span class="math inline">\(b*N(t)\)</span>) and death rate (<span class="math inline">\(d*N(t)\)</span>) increase with population size.</p>
+<p>Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
+<pre class="r"><code>plot(demographic.stoch, log=&quot;y&quot;, type=&quot;s&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
+<p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code># The option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale. However, you will get a warning whenever your simulation results in extinction because the logarithm of 0 is minus infinity.</code></pre>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
@@ -360,7 +370,7 @@ for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
 
 # Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
 curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)</code></pre>
-<p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>This results in a figure showing ten simulation runs. From this figure, you can visually count how many of these runs result in extinction and how many in exponential growth.</p>
 <div id="task" class="section level3">
 <h3>Task</h3>

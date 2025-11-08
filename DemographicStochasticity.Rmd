@@ -72,10 +72,21 @@ demographic.stoch <- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type="l", xlab="time", ylab="population size")
 ```
 
-Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached *Nmax* before going extinct. Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.
+Maybe in your particular simulation the population went extinct? If so, execute the function again to see whether it might then have reached *Nmax* before going extinct.
+
+It is also informative to use the plot-option ```type = "s"``` (*s* for step), which reveals the discrete nature of the model we are studying: a change in population size occurs through either an increase of 1 or a decrease of 1.
 
 ```{r}
-plot(demographic.stoch, log="y", type="l", xlab="time", ylab="ln(population size)")
+demographic.stoch <- time_series(3, 50, 0.2, 0.3)
+plot(demographic.stoch, type="s", xlab="time", ylab="population size")
+```
+
+This option also reveals more clearly that the time span between events is variable (because events occur randomly and the time span between events is determined by a draw from a exponential distribution). Furthermore, we can see that time span between events decrease as population size increases. This is because the population wide birth rate ($b*N(t)$) and death rate ($d*N(t)$) increase with population size.
+
+Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.
+
+```{r}
+plot(demographic.stoch, log="y", type="s", xlab="time", ylab="ln(population size)")
 # The option log="y" automatically produces a plot where population size is on a logarithmic scale. However, you will get a warning whenever your simulation results in extinction because the logarithm of 0 is minus infinity.
 ```
 
@@ -146,6 +157,10 @@ for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
 
 # Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
 curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
+```
+
+```{r}
+
 ```
 
 
