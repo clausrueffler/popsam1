@@ -22,7 +22,7 @@ $$
 $$
 describes the mean over many simulations. These simulations take into account that, even if all individuals in a population are genetically identical, they will still differ in the number of their offspring and their age at death. This is due to chance events (some people are hit by a falling tree while others are not...). Fluctuations due to such chance events acting at the level of the individual are called *demographic stochasticity*. In this exercise, we will explore the consequences of demographic stochasticity for population viability.
 
-More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs, population size increases by one. The probabilities with which these two events occur are proportional to $d*N(t)$ and $b*N(t)$, respectively. To implement this idea in *R* we can use the function ```sample(x, size, prob)```, where $x = c(-1, 1)$ is the vector of possible events (-1 in case of a death and 1 in case of a birth), $size = 1$ indicates how many events occur at any given point in time, and $prob = c(d*N, b*N)$ gives the vector of probabilities with which the two events occur. Since only the magnitude of birth and death relative to each other matters, we can also use $prob = c(d, b)$.
+More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs, population size increases by one. The probabilities with which these two events occur are proportional to $d$ and $b$, respectively. To implement this idea in *R* we can use the function ```sample(x, size, prob)```, where ```x = c(-1, 1)``` is the vector of possible events (-1 in case of a death and 1 in case of a birth), ```size = 1``` indicates how many events occur at any given point in time, and ```prob = c(d/(d+b), b/(d+b))``` gives the vector of probabilities with which the two events occur (check that these probabilities add up to 1 as should be the case). Since only the magnitude of birth and death relative to each other matters, we can also use ```prob = c(d, b)```.
 
 ```{r eval=FALSE}
 sample(x =c(-1, 1), size = 1, prob = c(d = 0.2, b = 0.3))
@@ -50,7 +50,7 @@ time_series <- function(N0, Nmax, d, b){# this defines a function with the name 
   output <- data.frame(t, N) # creates a data frame with two columns (one for time and one for population size) in which we store the results from the simulation; we could also have used a matrix instead
   while (N < Nmax & N > 0) {# loop runs until N=0 or N=Nmax
     dt <- rexp(1, rate = d * N + b * N) # time to next event drawn from exponential distribution
-    event <- sample(c(-1, 1), 1, prob = c(d * N, b * N)) # determines whether next event is birth or death
+    event <- sample(c(-1, 1), 1, prob = c(d, b)) # determines whether next event is birth or death
     t <- t + dt # updates time
     N <- N + event # updates population size
     output <- rbind(output, c(t, N)) # updates output by adding a new row

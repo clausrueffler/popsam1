@@ -294,7 +294,7 @@ $(document).ready(function () {
 <p><span class="math display">\[
 \frac{\mathrm{d}N}{\mathrm{d}t}=N(b-d)=Nr
 \]</span> describes the mean over many simulations. These simulations take into account that, even if all individuals in a population are genetically identical, they will still differ in the number of their offspring and their age at death. This is due to chance events (some people are hit by a falling tree while others are not…). Fluctuations due to such chance events acting at the level of the individual are called <em>demographic stochasticity</em>. In this exercise, we will explore the consequences of demographic stochasticity for population viability.</p>
-<p>More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs, population size increases by one. The probabilities with which these two events occur are proportional to <span class="math inline">\(d*N(t)\)</span> and <span class="math inline">\(b*N(t)\)</span>, respectively. To implement this idea in <em>R</em> we can use the function <code>sample(x, size, prob)</code>, where <span class="math inline">\(x = c(-1, 1)\)</span> is the vector of possible events (-1 in case of a death and 1 in case of a birth), <span class="math inline">\(size = 1\)</span> indicates how many events occur at any given point in time, and <span class="math inline">\(prob = c(d*N, b*N)\)</span> gives the vector of probabilities with which the two events occur. Since only the magnitude of birth and death relative to each other matters, we can also use <span class="math inline">\(prob = c(d, b)\)</span>.</p>
+<p>More specifically, stochasticity enters our simulation by deciding randomly whether the next event in a population is a death or a birth. If death occurs, then population size decreases by one and if birth occurs, population size increases by one. The probabilities with which these two events occur are proportional to <span class="math inline">\(d\)</span> and <span class="math inline">\(b\)</span>, respectively. To implement this idea in <em>R</em> we can use the function <code>sample(x, size, prob)</code>, where <code>x = c(-1, 1)</code> is the vector of possible events (-1 in case of a death and 1 in case of a birth), <code>size = 1</code> indicates how many events occur at any given point in time, and <code>prob = c(d/(d+b), b/(d+b))</code> gives the vector of probabilities with which the two events occur (check that these probabilities add up to 1 as should be the case). Since only the magnitude of birth and death relative to each other matters, we can also use <code>prob = c(d, b)</code>.</p>
 <pre class="r"><code>sample(x =c(-1, 1), size = 1, prob = c(d = 0.2, b = 0.3))
 # in fact, instead of evaluating the above line of code ten times we can simply evaluate
 sample(x =c(-1, 1), size = 10, prob = c(d = 0.2, b = 0.3), replace = TRUE) # here we had to add the argument replace=TRUE to the function to indicate that earlier outcomes do not effect the probabilities of future outcomes</code></pre>
@@ -311,7 +311,7 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
   output &lt;- data.frame(t, N) # creates a data frame with two columns (one for time and one for population size) in which we store the results from the simulation; we could also have used a matrix instead
   while (N &lt; Nmax &amp; N &gt; 0) {# loop runs until N=0 or N=Nmax
     dt &lt;- rexp(1, rate = d * N + b * N) # time to next event drawn from exponential distribution
-    event &lt;- sample(c(-1, 1), 1, prob = c(d * N, b * N)) # determines whether next event is birth or death
+    event &lt;- sample(c(-1, 1), 1, prob = c(d, b)) # determines whether next event is birth or death
     t &lt;- t + dt # updates time
     N &lt;- N + event # updates population size
     output &lt;- rbind(output, c(t, N)) # updates output by adding a new row
@@ -320,17 +320,21 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##            t  N
-## 1  0.0000000  3
-## 2  0.8111413  4
-## 3  1.6376511  5
-## 4  2.3689251  6
-## 5  2.4565727  5
-## 6  2.6628529  6
-## 7  2.7374410  7
-## 8  2.9246587  8
-## 9  3.1589787  9
-## 10 3.4899396 10</code></pre>
+<pre><code>##           t  N
+## 1  0.000000  3
+## 2  1.082308  4
+## 3  1.320649  3
+## 4  1.758899  4
+## 5  2.002800  3
+## 6  2.954326  2
+## 7  3.745836  3
+## 8  4.185554  4
+## 9  4.345184  5
+## 10 4.847083  6
+## 11 5.006053  7
+## 12 5.341590  8
+## 13 5.351215  9
+## 14 5.896547 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
@@ -365,8 +369,10 @@ for (i in 1:sim) {# to create sim different simulations, we embed the function t
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
 <p>Next comes the code that produces the plots.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colors equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plots the first simulation
-for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plots the first simulation</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
+<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;l&quot;, col=colors[i])
 }
 
