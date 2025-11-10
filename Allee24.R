@@ -1,4 +1,4 @@
-
+## plotting the solution of logistic growth
 
 log.growth <- function(r, a, n0, t){
   (r/a)/(1 - (1 - (r/(a*n0)))*exp(-r*t))
@@ -9,7 +9,7 @@ log.growth(0.1, 0.001, 150, 10)
 curve(log.growth(0.1, 0.001, 10, x), from = 0, to = 200)
 curve(log.growth(0.1, 0.001, 150, x), from = 0, to = 100, ylim = c(0, 150))
 
-
+# model with Allee effect
 Allee.dynamics <- function(c, b, a, d, n){
   c*n*n*(b - a*n) - d*n
 }
@@ -32,7 +32,6 @@ curve(eq.3(0.1, x, 0.001, 1), from = 0.2, to = 1, xlim = c(0, 1), ylim = c(0, 10
 curve(eq.2(0.1, x, 0.001, 1), from = 0.2, to = 1, add = TRUE)
 abline(h = 0)
 
-curve(eq.3(0.1, x, 0.001, 1), from = 0.2, to = 1)
 ###########
 library(deSolve)
 n0 <- c(n = 1)
