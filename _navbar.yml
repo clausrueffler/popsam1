@@ -13,3 +13,8 @@ left:
       - text: "2. Excercise: Demograhic Stochasticity"
         href: ./DemographicStochasticity.html
 #      - text: "2. Excercise: Solutions"
+
+      - text: "3. Excercise: Predator-Prey Interactions"
+        href: ./PredatorPrey.html
+#      - text: "3. Excercise: Predator-Prey Solutions"
+#        href: ./PredatorPreySolutions.html
