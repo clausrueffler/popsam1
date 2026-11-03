@@ -64,7 +64,7 @@ environmental.stochasticity <- function(N0, tmax, possible.outcomes, probabiliti
     lambda <- sample(possible.outcomes, 1, probabilities, replace = TRUE) # new lambda value is chosen randomly
     time.series[t+1] <- time.series[t]*lambda
   }
-  return(time.series)
+  time.series
 }
 ```
 
