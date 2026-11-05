@@ -39,7 +39,7 @@ N <- 10
 rexp(n = 1, rate = d * N + b * N)
 ```
 
-gives the waiting time between two events. Importantly, ```rexp(n = 1, rate = d * N + b * N)``` produces a different value each time you execute the above command, this waiting time is also a ransom variable.
+gives the waiting time between two events. Importantly, ```rexp(n = 1, rate = d * N + b * N)``` produces a different value each time you execute the above command, this waiting time is also a random variable.
 
 In the following piece of *R*-code, we define a function that puts all these pieces together and creates a stochastic population dynamical time series. The function has four arguments: *N0* (the initial number of individuals in the population), *Nmax* (when the simulated population has reached this number the simulation stops (the simulation also stops once the population has gone extinct (*N=0*)), *d* (the per-capita death rate) and *b* (the per-capita birth rate). At the heart of our function is a *while*-loop, so that the algorithm is repeated until the population is either extinct or the population size has reached *Nmax*.
 
@@ -97,9 +97,9 @@ What is the effect of our chosen set of parameters on the probability that the p
 ```{r}
 N0 <- 3
 Nmax <- 50
-d <- 0.2
-b <- 0.3
-sim <- 10 # this sets the number of simulations
+d <- 0.5
+b <- 0.55
+sim <- 50 # this sets the number of simulations
 
 results <- list() # using the list variable allows us to save results of all iterations of the function time_series, that is, we can save several data frames in it
 for (i in 1:sim) {# to create sim different simulations, we embed the function time.series into a for-loop
@@ -117,13 +117,26 @@ maxt <- c() # creates a vector in which we store the length of the different tim
 tmax <- max(maxt) # the length of the longest time series is assigned to the parameter tmax
 ```
 
-Next comes the code that produces the plots.
+Next comes the code that produces the plots, first on a normal scale.
 
 ```{r}
 colors <- rainbow(length(results)) # sets number of colors equal to number sim
-plot(results[[1]], type="l", log="y", ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="ln(population size)") # plots the first simulation
+plot(results[[1]], type="s", ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="population size") # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
-  lines(results[[i]], type="l", col=colors[i])
+  lines(results[[i]], type="s", col=colors[i])
+}
+
+# Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
+curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
+```
+
+And then on the log-scale. Note that for the log-scale we have to adjust the ```ylim``` to start at 1, because the $\ln(0) = -\infty$, which makes any plot with any plot where extinction can occur unreadable.
+
+```{r}
+colors <- rainbow(length(results)) # sets number of colors equal to number sim
+plot(results[[1]], type="s", log="y", ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="population size") # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+  lines(results[[i]], type="s", col=colors[i])
 }
 
 # Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
@@ -132,11 +145,11 @@ curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
 
 ```{r eval=FALSE, echo=FALSE}
 # plot for ecology-D slides
-N0 <- 10
-Nmax <- 50
+N0 <- 3
+Nmax <- 100
 d <- 0.5
 b <- 0.55
-sim <- 10 # this sets the number of simulations
+sim <- 50 # this sets the number of simulations
 
 results <- list() # using the list variable allows us to save results of all iterations of the function time_series, that is, we can save several data frames in it
 for (i in 1:sim) {# to create sim different simulations, we embed the function time.series into a for-loop
@@ -150,23 +163,26 @@ maxt <- c() # creates a vector in which we store the length of the different tim
 tmax <- max(maxt) # the length of the longest time series is assigned to the parameter tmax
 
 colors <- rainbow(length(results)) # sets number of colors equal to number sim
-plot(results[[1]], type="l", log="y", ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="ln(population size)") # plots the first simulation
+plot(results[[1]], type="s", ylim=c(0, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="ln(population size)") # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
-  lines(results[[i]], type="l", col=colors[i])
+  lines(results[[i]], type="s", col=colors[i])
 }
 
 # Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
 curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
 ```
 
-```{r}
+This results in a figure showing 50 simulation runs. From this figure, you can visually count how many of these runs end in extinction and non-extinction, respectively.
 
-```
-
-
-This results in a figure showing ten simulation runs. From this figure, you can visually count how many of these runs result in extinction and how many in exponential growth.
+Note, that one can mathematically prove that the deterministic curve is equal to the arithmetic mean over many simulations. Interestingly, based on counting the number of non-extinct simulations, we can conclude that the majority of simulations result in extinction! On the other hand, several simulations grow much faster than would be the case in the absence of demographic stochasticity. Hence, the deterministic model is not very informative for understanding the fate of most populations!
 
 ### Task
+
+<!--
+In principle, it would be nice to add a curve showing the mean over all simulations. However, since we use the Gillespie algorithm, where events are not synchronized, this is somewhat demanding in R. So I abstain from doing this.
+
+However, there would be very good reason for doing this. Namely, one could plot the mean over log(N(t)) at many point in time. My understanding is that this curve would be below the deterministic curve, and this mean log(N(t)) curve better characterizes the majority of trajectories. 
+-->
 
   1)
 Investigating the probability of extinction in dependence of four different parameters (*N0*, *Nmax*, *d*, *b*) is a bit cumbersome. Let us therefore set the maximum population size to 200 (*Nmax=200*) and the death rate equal to 1 (*d=1*) and only vary *N0* and *b*. Vary *b* according to *b = (0.9; 1; 1.1; 1.2; 1.5)* and initial population size *N0* according to *N0 = (1; 3; 5; 10; 50)*. Varying both parameters together gives you 25 different parameter combinations that you can arrange in a table with five rows (*N0*) and five columns (*birth*). In each cell of this table, report the proportion of ten runs that result in extinction.

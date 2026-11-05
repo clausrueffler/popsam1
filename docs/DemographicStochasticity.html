@@ -306,7 +306,7 @@ sample(x =c(-1, 1), size = 10, prob = c(d = 0.2, b = 0.3), replace = TRUE) # her
 b &lt;- 0.3
 N &lt;- 10
 rexp(n = 1, rate = d * N + b * N)</code></pre>
-<p>gives the waiting time between two events. Importantly, <code>rexp(n = 1, rate = d * N + b * N)</code> produces a different value each time you execute the above command, this waiting time is also a ransom variable.</p>
+<p>gives the waiting time between two events. Importantly, <code>rexp(n = 1, rate = d * N + b * N)</code> produces a different value each time you execute the above command, this waiting time is also a random variable.</p>
 <p>In the following piece of <em>R</em>-code, we define a function that puts all these pieces together and creates a stochastic population dynamical time series. The function has four arguments: <em>N0</em> (the initial number of individuals in the population), <em>Nmax</em> (when the simulated population has reached this number the simulation stops (the simulation also stops once the population has gone extinct (<em>N=0</em>)), <em>d</em> (the per-capita death rate) and <em>b</em> (the per-capita birth rate). At the heart of our function is a <em>while</em>-loop, so that the algorithm is repeated until the population is either extinct or the population size has reached <em>Nmax</em>.</p>
 <pre class="r"><code>time_series &lt;- function(N0, Nmax, d, b){# this defines a function with the name &quot;time_series&quot;. It has four arguments: N0, Nmax, b, d
   N &lt;- N0 # initial value for population size
@@ -323,43 +323,21 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##             t  N
-## 1   0.0000000  3
-## 2   0.8260635  2
-## 3   1.3655916  3
-## 4   3.4176823  4
-## 5   3.9360723  3
-## 6   4.2776425  2
-## 7   4.8110742  3
-## 8   4.9955538  2
-## 9   5.1757581  3
-## 10  5.3519518  2
-## 11  5.6364117  3
-## 12  6.6232787  4
-## 13  8.0666791  5
-## 14  8.8502754  4
-## 15  9.6473468  5
-## 16  9.8209781  4
-## 17 10.2361083  5
-## 18 10.3895530  6
-## 19 10.8678684  7
-## 20 11.0154277  6
-## 21 11.3566834  5
-## 22 11.7412579  4
-## 23 12.2333933  5
-## 24 12.2578266  4
-## 25 13.0501572  5
-## 26 13.4467562  6
-## 27 13.8183618  7
-## 28 13.8691364  6
-## 29 14.7701894  7
-## 30 15.1594312  6
-## 31 19.3000744  7
-## 32 19.6070025  8
-## 33 20.1668011  7
-## 34 20.3857898  8
-## 35 20.6713413  9
-## 36 20.8374232 10</code></pre>
+<pre><code>##            t  N
+## 1  0.0000000  3
+## 2  0.7157663  4
+## 3  0.8614650  3
+## 4  1.2452606  4
+## 5  1.5816367  5
+## 6  1.6478573  6
+## 7  2.1695429  7
+## 8  2.3946056  6
+## 9  2.9043877  7
+## 10 3.1585032  6
+## 11 3.2348928  7
+## 12 3.9189306  8
+## 13 4.4451955  9
+## 14 4.6489785 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
@@ -372,17 +350,15 @@ plot(demographic.stoch, type=&quot;s&quot;, xlab=&quot;time&quot;, ylab=&quot;po
 <p>This option also reveals more clearly that the time span between events is variable (because events occur randomly and the time span between events is determined by a draw from a exponential distribution). Furthermore, we can see that time span between events decrease as population size increases. This is because the population wide birth rate (<span class="math inline">\(b*N(t)\)</span>) and death rate (<span class="math inline">\(d*N(t)\)</span>) increase with population size.</p>
 <p>Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(demographic.stoch, log=&quot;y&quot;, type=&quot;s&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code># The option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale. However, you will get a warning whenever your simulation results in extinction because the logarithm of 0 is minus infinity.</code></pre>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
 <p>What is the effect of our chosen set of parameters on the probability that the population size reaches <em>N=Nmax</em> before it goes extinct? To investigate this, we have to look at many realisations of the simulation and it is easier to do this by automatizing this process. We start by setting the parameters where we add one additional parameter, <em>sim</em>, that determines how many times the simulation is repeated. We can do this using the same construction we used when investigating many runs of environmental stochasticity.</p>
 <pre class="r"><code>N0 &lt;- 3
 Nmax &lt;- 50
-d &lt;- 0.2
-b &lt;- 0.3
-sim &lt;- 10 # this sets the number of simulations
+d &lt;- 0.5
+b &lt;- 0.55
+sim &lt;- 50 # this sets the number of simulations
 
 results &lt;- list() # using the list variable allows us to save results of all iterations of the function time_series, that is, we can save several data frames in it
 for (i in 1:sim) {# to create sim different simulations, we embed the function time.series into a for-loop
@@ -394,21 +370,35 @@ for (i in 1:sim) {# to create sim different simulations, we embed the function t
   maxt[i] &lt;- max(results[[i]][1]) # determines the length of the ith time series and stores the result in the object maxt
   }
 tmax &lt;- max(maxt) # the length of the longest time series is assigned to the parameter tmax</code></pre>
-<p>Next comes the code that produces the plots.</p>
+<p>Next comes the code that produces the plots, first on a normal scale.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colors equal to number sim
-plot(results[[1]], type=&quot;l&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;) # plots the first simulation</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
-<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
-  lines(results[[i]], type=&quot;l&quot;, col=colors[i])
+plot(results[[1]], type=&quot;s&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+  lines(results[[i]], type=&quot;s&quot;, col=colors[i])
 }
 
 # Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
 curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>This results in a figure showing ten simulation runs. From this figure, you can visually count how many of these runs result in extinction and how many in exponential growth.</p>
+<p>And then on the log-scale. Note that for the log-scale we have to adjust the <code>ylim</code> to start at 1, because the <span class="math inline">\(\ln(0) = -\infty\)</span>, which makes any plot with any plot where extinction can occur unreadable.</p>
+<pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colors equal to number sim
+plot(results[[1]], type=&quot;s&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+  lines(results[[i]], type=&quot;s&quot;, col=colors[i])
+}
+
+# Let us add a line showing the deterministic dynamics, that is, in the absence of demographic stochasticity.
+curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)</code></pre>
+<p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>This results in a figure showing 50 simulation runs. From this figure, you can visually count how many of these runs end in extinction and non-extinction, respectively.</p>
+<p>Note, that one can mathematically prove that the deterministic curve is equal to the arithmetic mean over many simulations. Interestingly, based on counting the number of non-extinct simulations, we can conclude that the majority of simulations result in extinction! On the other hand, several simulations grow much faster than would be the case in the absence of demographic stochasticity. Hence, the deterministic model is not very informative for understanding the fate of most populations!</p>
 <div id="task" class="section level3">
 <h3>Task</h3>
+<!--
+In principle, it would be nice to add a curve showing the mean over all simulations. However, since we use the Gillespie algorithm, where events are not synchronized, this is somewhat demanding in R. So I abstain from doing this.
+
+However, there would be very good reason for doing this. Namely, one could plot the mean over log(N(t)) at many point in time. My understanding is that this curve would be below the deterministic curve, and this mean log(N(t)) curve better characterizes the majority of trajectories. 
+-->
 <ol style="list-style-type: decimal">
 <li><p>Investigating the probability of extinction in dependence of four different parameters (<em>N0</em>, <em>Nmax</em>, <em>d</em>, <em>b</em>) is a bit cumbersome. Let us therefore set the maximum population size to 200 (<em>Nmax=200</em>) and the death rate equal to 1 (<em>d=1</em>) and only vary <em>N0</em> and <em>b</em>. Vary <em>b</em> according to <em>b = (0.9; 1; 1.1; 1.2; 1.5)</em> and initial population size <em>N0</em> according to <em>N0 = (1; 3; 5; 10; 50)</em>. Varying both parameters together gives you 25 different parameter combinations that you can arrange in a table with five rows (<em>N0</em>) and five columns (<em>birth</em>). In each cell of this table, report the proportion of ten runs that result in extinction. Which conclusions you can draw from your results about the effect of <em>N0</em> and <em>b</em> on the probability of extinction? Are there parameter combinations that you feel you need to add to your analysis to get a better understanding?</p></li>
 <li><p>For the model above, it can be shown mathematically that the probability of extinction, <span class="math inline">\(u(N_0)\)</span>, of a population consisting originally of <span class="math inline">\(N_0\)</span> individuals is given by the following formula: <span class="math display">\[
