@@ -120,7 +120,7 @@ tmax <- max(maxt) # the length of the longest time series is assigned to the par
 Next comes the code that produces the plots, first on a normal scale.
 
 ```{r}
-colors <- rainbow(length(results)) # sets number of colors equal to number sim
+colors <- rainbow(sim) # sets number of colors equal to number sim
 plot(results[[1]], type="s", ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="population size") # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type="s", col=colors[i])
@@ -133,7 +133,7 @@ curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
 And then on the log-scale. Note that for the log-scale we have to adjust the ```ylim``` to start at 1, because the $\ln(0) = -\infty$, which makes any plot with any plot where extinction can occur unreadable.
 
 ```{r}
-colors <- rainbow(length(results)) # sets number of colors equal to number sim
+colors <- rainbow(sim) # sets number of colors equal to number sim
 plot(results[[1]], type="s", log="y", ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="population size") # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type="s", col=colors[i])
@@ -162,7 +162,7 @@ maxt <- c() # creates a vector in which we store the length of the different tim
   }
 tmax <- max(maxt) # the length of the longest time series is assigned to the parameter tmax
 
-colors <- rainbow(length(results)) # sets number of colors equal to number sim
+colors <- rainbow(sim) # sets number of colors equal to number sim
 plot(results[[1]], type="s", ylim=c(0, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="population size") # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type="s", col=colors[i])
