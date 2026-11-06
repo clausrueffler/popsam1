@@ -174,7 +174,7 @@ curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)
 
 This results in a figure showing 50 simulation runs. From this figure, you can visually count how many of these runs end in extinction and non-extinction, respectively.
 
-Note, that one can mathematically prove that the deterministic curve is equal to the arithmetic mean over many simulations. Interestingly, based on counting the number of non-extinct simulations, we can conclude that the majority of simulations result in extinction! On the other hand, several simulations grow much faster than would be the case in the absence of demographic stochasticity. Hence, the deterministic model is not very informative for understanding the fate of most populations!
+Note, that one can mathematically prove that the deterministic curve is equal to the arithmetic mean over many simulations. Interestingly, based on counting the number of non-extinct simulations, we can conclude that the majority of simulations result in extinction! On the other hand, several simulations grow much faster than would be the case in the absence of demographic stochasticity. This model knows just two qualitatively different outcomes, extinction or exponential growth, and the deterministic model is not very informative for understanding the fate of most populations! Much more interesting is to understand how the probability for a particular simulation to go extinct.
 
 ### Task
 

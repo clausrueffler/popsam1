@@ -323,15 +323,11 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##            t  N
-## 1 0.00000000  3
-## 2 0.09945881  4
-## 3 0.34549529  5
-## 4 0.44356787  6
-## 5 0.70334484  7
-## 6 1.17980288  8
-## 7 1.57316781  9
-## 8 1.84509259 10</code></pre>
+<pre><code>##           t N
+## 1 0.0000000 3
+## 2 0.8953525 2
+## 3 3.4266376 1
+## 4 8.0123006 0</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
@@ -389,7 +385,7 @@ plot(results[[1]], type=&quot;s&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=
 curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>This results in a figure showing 50 simulation runs. From this figure, you can visually count how many of these runs end in extinction and non-extinction, respectively.</p>
-<p>Note, that one can mathematically prove that the deterministic curve is equal to the arithmetic mean over many simulations. Interestingly, based on counting the number of non-extinct simulations, we can conclude that the majority of simulations result in extinction! On the other hand, several simulations grow much faster than would be the case in the absence of demographic stochasticity. Hence, the deterministic model is not very informative for understanding the fate of most populations!</p>
+<p>Note, that one can mathematically prove that the deterministic curve is equal to the arithmetic mean over many simulations. Interestingly, based on counting the number of non-extinct simulations, we can conclude that the majority of simulations result in extinction! On the other hand, several simulations grow much faster than would be the case in the absence of demographic stochasticity. This model knows just two qualitatively different outcomes, extinction or exponential growth, and the deterministic model is not very informative for understanding the fate of most populations! Much more interesting is to understand how the probability for a particular simulation to go extinct.</p>
 <div id="task" class="section level3">
 <h3>Task</h3>
 <!--
