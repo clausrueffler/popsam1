@@ -76,15 +76,15 @@ data <- environmental.stochasticity(N0, tmax, possible.outcomes, probabilities) 
 plot(data, type="l", xlab="time", ylab="population size")
 ```
 
-Alternatively, we can plot the time series on a log-scale.
+Alternatively, we can plot the time series on a log-scale. We can do this in two different ways. First, by adding the option ```log = "y"``` to the plot command. Second, by taking the logarithm of the data. In the second case, it is useful to add 1 to all entries in the time series, because $\ln(N)$ becomes negative for $N < 1$. Observe how the two option affect the scaling on the y-axis.
 
 ```{r eval=FALSE}
+plot(data, type="l", log = "y", xlab="time", ylab="population size")
+
 plot(log(data+1), type="l", xlab="time", ylab="ln(population size)")
 ```
 
-Note that for the log-scale we add 1 to all entries in the time series. The reason is that $\ln(N)$ for $N<1$ is negative.
-
-Each time this code is executed, you obtain a different random time series. If you do this often enough, you will note that in some cases the population decreases to very low values. In real life, this might mean that a population goes extinct. To incorporate this into our simulations, we can introduce an *extinction threshold*. If the population size drops below this threshold, then the population is extinct and cannot recover. A natural choice for such a threshold is 1. In the following code, we thus set population size to zero whenever *N(t)* drops below 1:
+Each time this code is executed, you obtain a different random time series. If you do this often enough, you will note that in some cases the population decreases to very low values, whithout ever properly becoming zero. In real life, this might mean that a population goes extinct. To incorporate this into our simulations, we can introduce an *extinction threshold*. If the population size drops below this threshold, then the population is extinct and cannot recover. A natural choice for such a threshold is 1. In the following code, we thus set population size to zero whenever *N(t)* drops below 1:
 
 ```{r eval=FALSE}
 # new function that incorporates extinction
@@ -94,7 +94,7 @@ environmental.stochasticity.ext <- function(N0, tmax, possible.outcomes, probabi
     lambda <- sample(possible.outcomes, 1, probabilities, replace = TRUE)
     time.series[t+1] <- ifelse(time.series[t] * lambda < 1, 0, time.series[t] * lambda) # sets population size to 0 in case N drops below 1
   }
-  return(time.series)
+  time.series
 }
 
 data <- environmental.stochasticity.ext(N0, tmax, possible.outcomes, probabilities)
@@ -138,7 +138,7 @@ Some simulation result in extinction while others do not.
 3.
 The variance across simulation runs increases with time. Thus, predictions become less accurate the longer we look into the future.
 4.
-The endpoints of the different simulations are highly skewed, with a few simulations reaching very high values and many quite low values.
+The endpoints of the different simulations are highly skewed, with a few simulations reaching very high values and many resulting in extinction or reaching very low values (when we do not introduce an extinction threshold).
 
 ## Average population trajectory
 
@@ -146,10 +146,12 @@ You have seen that as time proceeds, the different simulation runs increasingly 
 $$
 \bar N(t) = \frac{N_1(t)+ \ldots + N_n(t)}{n} = \frac{\sum_{i=1}^n N_i(t)}{n}.
 $$
-Let us add this average to our plot. First, we repeat the code that produces *sim=10* time series with an extinction threshold on a log-scale.
+Let us add this average to our plot. First, we repeat the code that produces *sim=10* time series without an extinction threshold on the  normal scale.
+
+To add the average is easy. Since we store the time series in a matrix called *results*. Each column contains a different time series. To calculate the mean population size at a certain point in time we have to take the mean over all values within a row. This can be done with the command ```rowMeans```.
 
 ```{r eval=FALSE}
-sim <- 10
+sim <- 40
 
 results <- matrix(nrow = tmax + 1, ncol = sim)
 
@@ -158,27 +160,34 @@ for (i in 1:sim) {
 }
 
 # Let us combine all time series into a single plot.
-
 cl <- rainbow(sim)
+matplot(results, lty = 1, type = "l", ylim = c(0, max(results)), col = cl, xlab = "time", ylab = "population size")
 
-matplot(log(results+1), lty = 1, type = "l", ylim = c(0, log(max(results)+1)), col = cl, xlab = "time", ylab = "ln(population size)")
+row.means <- rowMeans(results) # calculates average trajectory
+lines(row.means, type="l", lwd = 2, col="Black") # add average trajectory
+
+matplot(log(results+1), lty = 1, type = "l", ylim = c(0, max(log(results+1))), col = cl, xlab = "time", ylab = "ln(population size)")
+
+row.means <- log(rowMeans(results+1))
+lines(row.means, type="l", lwd = 2, col="Black")
 ```
+You should now see a black wiggly line appearing in you plot. This line should become smoother the higher the number of simulations. Try it!
 
-To add the average is easy. In the above code, we stored the time series in a matrix called *results*. Each column contains a different time series. To calculate the mean population size at a certain point in time we have to take the mean over all values within a row. This can be done with the command ```rowMeans```.
+Again, it seems that many trajectories are close to zero and hard to distinguish. Let us therefore make the same plot on the log-scale.
 
 ```{r eval=FALSE}
-row.means <- rowMeans(log(results + 1)) # important to first add 1, then take the logarithm and average in last step
+matplot(log(results+1), lty = 1, type = "l", ylim = c(0, max(log(results+1))), col = cl, xlab = "time", ylab = "ln(population size)")
 
+row.means <- log(rowMeans(results+1))
 lines(row.means, type="l", lwd = 2, col="Black")
 ```
 
-You should now see a black wiggly line appearing in you plot. This line should become smoother the higher the number of simulations (try it).
+In class, we derived that the expected average trajectory $\bar N(t)$ over many simulations is given by
 
-Is there a way to predict the average trajectory? It might be tempting to think that the average should follow
 $$
 \bar N(t) = N(0) \bar \lambda^t,
 $$
-where $\bar \lambda = 1/t*\sum_{i=0}^{t-1} \lambda(i)$ is the \textit{arithmetic mean} of the annual growth factors. In our current scenario, we have $\bar\lambda =$*lambda.mean*. Let us add this line.
+where $\bar \lambda = 1/t*\sum_{i=0}^{t-1} \lambda(i)$ is the \textit{arithmetic mean} of the annual growth factors. This trajectory thus corresponds to population growth without environmental stochasticity in the *average environment*. In our current scenario, we have $\bar\lambda =$*lambda.mean*. Let us add this line.
 
 ```{r eval=FALSE}
 # function computing a time series given that the population changes by the arithmetic mean lambda value

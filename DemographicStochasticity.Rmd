@@ -163,7 +163,7 @@ maxt <- c() # creates a vector in which we store the length of the different tim
 tmax <- max(maxt) # the length of the longest time series is assigned to the parameter tmax
 
 colors <- rainbow(length(results)) # sets number of colors equal to number sim
-plot(results[[1]], type="s", ylim=c(0, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="ln(population size)") # plots the first simulation
+plot(results[[1]], type="s", ylim=c(0, Nmax), xlim=c(0, tmax), col=colors[1], xlab="time", ylab="population size") # plots the first simulation
 for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type="s", col=colors[i])
 }

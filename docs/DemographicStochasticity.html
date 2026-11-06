@@ -324,20 +324,14 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
 <pre><code>##            t  N
-## 1  0.0000000  3
-## 2  0.7157663  4
-## 3  0.8614650  3
-## 4  1.2452606  4
-## 5  1.5816367  5
-## 6  1.6478573  6
-## 7  2.1695429  7
-## 8  2.3946056  6
-## 9  2.9043877  7
-## 10 3.1585032  6
-## 11 3.2348928  7
-## 12 3.9189306  8
-## 13 4.4451955  9
-## 14 4.6489785 10</code></pre>
+## 1 0.00000000  3
+## 2 0.09945881  4
+## 3 0.34549529  5
+## 4 0.44356787  6
+## 5 0.70334484  7
+## 6 1.17980288  8
+## 7 1.57316781  9
+## 8 1.84509259 10</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
@@ -350,6 +344,8 @@ plot(demographic.stoch, type=&quot;s&quot;, xlab=&quot;time&quot;, ylab=&quot;po
 <p>This option also reveals more clearly that the time span between events is variable (because events occur randomly and the time span between events is determined by a draw from a exponential distribution). Furthermore, we can see that time span between events decrease as population size increases. This is because the population wide birth rate (<span class="math inline">\(b*N(t)\)</span>) and death rate (<span class="math inline">\(d*N(t)\)</span>) increase with population size.</p>
 <p>Since we are dealing with a stochastic version of exponential growth we might want to plot the population size on a log-scale.</p>
 <pre class="r"><code>plot(demographic.stoch, log=&quot;y&quot;, type=&quot;s&quot;, xlab=&quot;time&quot;, ylab=&quot;ln(population size)&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code># The option log=&quot;y&quot; automatically produces a plot where population size is on a logarithmic scale. However, you will get a warning whenever your simulation results in extinction because the logarithm of 0 is minus infinity.</code></pre>
 <p>You can vary the parameters <em>N0</em>, <em>Nmax</em>, <em>d</em> and <em>b</em> and investigate their effect on the time series, more specifically, whether or not the population goes extinct.</p>
@@ -382,8 +378,10 @@ curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>And then on the log-scale. Note that for the log-scale we have to adjust the <code>ylim</code> to start at 1, because the <span class="math inline">\(\ln(0) = -\infty\)</span>, which makes any plot with any plot where extinction can occur unreadable.</p>
 <pre class="r"><code>colors &lt;- rainbow(length(results)) # sets number of colors equal to number sim
-plot(results[[1]], type=&quot;s&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plots the first simulation
-for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;s&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plots the first simulation</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
+## logarithmic plot</code></pre>
+<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;s&quot;, col=colors[i])
 }
 
