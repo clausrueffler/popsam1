@@ -5,14 +5,16 @@ type: inverse
 left:
   - text: "Exercises"
     menu:
-      - text: "1. Excercise: Environmental Stochasticity"
-        href: ./EnvironmentalStochasticityNew.html
+      - text: "1. Excercise: Demograhic Stochasticity"
+        href: ./DemographicStochasticity.html
 #      - text: "1. Excercise: Solutions"
+
+      - text: "2. Excercise: Environmental Stochasticity"
+        href: ./EnvironmentalStochasticityNew.html
+#      - text: "2. Excercise: Solutions"
 #        href: ./PopulationDynamicsSolutions.html 
 
-      - text: "2. Excercise: Demograhic Stochasticity"
-        href: ./DemographicStochasticity.html
-#      - text: "2. Excercise: Solutions"
+
 
       - text: "3. Excercise: Predator-Prey Interactions"
         href: ./PredatorPrey.html

@@ -261,10 +261,10 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="./EnvironmentalStochasticityNew.html">1. Excercise: Environmental Stochasticity</a>
+      <a href="./DemographicStochasticity.html">1. Excercise: Demograhic Stochasticity</a>
     </li>
     <li>
-      <a href="./DemographicStochasticity.html">2. Excercise: Demograhic Stochasticity</a>
+      <a href="./EnvironmentalStochasticityNew.html">2. Excercise: Environmental Stochasticity</a>
     </li>
     <li>
       <a href="./PredatorPrey.html">3. Excercise: Predator-Prey Interactions</a>
@@ -323,57 +323,15 @@ rexp(n = 1, rate = d * N + b * N)</code></pre>
 }</code></pre>
 <p>We can evaluate the function by writing</p>
 <pre class="r"><code>time_series(N0 = 3, Nmax = 10, d = 0.2, b = 0.3)</code></pre>
-<pre><code>##             t  N
-## 1   0.0000000  3
-## 2   0.7003063  2
-## 3   2.4721471  3
-## 4   2.8671845  4
-## 5   3.3999300  5
-## 6   3.4068727  6
-## 7   4.0529909  5
-## 8   4.9132168  4
-## 9   5.3784651  5
-## 10  5.9836166  6
-## 11  6.5774618  5
-## 12  6.8616255  6
-## 13  7.1032420  7
-## 14  7.5434107  6
-## 15  7.6419491  5
-## 16  7.7406782  6
-## 17  7.7554513  5
-## 18  8.7194711  4
-## 19  8.7954042  3
-## 20 10.1195877  4
-## 21 10.6156361  5
-## 22 11.6549027  4
-## 23 11.8924934  3
-## 24 12.3017765  4
-## 25 13.0123507  5
-## 26 13.0857572  4
-## 27 14.0708129  5
-## 28 14.4541980  6
-## 29 15.3434373  7
-## 30 15.3487122  6
-## 31 15.5453398  7
-## 32 16.1990444  6
-## 33 16.3402575  7
-## 34 16.6096509  8
-## 35 16.6580947  9
-## 36 17.0081790  8
-## 37 17.1036540  7
-## 38 17.1947762  8
-## 39 17.2979091  9
-## 40 17.3483896  8
-## 41 17.4460821  9
-## 42 17.8523153  8
-## 43 17.9117003  7
-## 44 17.9633380  8
-## 45 18.2241139  7
-## 46 18.5351705  8
-## 47 18.7952079  7
-## 48 18.8250878  8
-## 49 19.3480228  9
-## 50 19.6202706 10</code></pre>
+<pre><code>##           t N
+## 1 0.0000000 3
+## 2 0.2783700 4
+## 3 0.4105327 3
+## 4 0.6323315 2
+## 5 1.7429997 3
+## 6 2.2228296 2
+## 7 2.6862139 1
+## 8 9.1201920 0</code></pre>
 <p>Thus, in this case we have <em>N0=3</em>, <em>Nmax=10</em>, <em>d=0.2</em>, and <em>b=0.3</em>. The output of the function is a data frame with two columns. The first column gives the time at which an event occurs and the second column gives the updated population size. Each time you evaluate the function you obtain a different output. This is due to the stochastic nature of the simulation. Let us visualize a time series (now for <em>Nmax=200</em>).</p>
 <pre class="r"><code>demographic.stoch &lt;- time_series(3, 200, 0.2, 0.3)
 plot(demographic.stoch, type=&quot;l&quot;, xlab=&quot;time&quot;, ylab=&quot;population size&quot;)</code></pre>
@@ -418,10 +376,8 @@ curve(N0*exp(x*(b - d)), from = 0, to = tmax, add=TRUE)</code></pre>
 <p><img src="DemographicStochasticity_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>And then on the log-scale. Note that for the log-scale we have to adjust the <code>ylim</code> to start at 1, because the <span class="math inline">\(\ln(0) = -\infty\)</span>, which makes any plot with any plot where extinction can occur unreadable.</p>
 <pre class="r"><code>colors &lt;- rainbow(sim) # sets number of colors equal to number sim
-plot(results[[1]], type=&quot;s&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plots the first simulation</code></pre>
-<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value &lt;= 0 omitted from
-## logarithmic plot</code></pre>
-<pre class="r"><code>for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
+plot(results[[1]], type=&quot;s&quot;, log=&quot;y&quot;, ylim=c(1, Nmax), xlim=c(0, tmax), col=colors[1], xlab=&quot;time&quot;, ylab=&quot;population size&quot;) # plots the first simulation
+for (i in 2:sim) {# this for-loop adds all further simulations to the same graph
   lines(results[[i]], type=&quot;s&quot;, col=colors[i])
 }
 
